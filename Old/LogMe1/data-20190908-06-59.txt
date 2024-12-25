@@ -1,0 +1,21 @@
+Array
+(
+    [/api/v2/SendUserSMS] => 
+    [token] => naboode
+    [mac] => 09190489433
+    [MessageType] => 2
+)
+
+Array
+(
+    [/api/v2/VerifySMS] => 
+    [token] => naboode
+    [mac] => 09190489433
+    [Message] => 7973
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

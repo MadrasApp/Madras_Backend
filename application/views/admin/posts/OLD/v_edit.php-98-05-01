@@ -1,0 +1,1004 @@
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$thumbs = $this->post->postThumb($post_id, "all");
+
+$thumb_printed = FALSE;
+
+global $POST_TYPES;
+
+$postType = @$POST_TYPES[$type];
+
+?>
+<style>
+    .box:not(:first-child){
+        margin: 30px 0;
+    }
+</style>
+
+<div id="result"></div>
+
+<form id="postForm" class="editpost">
+
+    <div style="float:right;width:75%;padding-left:10px">
+
+        <input type="hidden" name="id" value="<?php echo  @$post['id'] ?>">
+        <input type="hidden" name="data[type]" value="<?php echo  $type ?>">
+
+        <?php if (in_array('title', $form)) : ?>
+            <input type="text" class="input xlarg" id="post-title" style="width:100%" placeholder="عنوان"
+                   name="data[title]">
+        <?php endif; ?>
+
+        <p></p>
+
+        <?php if (in_array('media', $form)) : ?>
+            <input type="button" class="w-btn" value="افزودن رسانه" onClick="media('editor')">
+        <?php endif; ?>
+
+        <?php if (in_array('editor', $form)) : ?>
+
+            <textarea id="content" name="data[content]" style="display:none"><?php echo  @$post['content'] ?></textarea>
+            <div id="textEditor"></div>
+            <script src="<?php echo  base_url() . "js/ckeditor/ckeditor.js" ?>"></script>
+            <script>
+                var EDITOR, html = $('#content').val(),
+                    config = {
+                        contentsCss: [CKEDITOR.basePath + 'contents.css', '<?php echo  base_url() ?>style/_master/font.css']
+                    };
+                $(function () {
+                    EDITOR = CKEDITOR.appendTo('textEditor', config, html);
+                });
+            </script>
+
+        <?php elseif (in_array('thumb', $form) && $type != 'book') : $thumb_printed = TRUE; ?>
+
+            <div class="box media-ap edit-post-thumb">
+                <div class="box-title"><i class="fa fa-photo"></i> تصویر</div>
+                <div class="box-content" style="padding:2px;text-align:center">
+                    <div class="convert-to-form-el editable-img" form-el-name="data[thumb]" form-el-value="file">
+                        <span class="media-ap-thumb replace" data-thumb="thumb600">
+                        <?php $thumbKey = (isset($post['thumb']) && trim($post['thumb']) != "") ?>
+                            <?php if ($thumbKey) : ?>
+                                <img src="<?php echo  base_url() . $thumbs['base'][600] ?>" file="<?php echo  $thumbs['base']['b'] ?>" class="convert-this">
+                            <?php endif; ?>
+                        </span>
+                        <div id="add-thumb-img" class="plus add-img"
+                             onClick="media('img,1',this,function(){ $('#add-thumb-img').hide() })"
+                             style="display:<?php echo  $thumbKey ? 'none' : 'inline-block' ?>;margin:15px"></div>
+                        <div class="form-ap-data" style="display:none"></div>
+                    </div>
+                </div>
+                <div class="box-footer"><i class="fa fa-pencil cu" onClick="media('img,1',this)"></i></div>
+            </div>
+
+        <?php endif; ?>
+		
+        <?php if (in_array('excerpt', $form)) : ?>
+            <div class="box">
+                <div class="box-title"><i class="fa fa-ellipsis-h"></i> چکیده و خلاصه</div>
+                <div class="box-content" style="padding:0">
+                    <textarea class="input" name="data[excerpt]" style="width:100%;margin:0;resize:vertical;" rows="5"
+                              placeholder="چکیده"></textarea>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>		
+
+        <?php if($type == 'book'): ?>
+
+            <?php /* ?>
+			<div class="full-screen" id="select-index">
+                <div class="content" style="padding:50px 100px">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-3">
+                            <h2 class="text-center" style="margin: 0 0 30px 0"> متصل کردن به فهرست <span class="result"></span> </h2>
+                            <hr style="margin: 20px 0"/>
+                            <div class="index-book"><?php echo  $indexes ?></div>
+                            <hr style="margin: 20px 0"/>
+                            <button type="button" class="btn btn-info btn-block btn-xlg" onClick="$(this).closest('.full-screen').hide()">بستن این صفحه</button>
+                        </div>
+                        <div class="col-xs-12 col-sm-9 indexes-content">
+                            <p>از قسمت سمت راست کتاب مربوطه را انتخاب کنید</p>
+                        </div>
+                    </div>
+                </div>
+                <?php if(isset($group_book_id)): ?>
+                    <script>
+                        $(window).load(function(){
+                            $('select.index-select').val(<?php echo  $group_book_id ?>);
+                            setTimeout(function(){
+                                $('select.index-select').trigger('change');
+                            },500);
+                        });
+                    </script>
+                <?php endif ?>
+            </div>
+
+            <script src="<?php echo  base_url() ?>/js/_admin/book.js"></script>
+            <div class="box">
+                <div class="box-title"><i class="fa fa-book"></i> متن و محتویات </div>
+                <div class="box-content" style="padding:0 15px">
+
+                    <?php if(isset($parts) && is_array($parts)): ?>
+					<?php $bookPages = isset($meta['pages']) ? explode(',',$meta['pages']):[]; ?>
+                        <?php foreach ($parts as $pk=>$p): ?>
+
+                            <div class="book-part row <?php echo  $p->sound != '' ? 'has-sound':'' ?> <?php echo  $p->description != '' ? 'has-description':'' ?> <?php echo  $p->index ? 'has-index':'' ?>" data-id="<?php echo  $p->id ?>">
+                                <div class="col-xs-1">
+                                    <ul class="btn-group-vertical list-unstyled">
+                                        <li class="btn btn-default add-index" title="<?php echo  $p->index_name != '' ? $p->index_name:'متصل کرد به فهرست'?>"><i class="fa fa-list"></i></li>
+                                        <li class="btn btn-default add-sound" title="افزودن یا حذف صدا"><i class="fa fa-play-circle-o"></i></li>
+                                        <li class="btn btn-default add-description" title="افزودن یا حذف شرح"><i class="fa fa-comment-o"></i></li>
+                                        <li class="btn btn-default add-part" title="افزودن پاراگراف"><i class="fa fa-plus-circle"></i></li>
+                                    </ul>
+                                </div>
+
+                                <div class="part-content col-xs-10">
+                                    <textarea name="book[part][<?php echo  $pk ?>][text]" class="form-control part-text" placeholder="متن"><?php echo  $p->text ?></textarea>
+                                    <textarea name="book[part][<?php echo  $pk ?>][description]" class="form-control part-description" placeholder="شرح"><?php echo  $p->description ?></textarea>
+                                    <div class="part-sound">
+                                        <input name="book[part][<?php echo  $pk ?>][file]" type="hidden" value="<?php echo  $p->sound ?>">
+                                        <?php if($p->sound != ''): ?>
+                                            <!--<audio controls=""><source src="<?php echo  $p->sound ?>" type="audio/mpeg">Your browser does not support the audio tag.</audio>-->
+                                        <?php endif ?>
+                                    </div>
+                                    <input name="book[part][<?php echo  $pk ?>][order]" class="part-order" type="hidden" value="">
+                                    <input name="book[part][<?php echo  $pk ?>][index]" class="part-index" type="hidden" value="<?php echo  $p->index ?>">
+                                    <input name="book[part][<?php echo  $pk ?>][id]" class="part-id" type="hidden" value="<?php echo  $p->id ?>">
+                                </div>
+                                <div class="col-xs-1">
+                                    <ul class="btn-group-vertical list-unstyled">
+                                        <li class="btn btn-default level-up" title="انتقال به بالا"><i class="fa fa-angle-up"></i></li>
+                                        <li class="btn btn-default part-grid" title="تغییر نحوه نمایش"><i class="fa fa-th-list"></i></li>
+                                        <li class="btn btn-default delete-part" title="حذف پاراگراف"><i class="fa fa-trash"></i></li>
+                                        <li class="btn btn-default level-down" title="انتقال به پایین"><i class="fa fa-angle-down"></i></li>
+                                    </ul>
+                                </div>
+								<div class="book-page <?php echo  in_array($pk,$bookPages) ? 'active':'' ?>"></div>
+                            </div>
+                        <?php endforeach ?>
+                    <?php else : ?>
+                        <div class="book-part row">
+                            <div class="col-xs-1">
+                                <ul class="btn-group-vertical list-unstyled">
+                                    <li class="btn btn-default add-index" title="متصل کرد به فهرست"><i class="fa fa-list"></i></li>
+                                    <li class="btn btn-default add-sound" title="افزودن یا حذف صدا"><i class="fa fa-play-circle-o"></i></li>
+                                    <li class="btn btn-default add-description" title="افزودن یا حذف شرح"><i class="fa fa-comment-o"></i></li>
+                                    <li class="btn btn-default add-part" title="افزودن پاراگراف"><i class="fa fa-plus-circle"></i></li>
+                                </ul>
+                            </div>
+
+                            <div class="part-content col-xs-10">
+                                <textarea name="book[part][1][text]" class="form-control part-text" placeholder="متن"></textarea>
+                                <textarea name="book[part][1][description]" class="form-control part-description" placeholder="شرح"></textarea>
+                                <div class="part-sound">
+                                    <input name="book[part][1][file]" type="hidden" value="">
+                                </div>
+                                <input name="book[part][1][order]" class="part-order" type="hidden" value="">
+                                <input name="book[part][1][index]" class="part-index" type="hidden" value="">
+                            </div>
+                            <div class="col-xs-1">
+                                <ul class="btn-group-vertical list-unstyled">
+                                    <li class="btn btn-default level-up" title="انتقال به بالا"><i class="fa fa-angle-up"></i></li>
+                                    <li class="btn btn-default part-grid" title="تغییر نحوه نمایش"><i class="fa fa-th-list"></i></li>
+                                    <li class="btn btn-default delete-part" title="حذف پاراگراف"><i class="fa fa-trash"></i></li>
+                                    <li class="btn btn-default level-down" title="انتقال به پایین"><i class="fa fa-angle-down"></i></li>
+                                </ul>
+                            </div>
+							<div class="book-page"></div>
+                        </div>
+						
+                    <?php endif ?>
+                </div>
+                <div class="box-footer">
+                    <div class="deleted-parts"></div>
+					<input type="hidden" id="book-pages" name="meta[pages]" value="<?php echo  @$meta['pages'] ?>">
+				</div>
+            </div>
+			<?php */ ?>
+			
+
+			<div class="box">
+                <div class="box-title"><i class="fa fa-book"></i> آزمون اول</div>
+                <div class="box-content" style="padding:0 15px">
+					
+                    <?php if(isset($tests) && is_array($tests)): ?>
+                        <?php foreach ($tests as $tk=>$test): if($test->category == 2) continue;  ?>
+						
+                        <div class="book-test row" data-id="<?php echo  $test->id ?>">
+                            <div class="col-xs-1">
+                                <ul class="btn-group-vertical list-unstyled">
+									<li class="btn btn-default test-grid" title="تغییر نحوه نمایش"><i class="fa fa-th-list"></i></li>
+									<li class="btn btn-default delete-test" title="حذف"><i class="fa fa-trash"></i></li>
+                                </ul>
+                            </div>
+                            <div class="test-content col-xs-11">
+                                <input type="text" name="book[test][<?php echo  $tk ?>][question]" class="form-control input-lg test-text" placeholder="سوال" value="<?php echo  html_escape($test->question) ?>">
+								<div class="answers">
+									<?php foreach(range(1,4) as $ti): ?>
+									<div class="input-group">
+										<label class="input-group-addon">
+											<input type="radio" value="<?php echo  $ti ?>" name="book[test][<?php echo  $tk ?>][answer]" <?php echo  $test->true_answer == $ti ? 'checked':''  ?>>
+										</label>
+										<input type="text" class="form-control need" name="book[test][<?php echo  $tk ?>][answer_<?php echo  $ti ?>]" placeholder="پاسخ <?php echo  $ti ?>" value="<?php echo  html_escape($test->{'answer_'.$ti}) ?>">
+									</div>
+									<?php endforeach ?>
+								</div>
+								<input type="hidden" name="book[test][<?php echo  $tk ?>][id]" value="<?php echo  $test->id ?>">
+								<input type="hidden" name="book[test][<?php echo  $tk ?>][category]" value="1">
+                            </div>
+                        </div>						
+                            
+                        <?php endforeach ?>
+                    <?php endif ?>
+					<div class="text-center" style="padding:20px">
+						<div class="plus add-test" data-category="1"></div>
+					</div>
+                </div>
+                <div class="box-footer">
+					<div class="deleted-tests"></div>
+				</div>
+            </div>
+			
+			<div class="box">
+                <div class="box-title"><i class="fa fa-book"></i> آزمون دوم</div>
+                <div class="box-content" style="padding:0 15px">
+					
+                    <?php if(isset($tests) && is_array($tests)): ?>
+                        <?php foreach ($tests as $tk=>$test): if($test->category == 1) continue;  ?>
+						
+                        <div class="book-test row" data-id="<?php echo  $test->id ?>">
+                            <div class="col-xs-1">
+                                <ul class="btn-group-vertical list-unstyled">
+									<li class="btn btn-default test-grid" title="تغییر نحوه نمایش"><i class="fa fa-th-list"></i></li>
+									<li class="btn btn-default delete-test" title="حذف"><i class="fa fa-trash"></i></li>
+                                </ul>
+                            </div>
+                            <div class="test-content col-xs-11">
+                                <input type="text" name="book[test][<?php echo  $tk ?>][question]" class="form-control input-lg test-text" placeholder="سوال" value="<?php echo  html_escape($test->question) ?>">
+								<div class="answers">
+									<?php foreach(range(1,4) as $ti): ?>
+									<div class="input-group">
+										<label class="input-group-addon">
+											<input type="radio" value="<?php echo  $ti ?>" name="book[test][<?php echo  $tk ?>][answer]" <?php echo  $test->true_answer == $ti ? 'checked':''  ?>>
+										</label>
+										<input type="text" class="form-control need" name="book[test][<?php echo  $tk ?>][answer_<?php echo  $ti ?>]" placeholder="پاسخ <?php echo  $ti ?>" value="<?php echo  html_escape($test->{'answer_'.$ti}) ?>">
+									</div>
+									<?php endforeach ?>
+								</div>
+								<input type="hidden" name="book[test][<?php echo  $tk ?>][id]" value="<?php echo  $test->id ?>">
+								<input type="hidden" name="book[test][<?php echo  $tk ?>][category]" value="2">
+                            </div>
+                        </div>						
+                            
+                        <?php endforeach ?>
+                    <?php endif ?>
+					<div class="text-center" style="padding:20px">
+						<div class="plus add-test" data-category="2"></div>
+					</div>
+                </div>
+                <div class="box-footer"></div>
+            </div>			
+			
+        <?php endif ?>
+
+		
+        <?php if ($type == 'book') : ?>
+            <div class="box">
+                <div class="box-title"><i class="fa fa-download"></i> نمونه سوالات </div>
+                <div class="box-content">
+                    <div class="dl-box-book">
+
+                        <?php if (isset($meta['dl_book']) && trim($meta['dl_book']) != "") : ?>
+
+                            <?php if ($this->tools->isJson($meta['dl_book'])) : ?>
+
+                                <?php $dl = $this->tools->jsonDecode($meta['dl_book']); ?>
+
+                                <?php foreach ($dl as $dl_key => $dl_value) : ?>
+
+                                    <div class="dl-row">
+                                        <input readonly name="meta[dlbook][file][]" type="text" class="input small dl-file"
+                                               value="<?php echo  $dl_value['file'] ?>">
+                                        <input name="meta[dlbook][name][]" type="text" class="input small dl-name"
+                                               value="<?php echo  $dl_value['name'] ?>">
+                                        <i class="fa fa-times fa-lg red" onClick="$(this).parent().remove()"></i>
+                                    </div>
+
+                                <?php endforeach; ?>
+
+                            <?php endif; ?>
+
+                        <?php endif; ?>
+                    </div>
+                    <div class="plus" onClick="media({selected:'files'},this,adDl2)"></div>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>		
+
+        <?php if (in_array('dl_box', $form)) : ?>
+
+            <div class="box">
+                <div class="box-title"><i class="fa fa-download"></i> فایل های پیوست شده </div>
+                <div class="box-content">
+                    <div class="dl-box">
+
+                        <?php if (isset($meta['dl_box']) && trim($meta['dl_box']) != "") : ?>
+
+                            <?php if ($this->tools->isJson($meta['dl_box'])) : ?>
+
+                                <?php $dl = $this->tools->jsonDecode($meta['dl_box']); ?>
+
+                                <?php foreach ($dl as $dl_key => $dl_value) : ?>
+
+                                    <div class="dl-row">
+                                        <input readonly name="meta[dl][file][]" type="text" class="input small dl-file"
+                                               value="<?php echo  $dl_value['file'] ?>">
+                                        <input name="meta[dl][name][]" type="text" class="input small dl-name"
+                                               value="<?php echo  $dl_value['name'] ?>">
+                                        <i class="fa fa-times fa-lg red" onClick="$(this).parent().remove()"></i>
+                                    </div>
+
+                                <?php endforeach; ?>
+
+                            <?php endif; ?>
+
+                        <?php endif; ?>
+                    </div>
+                    <div class="plus" onClick="media({selected:'files'},this,adDl)"></div>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (in_array('product_settings', $form)) : ?>
+
+            <div class="box">
+                <div class="box-title"><i class="fa fa-cog"></i> اطلاعات محصول</div>
+                <div class="box-content">
+
+                    <table cellpadding="" width="100%">
+                        <tr>
+                            <td><span> نوع محصول </span></td>
+                            <td>
+                                <select name="meta[product][type]" class="input small"
+                                        onChange="handleProductType(this)" style="width:200px">
+                                    <option value="file"> فایل قابل دانلود</option>
+                                    <option value="object"> کالا</option>
+                                </select>
+
+                                &nbsp;
+
+                                <label> <input type="checkbox" value="1" name="meta[product][spacial_offer]">
+                                    پیشنهاد ویژه
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span>قیمت محصول </span></td>
+                            <td>
+                                <input name="meta[product][price]" type="text" class="input medium" placeholder="قیمت"
+                                       style="width:120px">
+                                <input name="meta[product][off]" type="text" class="input medium"
+                                       placeholder="قیمت با تخفیف" style="width:120px">
+                                <input name="meta[product][pre]" type="text" class="input medium"
+                                       placeholder="پیش پرداخت" style="width:120px">
+                            </td>
+                        </tr>
+                        <tr id="product-details" style="display:none">
+                            <td><span> مشخصات محصول </span></td>
+                            <td>
+                                <input name="meta[product][size]" type="text" class="input medium" placeholder="ابعاد"
+                                       style="width:120px">
+                                <input name="meta[product][volume]" type="text" class="input medium" placeholder="حجم"
+                                       style="width:120px">
+                                <input name="meta[product][mass]" type="text" class="input medium" placeholder="وزن"
+                                       style="width:120px">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span> توضیحات </span></td>
+                            <td>
+                                <textarea class="input" name="meta[product][description]" style="width:365px" rows="3"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span> تصاویر </span></td>
+                            <td class="media-ap convert-to-form-el product-thumbs" form-el-name="meta[thumb][]" form-el-value="file">
+                                <span class="media-ap-thumb edit-post-thumb-55 editable-img" data-thumb="thumb150">
+                                    <?php
+                                    if ($thumbs && isset($thumbs['other']))
+                                        foreach ($thumbs['other'] as $key => $value) {
+                                            echo '<img src="' . base_url() . $value[150] . '" width=45 height=45 file="' . $value['b'] . '" class="convert-this">';
+                                        }
+                                    ?>
+                                </span>
+                                <div class="plus larg" onClick="media('img',this)"></div>
+                                <div class="form-ap-data" style="display:none"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (in_array('gallery', $form)) : ?>
+
+            <div class="box">
+                <div class="box-title"><i class="fa fa-object-ungroup"></i> گالری تصاویر</div>
+                <div class="box-content post-gallery">
+                    <div class="media-ap convert-to-form-el product-thumbs" form-el-name="meta[thumb][]" form-el-value="file">
+                        <span class="media-ap-thumb edit-post-thumb-55 editable-img" data-thumb="thumb150">
+                            <?php
+                            if ($thumbs && isset($thumbs['other']))
+                                foreach ($thumbs['other'] as $key => $value) {
+                                    echo '<img src="' . base_url() . $value[150] . '" width=45 height=45 file="' . $value['b'] . '" class="convert-this"/>';
+                                }
+                            ?>
+                        </span>
+                        <div class="plus larg" onClick="media('img',this)"></div>
+                        <div class="form-ap-data" style="display:none"></div>
+                    </div>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (in_array('seo', $form)) : ?>
+            <div class="box">
+                <div class="box-title"><i class="fa fa-star"></i> سئو</div>
+                <div class="box-content">
+                    <input type="text" class="input" name="data[meta_keywords]" value="<?php echo  $post['meta_keywords'] ?>" placeholder="Meta Keywords">
+                    <textarea class="input" name="data[meta_description]" placeholder="Meta description" rows="6"><?php echo  $post['meta_description'] ?></textarea>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if(isset($postType['meta']) && is_array($postType['meta']) ) : ?>
+                <div class="box">
+                    <div class="box-title"><i class="fa fa-list"></i> اطلاعات تکمیلی </div>
+                    <div class="box-content">
+						<table class="table">
+                        <?php foreach ($postType['meta'] as $mik=>$mi): $Type = $mi['type']; ?>
+							<tr>
+								<td style="vertical-align:middle;"><?php echo  @$mi['name']; ?></td>
+								<td style="vertical-align:middle;">
+								<?php switch ($Type) :
+										case 'select'   : break; ?>
+										
+									<?php case 'textarea' : break; ?>
+									
+									<?php default : ?>
+										
+										<input type="<?php echo  $Type ?>" class="input <?php echo  @$mi['class'] ?>" name="meta[<?php echo  $mik ?>]" value="<?php echo  @$meta[$mik] ?>" placeholder="<?php echo  @$mi['placeholder'] ?>">
+										
+									<?php break; ?>
+								<?php endswitch; ?>
+								</td>
+							</tr>
+                        <?php endforeach; ?>
+						</table>
+                    </div>
+                    <div class="box-footer"></div>
+                </div>
+        <?php endif; ?>
+    </div>
+
+    <div style="float:right;width:25%;padding-top:10px;">
+
+        <div class="box">
+            <div class="box-title"><i class="fa fa-check" style="margin-top:0"></i> ذخیره</div>
+            <div class="box-content">
+
+                <div class="publish-post">
+
+                    <p><i class="fa fa-user" title="زمان ایجاد"></i> نویسنده </p>
+                    <div>
+
+                        <select name="data[author]" class="input small" style="width:100%;text-align:center">
+                            <?php if ($users && is_array($users)) : ?>
+                                <?php foreach ($users as $ukey => $user) : ?>
+                                    <option value="<?php echo  $user['id'] ?>"><?php echo  $user['displayname'] ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+
+                        <div class="clear" style="height:15px"></div>
+                    </div>
+
+                    <?php $date = strtotime($post['date']);
+                    $jdate = explode('/', jdate("Y/m/d/H/i", $date, '', '', 'en')); ?>
+
+                    <p><i class="fa fa-clock-o" title="زمان ایجاد"></i> تاریخ ایجاد </p>
+                    <div>
+
+                        <input type="text" maxlength="2" max="60" autocomplete="off" class="input OnlyNum"
+                               name="date[i]" value="<?php echo  $jdate[4] ?>" title="دقیقه">
+                        <span>:</span>
+                        <input type="text" maxlength="2" max="23" autocomplete="off" class="input OnlyNum"
+                               name="date[H]" value="<?php echo  $jdate[3] ?>" title="ساعت">
+                        <span>-</span>
+                        <input type="text" maxlength="2" max="31" autocomplete="off" class="input OnlyNum"
+                               name="date[d]" value="<?php echo  $jdate[2] ?>" title="روز" min="01">
+                        <input type="text" maxlength="2" max="12" autocomplete="off" class="input OnlyNum"
+                               name="date[m]" value="<?php echo  $jdate[1] ?>" title="ماه" min="01">
+                        <input type="text" maxlength="4" max="1450" autocomplete="off" class="input OnlyNum"
+                               name="date[y]" value="<?php echo  $jdate[0] == -1 ? '1395':$jdate[0] ?>" title="سال" style="width:40px" min="1350">
+                        <div class="clear" style="height:15px"></div>
+                    </div>
+
+                    <p><i class="fa fa-clock-o" title="زمان بروز رسانی"></i> تاریخ به روزرسانی </p>
+                    <?php $date = strtotime('now');
+                    $jdate = explode('/', jdate("Y/m/d/H/i", $date, '', '', 'en')); ?>
+
+                    <div>
+                        <input type="text" maxlength="2" max="60" autocomplete="off" class="input OnlyNum"
+                               name="mdate[i]" value="<?php echo  $jdate[4] ?>" title="دقیقه">
+                        <span>:</span>
+                        <input type="text" maxlength="2" max="23" autocomplete="off" class="input OnlyNum"
+                               name="mdate[H]" value="<?php echo  $jdate[3] ?>" title="ساعت">
+                        <span>-</span>
+                        <input type="text" maxlength="2" max="31" autocomplete="off" class="input OnlyNum"
+                               name="mdate[d]" value="<?php echo  $jdate[2] ?>" title="روز" min="01">
+                        <input type="text" maxlength="2" max="12" autocomplete="off" class="input OnlyNum"
+                               name="mdate[m]" value="<?php echo  $jdate[1] ?>" title="ماه" min="01">
+                        <input type="text" maxlength="4" max="1450" autocomplete="off" class="input OnlyNum"
+                               name="mdate[y]" value="<?php echo  $jdate[0] ?>" title="سال" style="width:40px" min="1350">
+                        <div class="clear" style="height:15px"></div>
+                    </div>
+
+                </div>
+                <input type="button" class="btn btn-primary" value="انتشار" onClick="updatePost(this,'publish')">
+                <input type="button" class="btn btn-warning" value="پیش نویس" onClick="updatePost(this,'draft')">
+            </div>
+            <div class="box-footer" style="min-height:32px"></div>
+        </div>
+
+        <?php if (in_array('thumb', $form) && !$thumb_printed) : ?>
+            <div class="box media-ap edit-post-thumb">
+                <div class="box-title"><i class="fa fa-photo"></i> تصویر</div>
+
+                <div class="box-content" style="padding:2px;text-align:center">
+                    <div class="convert-to-form-el editable-img" form-el-name="data[thumb]" form-el-value="file">
+                        <span class="media-ap-thumb replace" data-thumb="thumb300">
+
+                        <?php $thumbKey = (isset($post['thumb']) && trim($post['thumb']) != "") ?>
+
+                            <?php if ($thumbKey) : ?>
+                                <img src="<?php echo  base_url() . $thumbs['base'][300] ?>" file="<?php echo  $thumbs['base']['b'] ?>" class="convert-this">
+                            <?php endif; ?>
+
+                        </span>
+                        <div id="add-thumb-img" class="plus add-img"
+                             onClick="media('img,1',this,function(){ $('#add-thumb-img').hide() })"
+                             style="display:<?php echo  $thumbKey ? 'none' : 'inline-block' ?>;margin:15px"></div>
+                        <div class="form-ap-data" style="display:none"></div>
+                    </div>
+                </div>
+
+                <div class="box-footer"><i class="fa fa-pencil cu" onClick="media('img,1',this)"></i></div>
+            </div>
+        <?php endif; ?>
+
+
+        <?php if (in_array('icon', $form)) : ?>
+            <div class="box">
+
+                <div class="box-title"><i class="fa fa-smile-o"></i> آیکن</div>
+
+                <div class="box-content" style="text-align:center">
+                    <div class="icon-append" style="text-align:center">
+                        <span title="افزودن آیکن" class="ic-btn" onclick="selectIcon(this)"></span>
+                        <i class="fa fa-3x fa-<?php echo  @$post['icon'] ?>" data-icon-view="" style="color:#666"></i>
+                        <input value="" name="data[icon]" type="hidden">
+                    </div>
+                </div>
+
+                <div class="box-footer"> &nbsp; </div>
+
+            </div>
+        <?php endif; ?>
+
+
+        <?php if (in_array('category', $form)) : ?>
+            <div class="box">
+                <div class="box-title"><i class="fa fa-bookmark"></i> دسته بندی</div>
+                <div class="box-content" style="padding:0">
+
+                    <div class="category-select">
+                        <?php echo  $this->post->getCateoryList($type, 0, 1, $post['category']); ?>
+                    </div>
+
+                    <?php if ($this->user->can('category_' . $type)) : ?>
+                        <div id="category-add" style="padding:10px;border-top:solid 1px #999">
+                            <input id="cat-val" type="text" class="input medium" style="margin:0 0 5px 0"
+                                   placeholder="دسته جدید">
+                            <select id="cat-parent" class="input small" style="margin:0 0 5px 0;text-align:center;">
+                                <option value="0">- مادر -</option>
+                                <?php echo  $this->post->getCategorySelectMenu($type); ?>
+                            </select>
+                            <input id="cat-type" type="hidden" value="<?php echo  $type ?>">
+                            <input type="button" class="w-btn" value="افزودن" onClick="addCategory(this)">
+                        </div>
+                    <?php endif; ?>
+
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>
+
+
+
+
+        <?php if(isset($postType['single']) && $postType['single'] !== FALSE): ?>
+        <div class="box">
+            <div class="box-title"><i class="fa fa-wechat"></i> نظرات</div>
+            <div class="box-content text-center">
+                <h4>فعال بودن نظرات</h4>
+                <p style="margin-top: 30px">
+                    <label><input type="radio" name="data[accept_cm]" value="1">بله</label>
+                    &nbsp; &nbsp;
+                    <label><input type="radio" name="data[accept_cm]" value="0">خیر</label>
+                </p>
+            </div>
+            <div class="box-footer"></div>
+        </div>
+        <?php endif ?>
+
+        <?php if (in_array('tag', $form)) : ?>
+            <div class="box">
+                <div class="box-title"><i class="fa fa-tags"></i> برچسب ها</div>
+                <div class="box-content">
+                    <input type="text" class="input medium" id="tag-input" placeholder="برچسب جدید">
+                    <div class="post-tags convert-to-form-el" form-el-name="tags[]" form-el-value="tag">
+                        <?php $tags = explode('+', $post['tags']); ?>
+                        <?php if ($post['tags'] && count($tags) > 0) : ?>
+                            <?php foreach ($tags as $tag) : ?>
+                                <span class="tag">
+                                    <i class="fa fa-times red"></i>
+                                    <a class="a convert-this" tag="<?php echo  $tag ?>"><?php echo  $tag ?></a>
+                                </span>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        <div class="form-ap-data" style="display:none"></div>
+                    </div>
+                </div>
+                <div class="box-footer"></div>
+            </div>
+        <?php endif; ?>
+
+    </div>
+
+</form>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		/**************** TESTS ********************/
+		$(document).on('click','.test-grid',function(){
+			$(this).closest('.book-test').toggleClass('full-grid');
+		}).on('click','.add-test',function(){
+			
+			var j = $('.book-test').length + 1, a = '';
+			
+			for(var i=1;i<=4;i++)
+				a += '<div class="input-group">'
+				+'<label class="input-group-addon">'
+				+'<input type="radio" value="'+i+'" name="book[test]['+j+'][answer]" '+(i==1?'checked':'')+'>'
+				+'</label>'
+				+'<input type="text" class="form-control need" name="book[test]['+j+'][answer_'+i+']" placeholder="پاسخ '+i+'">'
+				+'</div>';
+					
+			
+			
+			var t =  '<div class="book-test row" style="display:none">'
+					+'<div class="col-xs-1">'
+					+'<ul class="btn-group-vertical list-unstyled">'
+					+'<li class="btn btn-default test-grid" title="تغییر نحوه نمایش"><i class="fa fa-th-list"></i></li>'
+					+'<li class="btn btn-default delete-test" title="حذف"><i class="fa fa-trash"></i></li>'
+					+'</ul>'
+					+'</div>'
+					+'<div class="test-content col-xs-11">'
+					+'<input type="text" name="book[test]['+j+'][question]" class="form-control input-lg test-text need" placeholder="سوال">'
+					+'<input type="hidden" name="book[test]['+j+'][category]" value="'+($(this).attr('data-category'))+'">'
+					+'<div class="answers">'
+					+ a
+					+'</div>'
+					+'</div>'
+					+'</div>';
+			
+			var $t = $(t);
+			
+			$t.insertBefore(this.parentNode);
+			
+			$t.slideDown(400,function(){
+				$('html,body').animate({
+					scrollTop : '+=' + $t.outerHeight()
+				},function () {
+					$t.find('.test-text').focus();
+				});
+			});
+		}).on('click','.delete-test',function(){
+			
+			if(!confirm('ین آزمون حذف شود ؟')) return;
+			
+			var test = $(this).closest('.book-test');
+			
+			if($(test).is('[data-id]'))
+				$('.deleted-tests').append('<input type="hidden" name="deleted_test[]" value="'+($(test).attr('data-id'))+'">');
+			
+			$(test).slideUp(400,function(){
+				$(this).remove();
+			});
+		});
+	});
+
+    var postdata = <?php echo  json_encode($post) ?>, productdata = {};
+
+    <?php if( in_array('product_settings', $form) && isset($meta['product_data']) ) :  ?>
+
+    productdata = <?php echo  $meta['product_data'] ?>;
+
+    <?php endif; ?>
+
+    $(document).ready(function (e) {
+
+        $('[name="data[accept_cm]"][value="<?php echo  $post['accept_cm'] ?>"]').prop('checked', true);
+
+        $.each(postdata, function (i, v) {
+
+            $('[name="data[' + i + ']"]:not(:radio)').val(v).trigger("change blure click");
+
+        });
+
+        $.each(productdata, function (i, v) {
+
+            var el = $('[name="meta[product][' + i + ']"]');
+            if ($(el).is("input[type=checkbox]") && v)
+                $(el).prop("checked", "checked");
+            else
+                $(el).val(v).trigger("change blure click");
+
+        });
+
+
+        $(document).on("click", ".tag .fa", function () {
+            $(this).parent().remove()
+        });
+
+        $("#tag-input").keyup(function (e) {
+
+            var inp = this, val = $.trim($(inp).val());
+
+            if (e.keyCode == 13 && val != "") {
+                $('<span/>', {class: 'tag'})
+                    .appendTo($(inp).next())
+                    .append($('<i/>', {class: 'fa fa-times red'}))
+                    .append($('<a/>', {class: 'a convert-this', tag: val}).html(val));
+                $(inp).val('');
+            }
+        });
+
+        $(document).on("blur", "input[max],input[min]", function () {
+            var max = $(this).attr('max'), min = $(this).attr('min'), val = $(this).val();
+
+            if (val > max) $(this).val(max);
+            if (val < min) $(this).val(min);
+
+        });
+
+    });
+
+    function addBookPart(btn){
+        var part = '';
+    }
+
+    function handleProductType(el) {
+        if (el.value === "file")
+            $('#product-details').hide();
+        else
+            $('#product-details').show();
+    }
+
+    function addCategory(btn) {
+
+        var nameInp = $('#category-add #cat-val'),
+            name = $(nameInp).val(),
+            parent = $('#category-add #cat-parent').val(),
+            type = $('#category-add #cat-type').val();
+
+        if ($.trim(name) == "") {
+            $(nameInp).focus();
+            return;
+        }
+
+        $(btn).parent().addClass('l h6 blue');
+
+        var data = {name: name, parent: parent, type: type};
+        $.ajax({
+            type: "POST",
+            url: URL + "/category/add",
+            data: data,
+            dataType: "json",
+            success: function (data) {
+
+                if (data.done) {
+                    var id = data.data.id;
+                    var $div = $('.category-select'), $ul = $($div).find('ul:first');
+
+                    var $li = $('<li/>', {'item-id': id, 'parent': parent, 'name': name});
+                    $('<label/>').append(
+                        $('<input/>', {value: id, type: 'checkbox', name: 'category[]'})
+                    ).append(name).appendTo($li);
+
+                    var $UL = $('<ul/>').append($li);
+
+                    if (!$ul.length) {
+                        $($UL).appendTo($div);
+                    }
+                    else if (parent == 0) {
+                        $($li).appendTo($ul);
+                    }
+                    else {
+                        var $LI = $($div).find('li[item-id="' + parent + '"]'),
+                            $UL2 = $($LI).find('ul:first');
+
+                        if ($UL2.length) $($li).appendTo($UL2);
+                        else $($UL).appendTo($LI);
+                    }
+
+                    $('<option/>', {value: id, name: name, parent: parent, 'item-id': id}).html(name)
+                        .appendTo($('#category-add #cat-parent'));
+
+                    $(btn).parent().removeClass('l h6 blue');
+
+                } else {
+                    dialog_box('افزودن دسته بندی جدید با مشکل مواجه شد');
+                    $(btn).parent().removeClass('l h6 blue');
+                }
+            }
+        });
+    }
+
+    function updatePost(btn, action) {
+
+
+        var title = $.trim($('#post-title').val());
+		
+        if (title == "") {
+            $('#post-title').focus();
+            return;
+        }
+		
+        convertToFormEl();
+
+        <?php if( in_array('editor', $form) ): ?>
+        $('#content').val(EDITOR.getData());
+        <?php endif ?>
+
+        <?php if($type == 'book'): ?>
+            /*if(!checkBookData())
+			{
+                //$(btn).removeProp("disabled");
+                //$footer.removeClass('l blue');
+                return;
+            }*/
+        <?php endif ?>
+		
+		var key = true;
+		$('#postForm .need').each(function(i,el){
+			if($.trim($(el).val()) == '')
+			{
+				$('html,body').animate({
+					scrollTop : $(el).offset().top - 120
+				},300,function(){
+					$(el).focus()
+				});
+				key = false;
+				return false;
+			}
+		});
+		
+		if(!key) return;
+		
+        var $footer = $(btn).closest('.box-content').next(),
+			type = action == "draft" ? "پیش نویس ذخیره شد" : "منتشر شد";
+			
+        $(btn).prop("disabled", "disabled");
+        $footer.addClass('l blue');
+
+        var data = new FormData(document.getElementById('postForm'));
+
+        $.ajax({
+            type    : "POST",
+            url     : URL + "/post/save/" + action,
+            data    : data ,
+            cache   : false,
+            processData : false,
+            contentType : false,
+			timeout     : 300000,
+			timeOut     : 300000,
+            success     : function (data) {
+
+                $(btn).removeProp("disabled");
+                $footer.removeClass('l blue');
+
+                if(data == 'login')
+                {
+                    login(function(){
+                        updatePost(btn, action);
+                    });
+                }
+                else
+                {
+                    var currentDate = new Date();
+                    var time = '<i class="fa fa-clock-o"></i> ' + +currentDate.getHours() + ":" + currentDate.getMinutes();
+                    $footer.html(type + ' &nbsp; ' + time);
+                    $('#result').html(data);
+                }
+            },
+            error: function (a,b,c) {
+				console.log(a,b,c);
+                $(btn).removeProp("disabled");
+                $footer.removeClass('l blue');
+                $footer.html($('<span/>').css("color", "red").html('ارتباط برقرار نیست'));
+            }
+        });
+    }
+
+
+    function adDl(data, files, btn) {
+
+        var $box = $('.dl-box'),
+            $row = $('<div/>').addClass('dl-row'),
+            $inName = $('<input/>', {type: 'text', name: 'meta[dl][name][]'}).addClass('input small dl-name'),
+            $inFile = $('<input/>', {type: 'text', name: 'meta[dl][file][]', readonly: 'readonly'})
+                .addClass('input small dl-file'),
+            $fa = $('<i/>', {class: 'fa fa-times fa-lg red cu'}).on("click", function () {
+                $(this).closest('.dl-row').remove();
+            });
+
+        $(files).each(function (i, file) {
+
+            var name = $(file).data('name'), val = $(file).data('file');
+
+            var r = $($row).clone(true)
+                .append($($inFile).clone(true).val(val))
+                .append($($inName).clone(true).val(name))
+                .append($($fa).clone(true))
+                .appendTo($box)
+
+        });
+    }
+	
+    function adDl2(data, files, btn) {
+
+        var $box = $('.dl-box-book'),
+            $row = $('<div/>').addClass('dl-row'),
+            $inName = $('<input/>', {type: 'text', name: 'meta[dlbook][name][]'}).addClass('input small dl-name'),
+            $inFile = $('<input/>', {type: 'text', name: 'meta[dlbook][file][]', readonly: 'readonly'})
+                .addClass('input small dl-file'),
+            $fa = $('<i/>', {class: 'fa fa-times fa-lg red cu'}).on("click", function () {
+                $(this).closest('.dl-row').remove();
+            });
+
+        $(files).each(function (i, file) {
+
+            var name = $(file).data('name'), val = $(file).data('file');
+
+            var r = $($row).clone(true)
+                .append($($inFile).clone(true).val(val))
+                .append($($inName).clone(true).val(name))
+                .append($($fa).clone(true))
+                .appendTo($box)
+
+        });
+    }	
+
+</script>

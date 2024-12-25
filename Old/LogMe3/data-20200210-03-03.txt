@@ -1,0 +1,122 @@
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => naderooo
+    [token] => oTjEkG0qY2inBzD4xSMhXFmKfA1cN7bC
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => naderooo
+    [token] => oTjEkG0qY2inBzD4xSMhXFmKfA1cN7bC
+    [data] => {"highlights":{"added":[{"highlight_color":2,"highlight_end":408,"highlight_id":41483134,"highlight_start":313,"highlight_text":"بودن حجّت تنها و تنها وقتی حاصل می‌شود مکلّف بدان علم یابد، و بدون علم به حجیّت معنا ندارد چیزی","selected":false,"sharh":1,"text_id":4148}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 3031781555
+    [token] => kMA0wvKl2EQqxJVs14agHuL9fFjIRUhP
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => naderooo
+    [token] => oTjEkG0qY2inBzD4xSMhXFmKfA1cN7bC
+    [id] => 8303
+    [case] => sound
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

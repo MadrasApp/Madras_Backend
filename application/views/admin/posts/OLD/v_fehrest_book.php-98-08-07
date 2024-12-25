@@ -1,0 +1,50 @@
+<?php
+//Alireza Balvardi
+defined('BASEPATH') OR exit('No direct script access allowed');
+/*
+		echo "<pre>";
+		print_r();
+		echo "</pre>";
+		die;
+*/
+	$html = '<li>
+				<div class="li">[NAME]</div>
+			</li>';
+?>
+
+<style>.box:not(:first-child){margin: 30px 0;}</style>
+<script src="<?php echo  base_url() ?>/js/_admin/book.js"></script>
+
+<div id="result"></div>
+
+
+<div style="width:90%;padding-left:10px;margin:auto;">
+	
+	<h2>فهرست کتاب <?php echo  $post['title'] ?></h2>
+
+	<p></p>
+	<div class="box">
+		<div class="box-content" style="padding:0 15px">
+			<?php if(isset($parts) && is_array($parts) && !empty($parts)): ?>
+			<div class="group-list">
+			   <ul>
+				<?php
+				$start = array_shift($parts);
+				echo '<li><div class="li">'.$start->name.'</div><ul>';
+				foreach ($parts as $pk=>$p){
+					$X = $html;
+					$X = str_replace('[NAME]',$p->name,$X);
+					echo $X;
+				}
+				echo '</li></ul>';
+				?>
+				   </ul>
+			   </ul>
+			</div>
+			<?php else : ?>
+				<center>فهرست در کتاب <?php echo  $post['title'] ?> استفاده نشده است</center>
+				
+			<?php endif ?>
+		</div>
+	</div>
+</div>

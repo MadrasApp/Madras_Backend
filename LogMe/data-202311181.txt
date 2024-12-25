@@ -1,0 +1,31 @@
+Array
+(
+    [/api/v2/DayClassOnline] => 
+    [mac] => USER_MAC
+    [dayofweek] => 0
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+)
+
+=================================
+Array
+(
+    [/api/v2/getClassOnlineAccounts] => 
+    [mac] => USER_MAC
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [limit] => 1000
+    [start] => 0
+)
+
+=================================
+Array
+(
+    [/api/v2/SendUserSMS] => 
+    [token] => user_token
+    [mac] => 09131789658
+    [MessageType] => 2
+    [mobilemodel] => asus ASUS_Z012DE
+    [android] => skd: 26, version: 8.0.0, name: O
+    [AppVer] => 1.8.9.1
+)
+
+=================================

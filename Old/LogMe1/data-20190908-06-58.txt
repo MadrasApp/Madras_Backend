@@ -1,0 +1,53 @@
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/45] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/] => 
+)
+
+Array
+(
+    [/api/v2/getBook/80/zip] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/45] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 
+    [token] => naboode
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+

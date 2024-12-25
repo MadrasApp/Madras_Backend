@@ -1,0 +1,48 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/45] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getBook/70/zip] => 
+)
+
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => 88:BD:45:83:75:38
+    [token] => KBM8xGkIvZfPS3Eljb2R1Xtd6YnUucJW
+    [book_id] => 70
+)
+
+Array
+(
+    [/api/v2/getBook/70/zip] => 
+)
+

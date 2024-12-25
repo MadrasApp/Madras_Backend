@@ -1,0 +1,103 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => kazemi_271
+    [token] => kPcWCSLX6A78D5iBjdOluaNtGEeFQwxH
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => kazemi_271
+    [token] => kPcWCSLX6A78D5iBjdOluaNtGEeFQwxH
+    [data] => {"highlights":{"added":[{"highlight_color":2,"highlight_end":1225,"highlight_id":1053512216,"highlight_start":1221,"highlight_text":"یعرف","selected":false,"sharh":0,"text_id":10535},{"highlight_color":3,"highlight_end":245,"highlight_id":107052286,"highlight_start":228,"highlight_text":"الجانبین لها محتا","selected":false,"sharh":0,"text_id":10705},{"highlight_color":2,"highlight_end":443,"highlight_id":107054283,"highlight_start":428,"highlight_text":"الغیر الذی تحتا","selected":false,"sharh":0,"text_id":10705},{"highlight_color":2,"highlight_end":5768,"highlight_id":1003357131,"highlight_start":5713,"highlight_text":"ن جهة الرضا المدلول علیه به لا من جهة سببیة الفعل تعبدا","selected":false,"sharh":0,"text_id":10033},{"highlight_color":3,"highlight_end":271,"highlight_id":100342121,"highlight_start":212,"highlight_text":"المولی بعد علمه بتزویج عبده إقرار منه له علیه و ما دل علی أ","selected":false,"sharh":0,"text_id":10034},{"highlight_color":2,"highlight_end":385,"highlight_id":100343784,"highlight_start":378,"highlight_text":"بد بدون","selected":false,"sharh":0,"text_id":10034},{"highlight_color":1,"highlight_end":1154,"highlight_id":1003411480,"highlight_start":1148,"highlight_text":"الثالث","selected":false,"sharh":0,"text_id":10034},{"highlight_color":3,"highlight_end":417,"highlight_id":100353712,"highlight_start":371,"highlight_text":"إجازة البیع لیست إجازة لقبض الثمن و لا لإقباض ","selected":false,"sharh":0,"text_id":10035},{"highlight_color":1,"highlight_end":1041,"highlight_id":1003510373,"highlight_start":1037,"highlight_text":"لغوا","selected":false,"sharh":0,"text_id":10035},{"highlight_color":2,"highlight_end":1244,"highlight_id":1003512150,"highlight_start":1215,"highlight_text":"السادس الإجازة لیست علی الفور","selected":false,"sharh":0,"text_id":10035},{"highlight_color":2,"highlight_end":1716,"highlight_id":1003517127,"highlight_start":1712,"highlight_text":"أوقع","selected":false,"sharh":0,"text_id":10035},{"highlight_color":3,"highlight_end":26,"highlight_id":1003644,"highlight_start":4,"highlight_text":"أما القول فی المجیز \r\n","selected":false,"sharh":0,"text_id":10036},{"highlight_color":2,"highlight_end":660,"highlight_id":100366566,"highlight_start":656,"highlight_text":"یضعف","selected":false,"sharh":0,"text_id":10036},{"highlight_color":2,"highlight_end":1158,"highlight_id":1057411542,"highlight_start":1154,"highlight_text":"یقصد","selected":false,"sharh":0,"text_id":10574},{"highlight_color":2,"highlight_end":1349,"highlight_id":1003613406,"highlight_start":1340,"highlight_text":" البیضاوی","selected":false,"sharh":0,"text_id":10036},{"highlight_color":1,"highlight_end":1770,"highlight_id":1003617662,"highlight_start":1766,"highlight_text":"أرید","selected":false,"sharh":0,"text_id":10036},{"highlight_color":3,"highlight_end":56,"highlight_id":1003716,"highlight_start":1,"highlight_text":" الثالث لا یشترط فی المجیز کونه جائز التصرف حال العقد\r\n","selected":false,"sharh":0,"text_id":10037},{"highlight_color":2,"highlight_end":1032,"highlight_id":1031610245,"highlight_start":1024,"highlight_text":"لت الحکم","selected":false,"sharh":0,"text_id":10316},{"highlight_color":2,"highlight_end":195,"highlight_id":100881367,"highlight_start":136,"highlight_text":"فانکشف کونه ولیا و إما لعدم الملک فانکشف کونه مالکا و علی ک","selected":false,"sharh":0,"text_id":10088},{"highlight_color":2,"highlight_end":1518,"highlight_id":1008815156,"highlight_start":1515,"highlight_text":"قصد","selected":false,"sharh":0,"text_id":10088},{"highlight_color":3,"highlight_end":1689,"highlight_id":1008816852,"highlight_start":1685,"highlight_text":"أقول","selected":false,"sharh":0,"text_id":10088},{"highlight_color":1,"highlight_end":1945,"highlight_id":1008819387,"highlight_start":1938,"highlight_text":" نعم من","selected":false,"sharh":0,"text_id":10088},{"highlight_color":2,"highlight_end":511,"highlight_id":100605074,"highlight_start":507,"highlight_text":"یشهد","selected":false,"sharh":0,"text_id":10060},{"highlight_color":3,"highlight_end":1360,"highlight_id":1006013438,"highlight_start":1343,"highlight_text":"الجد و یتم فی الأ","selected":false,"sharh":0,"text_id":10060},{"highlight_color":2,"highlight_end":1484,"highlight_id":1006114614,"highlight_start":1461,"highlight_text":"سألة من جملة أولیاء الت","selected":false,"sharh":0,"text_id":10061},{"highlight_color":3,"highlight_end":45,"highlight_id":1178958,"highlight_start":5,"highlight_text":"السادس [تفسیر وصفی الصحة و الفساد]\r\nاشار","selected":false,"sharh":0,"text_id":11789},{"highlight_color":3,"highlight_end":845,"highlight_id":117898135,"highlight_start":813,"highlight_text":"صحة و الفساد عند المتکلم و الفقی","selected":false,"sharh":0,"text_id":11789},{"highlight_color":2,"highlight_end":1192,"highlight_id":1058611776,"highlight_start":1177,"highlight_text":"إنما تکون موضوع","selected":false,"sharh":0,"text_id":10586},{"highlight_color":3,"highlight_end":64,"highlight_id":1058962,"highlight_start":6,"highlight_text":"رابعها أن ما وضعت له الألفاظ ابتداء هو الصحیح التام الواجد","selected":false,"sharh":0,"text_id":10589},{"highlight_color":1,"highlight_end":349,"highlight_id":105893261,"highlight_start":326,"highlight_text":"حاجة إلی الکثرة و الشهر","selected":false,"sharh":0,"text_id":10589},{"highlight_color":3,"highlight_end":406,"highlight_id":105913532,"highlight_start":353,"highlight_text":" و منها أن ثمرة النزاع إجمال الخطاب علی القول الصحیحی","selected":false,"sharh":0,"text_id":10591},{"highlight_color":2,"highlight_end":1094,"highlight_id":1059110758,"highlight_start":1075,"highlight_text":"ربما قیل بظهور الثم","selected":false,"sharh":0,"text_id":10591}],"edited":[],"deleted":[]},"notes":{"added":[{"end":913,"not_id":1053510098,"not_text":"ک المباحث و إن کان عن أحوال السنة بهذا المعنی إلا أن البحث فی غیر واحد من مسائلها کمباحث الألفاظ","not_text_user":"","notstart":1009,"selected":false,"sharh":0,"text_id":10535,"title":""},{"end":860,"not_id":105358630,"not_text":"کان","not_text_user":"بعنوان کان ناقصه","notstart":863,"selected":false,"sharh":0,"text_id":10535,"title":""},{"end":1967,"not_id":1003519733,"not_text":"م","not_text_user":"فرق بین جز و شرط\nبطلان جز موجب بطلان کل معامله نمیشود\nجز مثل شراب و سرکه\nاجازه مالک در این اجزا فقط نسبت به شراب باطل است و در شرط میگوییم که بطلان شرط موجب بطلان مشروط میشود.\n\n","notstart":1973,"selected":false,"sharh":0,"text_id":10035,"title":""},{"end":326,"not_id":100883332,"not_text":"الإشکال","not_text_user":"کالایی را که بایع گمان میکرد مال مردم است \nبه نیت صاحبش میفروشد ولی بعداز بیع کشف خلاف میشود که خود او مالک اصلی است و وی در جهل مرکب بوده است","notstart":333,"selected":false,"sharh":0,"text_id":10088,"title":""}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => Alamsah
+    [token] => 9bgLiMZw50ABf82Knr7lCzmSFTY6ahG3
+    [data] => {"highlights":{"added":[{"highlight_color":2,"highlight_end":2605,"highlight_id":687325988,"highlight_start":2598,"highlight_text":" قریباً","selected":false,"sharh":0,"text_id":6873},{"highlight_color":3,"highlight_end":2605,"highlight_id":687325992,"highlight_start":2599,"highlight_text":"قریباً","selected":false,"sharh":0,"text_id":6873},{"highlight_color":1,"highlight_end":2605,"highlight_id":687325990,"highlight_start":2599,"highlight_text":"قریباً","selected":false,"sharh":0,"text_id":6873}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[{"id":0,"selected":false,"text_id":9254},{"id":0,"selected":false,"text_id":1250},{"id":0,"selected":false,"text_id":6615},{"id":0,"selected":false,"text_id":9260}],"deleted":[]}}
+)
+

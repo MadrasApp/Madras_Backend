@@ -1,0 +1,23 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/SendUserSMS] => 
+    [token] => token
+    [mac] => 09156332481
+    [MessageType] => 2
+)
+

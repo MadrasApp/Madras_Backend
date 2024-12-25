@@ -1,0 +1,189 @@
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/SendUserSMS] => 
+    [token] => token
+    [mac] => 09190489433
+    [MessageType] => 2
+)
+
+Array
+(
+    [/api/v2/VerifySMS] => 
+    [token] => token
+    [mac] => 09190489433
+    [Message] => 4631
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [token] => token
+    [mac] => 09190489433
+)
+
+Array
+(
+    [/api/v2/Tags] => 
+    [token] => token
+    [mac] => 09190489433
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 09190489433
+    [token] => token
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":273,"highlight_id":1871,"highlight_start":229,"highlight_tags":"[]","highlight_text":"","highlight_title":"ترکواشرائطه، و کل من اخطا الطریق ضل فلا ينال","selected":false,"sharh":0,"text_id":1217},{"highlight_color":4,"highlight_end":501,"highlight_id":1881,"highlight_start":476,"highlight_tags":"[]","highlight_text":"","highlight_title":"رسول الله: طلب العلم فريض","selected":false,"sharh":0,"text_id":1217},{"highlight_color":4,"highlight_end":376,"highlight_id":1889,"highlight_start":283,"highlight_tags":"[]","highlight_text":"","highlight_title":"أردت أن أبين طريق التعلم على سبيل الاختصار على ما رأيت فى الكتاب و سمعت من أساتيدي أولى العلم","selected":false,"sharh":0,"text_id":1217},{"highlight_color":3,"highlight_end":65,"highlight_id":1904,"highlight_start":10,"highlight_tags":"[]","highlight_text":"","highlight_title":"بسم الله الرحمن الرحیم احسن کلمه یبتدء بها الکلام و خیر","selected":false,"sharh":0,"text_id":1218},{"highlight_color":1,"highlight_end":332,"highlight_id":1934,"highlight_start":132,"highlight_tags":"[]","highlight_text":"","highlight_title":"علی سید الانام محمد و آله البرره الکرام سیما ابن عمه علی ع الذی نصبه علما للاسلام و رفعه لکسر الاصنام جازم اعناق النواصب اللئام و واضع علم النحو لحفظ الکلام. \nو بعد فهذه الفوائد الصمدیه فی علم العربیه","selected":false,"sharh":0,"text_id":1218},{"highlight_color":3,"highlight_end":757,"highlight_id":1935,"highlight_start":404,"highlight_tags":"[\"تاریخ\"]","highlight_text":"","highlight_title":"فی قوانین الاعراب و فرائد لم یطلع علیها الا اولو الالباب و وضعتها للاخ الاعز عبد الصمد جعله الله من العلماء العاملین و نفعه بها و جمیع المؤمنین و تشتمل علی خمس حدائق \n\nالحدیقه الاولی: فیما اردت تقدیمه \nغره: (تعریف النحو و فائدته) \n\u003d النحو: علم بقوانین الفاظ العرب من حیث الاعراب و البناء و فائدته حفظ اللسان عن الخطا فی المقال و موضوعه الکلمه و الکلام.","selected":false,"sharh":0,"text_id":1218},{"highlight_color":4,"highlight_end":846,"highlight_id":1936,"highlight_start":760,"highlight_tags":"[]","highlight_text":"","highlight_title":"فالکلمه: لفظ موضوع مفرد و هی اسم و فعل و حرف. \n\u003d و الکلام: لفظ مفید بالاسناد و لا یاتی","selected":false,"sharh":0,"text_id":1218},{"highlight_color":2,"highlight_end":369,"highlight_id":1855,"highlight_start":349,"highlight_tags":"[]","highlight_text":"","highlight_title":"برنامه های اعتقادی (","selected":false,"sharh":0,"text_id":1220},{"highlight_color":4,"highlight_end":154,"highlight_id":1865,"highlight_start":105,"highlight_tags":"[]","highlight_text":"","highlight_title":"ك الّلهمّ على نعمك و آلائك، و أصلّي و أسلّم على م","selected":false,"sharh":0,"text_id":1231},{"highlight_color":1,"highlight_end":329,"highlight_id":1866,"highlight_start":235,"highlight_tags":"[]","highlight_text":"","highlight_title":"شرح لطيف مزجته بألفيّة ابن مالك، مهذّب المقاصد، واضح المسالك، يبيّن مراد ناظمها و يهدى الطّالب","selected":false,"sharh":0,"text_id":1231},{"highlight_color":5,"highlight_end":794,"highlight_id":2256,"highlight_start":415,"highlight_tags":"[]","highlight_text":"آذر","highlight_title":"التَّعْیِینَ ، ( أَوْ زَوْجَتِی مَثَلًا طَالِقٌ ) . \nوَیَنْحَصِرُ عِنْدَنَا فِی هَذِهِ اللَّفْظَةِ ( فَلَا یَکْفِی أَنْتِ طَلَاقٌ ) وَإِنْ صَحَّ إطْلَاقُ الْمَصْدَرِ عَلَی اسْمِ الْفَاعِلِ وَقَصَدَهُ فَصَارَ بِمَعْنَی طَالِقٍ وُقُوفًا عَلَی مَوْضِعِ النَّصِّ ، وَالْإِجْمَاعِ ، وَاسْتِصْحَابًا لِلزَّوْجِیَّةِ ؛ وَلِأَنَّ الْمَصَادِرَ إنَّمَا تُسْتَعْمَلُ فِی غَیْرِ مَوْضُوعِهَا","selected":false,"sharh":0,"text_id":1242},{"highlight_color":3,"highlight_end":140,"highlight_id":2257,"highlight_start":45,"highlight_tags":"[]","highlight_text":"","highlight_title":"وَهُوَ إزَالَةُ قَیْدِ النِّکَاحِ بِغَیْرِ عِوَضٍ بِصِیغَةِ \" طَالِقٌ \" ( وَفِیهِ فُصُولٌ ) :","selected":false,"sharh":0,"text_id":1242},{"highlight_color":5,"highlight_end":1046,"highlight_id":2258,"highlight_start":919,"highlight_tags":"[\"اصول\"]","highlight_text":"KJHGKHG","highlight_title":"مِنْ الْمُطَلَّقَاتِ ، ( وَلَا مُطَلَّقَةٌ ، وَلَا طَلَّقْت فُلَانَةَ عَلَی قَوْلٍ مَشْهُورٍ ) لِأَنَّهُ لَیْسَ بِصَرِیحٍ فِیهِ","selected":false,"sharh":0,"text_id":1242},{"highlight_color":3,"highlight_end":392,"highlight_id":1896,"highlight_start":344,"highlight_tags":"[]","highlight_text":"کامنت برای این بخش ازکتاب","highlight_title":"در می‌آوریم تا معانی دانست می‌داند بدان و … بدست","selected":false,"sharh":0,"text_id":4336},{"highlight_color":3,"highlight_end":477,"highlight_id":1885,"highlight_start":434,"highlight_tags":"[]","highlight_text":"یادداشتی برای این تست","highlight_title":"سفرجل مزید خندریس توجه کنید خماسی بودن مختص","selected":false,"sharh":0,"text_id":4340},{"highlight_color":2,"highlight_end":377,"highlight_id":1886,"highlight_start":327,"highlight_tags":"[]","highlight_text":"","highlight_title":"مثالهای زیر توجه نمایید ثلاثی مجرد علم رجل مزید اع","selected":false,"sharh":0,"text_id":4340},{"highlight_color":1,"highlight_end":426,"highlight_id":1887,"highlight_start":391,"highlight_tags":"[]","highlight_text":"","highlight_title":"مجرد دحرج جعفر مزید تدحرج جعافر خما","selected":false,"sharh":0,"text_id":4340},{"highlight_color":4,"highlight_end":518,"highlight_id":1888,"highlight_start":481,"highlight_tags":"[]","highlight_text":"","highlight_title":"اسم است و فعل یا ثلاثی است یا رباعی‌","selected":false,"sharh":0,"text_id":4340},{"highlight_color":4,"highlight_end":367,"highlight_id":1856,"highlight_start":351,"highlight_tags":"[]","highlight_text":"","highlight_title":"مرجع تقلید گویند","selected":false,"sharh":0,"text_id":5685},{"highlight_color":3,"highlight_end":350,"highlight_id":1857,"highlight_start":311,"highlight_tags":"[]","highlight_text":"","highlight_title":"به مجتهدی که دیگران از او تقلید می کنند","selected":false,"sharh":0,"text_id":5685},{"highlight_color":1,"highlight_end":410,"highlight_id":1858,"highlight_start":374,"highlight_tags":"[]","highlight_text":"","highlight_title":"مرجع تقلید باید دارای شرایط زیر باشد","selected":false,"sharh":0,"text_id":5685},{"highlight_color":2,"highlight_end":6541,"highlight_id":1897,"highlight_start":6460,"highlight_tags":"[]","highlight_text":"","highlight_title":"قضیّه حملی به ملاک های گوناگون تقسیم می‌شود: \n۱. شخصیّه، طبیعیّه، مهمله و محصوره","selected":false,"sharh":0,"text_id":5795},{"highlight_color":1,"highlight_end":291,"highlight_id":2167,"highlight_start":261,"highlight_tags":"[]","highlight_text":"","highlight_title":"سکولارها بر نفی حکومت دینی (۲)","selected":false,"sharh":0,"text_id":6900},{"highlight_color":3,"highlight_end":98,"highlight_id":2168,"highlight_start":82,"highlight_tags":"[]","highlight_text":"","highlight_title":"معنای حکومت دینی","selected":false,"sharh":0,"text_id":6900},{"highlight_color":1,"highlight_end":382,"highlight_id":2169,"highlight_start":374,"highlight_tags":"[]","highlight_text":"","highlight_title":"پیروزی","selected":false,"sharh":0,"text_id":6900},{"highlight_color":3,"highlight_end":1100,"highlight_id":2170,"highlight_start":1063,"highlight_tags":"[]","highlight_text":"","highlight_title":"جمعی سوق میدهد. \nخانواده، عشیره، قبیل","selected":false,"sharh":0,"text_id":6900},{"highlight_color":1,"highlight_end":1131,"highlight_id":2171,"highlight_start":1111,"highlight_tags":"[]","highlight_text":"","highlight_title":"شهر، کشور و ملت، همگ","selected":false,"sharh":0,"text_id":6900},{"highlight_color":3,"highlight_end":585,"highlight_id":2173,"highlight_start":543,"highlight_tags":"[]","highlight_text":"","highlight_title":"کرد. \nتأمّل درباره حکومت دینی، ابعاد مختلف","selected":false,"sharh":0,"text_id":6900},{"highlight_color":2,"highlight_end":763,"highlight_id":2175,"highlight_start":732,"highlight_tags":"[]","highlight_text":"","highlight_title":"حکومت دینی، به ویژه در دنیای مع","selected":false,"sharh":0,"text_id":6900},{"highlight_color":1,"highlight_end":1004,"highlight_id":2177,"highlight_start":963,"highlight_tags":"[]","highlight_text":"","highlight_title":"موجودی اجتماعی است; زیرا نیازهای گوناگون","selected":false,"sharh":0,"text_id":6900},{"highlight_color":4,"highlight_end":1199,"highlight_id":2178,"highlight_start":1142,"highlight_tags":"[]","highlight_text":"","highlight_title":"متنوّع و مختلف حیات جمعی بشر و گرایش وی به زیست اجتماعی ا","selected":false,"sharh":0,"text_id":6900},{"highlight_color":1,"highlight_end":1312,"highlight_id":2179,"highlight_start":1276,"highlight_tags":"[]","highlight_text":"","highlight_title":"مواردی پیش میآید که به کلّ جامعه مرب","selected":false,"sharh":0,"text_id":6900},{"highlight_color":2,"highlight_end":1265,"highlight_id":2180,"highlight_start":1225,"highlight_tags":"[]","highlight_text":"","highlight_title":"ع و نیازهای افراد به یکدیگر گره میخورد.","selected":false,"sharh":0,"text_id":6900},{"highlight_color":4,"highlight_end":624,"highlight_id":2181,"highlight_start":607,"highlight_tags":"[]","highlight_text":"","highlight_title":"سعی بر آن است که","selected":false,"sharh":0,"text_id":6900},{"highlight_color":4,"highlight_end":853,"highlight_id":2184,"highlight_start":800,"highlight_tags":"[]","highlight_text":"","highlight_title":"پردازان سیاسی رو به رو است. \nاز این رو، در این فصل به","selected":false,"sharh":0,"text_id":6900},{"highlight_color":3,"highlight_end":659,"highlight_id":2187,"highlight_start":630,"highlight_tags":"[]","highlight_text":"","highlight_title":"صار زوایای مختلف بحث از نسبت","selected":false,"sharh":0,"text_id":6900},{"highlight_color":3,"highlight_end":387,"highlight_id":2172,"highlight_start":349,"highlight_tags":"[]","highlight_text":"","highlight_title":"تنوّع و گستردگی، در این نکته نهفته است","selected":false,"sharh":0,"text_id":6901},{"highlight_color":1,"highlight_end":287,"highlight_id":2174,"highlight_start":261,"highlight_tags":"[]","highlight_text":"","highlight_title":"مطالعات به مباحث ملموس و ع","selected":false,"sharh":0,"text_id":6901},{"highlight_color":2,"highlight_end":883,"highlight_id":2176,"highlight_start":845,"highlight_tags":"[]","highlight_text":"","highlight_title":"سطح جهانی و بین المللی داشته باشند; هم","selected":false,"sharh":0,"text_id":6901},{"highlight_color":4,"highlight_end":560,"highlight_id":2182,"highlight_start":522,"highlight_tags":"[]","highlight_text":"","highlight_title":"از پرسش ها و دغدغه های سیاسی، جنبه عمل","selected":false,"sharh":0,"text_id":6901},{"highlight_color":4,"highlight_end":974,"highlight_id":2183,"highlight_start":949,"highlight_tags":"[]","highlight_text":"","highlight_title":"منطقه در اختیار داشته باش","selected":false,"sharh":0,"text_id":6901},{"highlight_color":4,"highlight_end":666,"highlight_id":2185,"highlight_start":564,"highlight_tags":"[]","highlight_text":"","highlight_title":"کاربردی دارد; برای مثال یک عالم علوم سیاسی یا مدیران و سیاستمداران یک کشور میخواهند بدانند که در روابط","selected":false,"sharh":0,"text_id":6901},{"highlight_color":3,"highlight_end":770,"highlight_id":2186,"highlight_start":736,"highlight_tags":"[]","highlight_text":"","highlight_title":"جهانی، روابط بین الملل خود را چگون","selected":false,"sharh":0,"text_id":6901},{"highlight_color":1,"highlight_end":891,"highlight_id":2188,"highlight_start":870,"highlight_tags":"[]","highlight_text":"","highlight_title":"شته باشند; همچنان که","selected":false,"sharh":0,"text_id":6901},{"highlight_color":3,"highlight_end":454,"highlight_id":2189,"highlight_start":445,"highlight_tags":"[]","highlight_text":"","highlight_title":"شاخه از","selected":false,"sharh":0,"text_id":6901},{"highlight_color":4,"highlight_end":1037,"highlight_id":1905,"highlight_start":985,"highlight_tags":"[]","highlight_text":"","highlight_title":"و تلازم الفعل علامه التانیث ان کان فاعله ظاهرا حقیقی","selected":false,"sharh":0,"text_id":7453},{"highlight_color":3,"highlight_end":511,"highlight_id":1882,"highlight_start":472,"highlight_tags":"[\"ایران\"]","highlight_text":"","highlight_title":"مضمره جوازا بعد الحروف العاطفه له علی ا","selected":false,"sharh":0,"text_id":7474},{"highlight_color":1,"highlight_end":890,"highlight_id":1899,"highlight_start":853,"highlight_tags":"[]","highlight_text":"","highlight_title":"بمعنی الی او کی اذا ارید به الاستقبال","selected":false,"sharh":0,"text_id":7474},{"highlight_color":2,"highlight_end":619,"highlight_id":1900,"highlight_start":575,"highlight_tags":"[]","highlight_text":"","highlight_title":"نحو اسلمت لادخل الجنه و وجوبا بعد خمسه احرف:","selected":false,"sharh":0,"text_id":7474},{"highlight_color":3,"highlight_end":946,"highlight_id":1901,"highlight_start":900,"highlight_tags":"[]","highlight_text":"","highlight_title":"حتی تغرب الشمس و اسلمت حتی ادخل الجنه فان اردت","selected":false,"sharh":0,"text_id":7474},{"highlight_color":2,"highlight_end":412,"highlight_id":1850,"highlight_start":369,"highlight_tags":"[]","highlight_text":"","highlight_title":"مساله (الالغاء و التعلیق فی افعال القلوب):","selected":false,"sharh":0,"text_id":7476},{"highlight_color":4,"highlight_end":286,"highlight_id":1851,"highlight_start":230,"highlight_tags":"[]","highlight_text":"","highlight_title":"یبعثوا و علم و رای للامرین و الغالب للیقین نحوانهم یرونه","selected":false,"sharh":0,"text_id":7476},{"highlight_color":1,"highlight_end":367,"highlight_id":1853,"highlight_start":342,"highlight_tags":"[]","highlight_text":"","highlight_title":"الظن نحو حسبت زیدا قائما.","selected":false,"sharh":0,"text_id":7476},{"highlight_color":3,"highlight_end":469,"highlight_id":1854,"highlight_start":413,"highlight_tags":"[]","highlight_text":"","highlight_title":"و اذا توسطت بین المبتدا و الخبر او تاخرت جاز ابطال عملها","selected":false,"sharh":0,"text_id":7476},{"highlight_color":4,"highlight_end":520,"highlight_id":1859,"highlight_start":475,"highlight_tags":"[\"تاریخ\",\"اصول\",\"تاریخ\",\"فقه\",\"فقه\"]","highlight_text":"یادداشتی روی این متن گذاشته شده","highlight_title":"و محلا و یسمی الالغاء نحو زید علمت قائم و زید","selected":false,"sharh":0,"text_id":7476},{"highlight_color":4,"highlight_end":5295,"highlight_id":4006,"highlight_start":5250,"highlight_tags":"[]","highlight_text":"","highlight_title":"اللهم اشرح صدورنا بانوار المعارف و نور قلوبنا","selected":false,"sharh":0,"text_id":7479},{"highlight_color":5,"highlight_end":157,"highlight_id":1939,"highlight_start":114,"highlight_tags":"[]","highlight_text":"تست","highlight_title":"ده از ثلاثي مجرد باب فعل يفعل (عاذ ، يعوذ)","selected":false,"sharh":0,"text_id":12555},{"highlight_color":1,"highlight_end":504,"highlight_id":1947,"highlight_start":473,"highlight_tags":"[]","highlight_text":"","highlight_title":"فلأنّ الشكّ إنّما وقع في رضا من","selected":false,"sharh":0,"text_id":13239},{"highlight_color":3,"highlight_end":826,"highlight_id":1951,"highlight_start":796,"highlight_tags":"[]","highlight_text":"","highlight_title":"شيطان‌پرستي يک مفهوم خود ساخته","selected":false,"sharh":0,"text_id":16170},{"highlight_color":1,"highlight_end":869,"highlight_id":1867,"highlight_start":848,"highlight_tags":"[]","highlight_text":"","highlight_title":"در كشور، گروههاي اجت","selected":false,"sharh":0,"text_id":16420},{"highlight_color":4,"highlight_end":251,"highlight_id":1894,"highlight_start":192,"highlight_tags":"[]","highlight_text":"","highlight_title":"و «مُبَلِّغ» کسی است که با همۀ توان تلاش می‌کند تا با مواد","selected":false,"sharh":0,"text_id":20125},{"highlight_color":3,"highlight_end":631,"highlight_id":1895,"highlight_start":609,"highlight_tags":"[]","highlight_text":"","highlight_title":"سرمشق توست در بي‌ارزش","selected":false,"sharh":0,"text_id":21070},{"highlight_color":5,"highlight_end":755,"highlight_id":48,"highlight_start":743,"highlight_tags":"[]","highlight_text":"zxczc","highlight_title":"أحد إذ العلم","selected":false,"sharh":0,"text_id":1217},{"highlight_color":5,"highlight_end":356,"highlight_id":49,"highlight_start":346,"highlight_tags":"[]","highlight_text":"dfsfsfds","highlight_title":"و من الغير","selected":false,"sharh":0,"text_id":7509},{"highlight_color":5,"highlight_end":219,"highlight_id":53,"highlight_start":212,"highlight_tags":"[]","highlight_text":"dsf","highlight_title":"المنقوص","selected":false,"sharh":0,"text_id":7454},{"highlight_color":5,"highlight_end":219,"highlight_id":54,"highlight_start":212,"highlight_tags":"[]","highlight_text":"dsf","highlight_title":"المنقوص","selected":false,"sharh":0,"text_id":7454},{"highlight_color":5,"highlight_end":409,"highlight_id":58,"highlight_start":394,"highlight_tags":"[]","highlight_text":"eqw","highlight_title":"لا یجوز تقدیمُه","selected":false,"sharh":0,"text_id":4692}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => 09190489433
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => 09190489433
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+

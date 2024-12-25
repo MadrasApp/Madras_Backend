@@ -1,0 +1,230 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => 09188491623
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => 09188491623
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getPrice/level/43] => 
+    [mac] => 09188491623
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => 09188491623
+    [token] => token
+    [code] => bale503324
+    [level_id] => 43
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 
+    [token] => naboode
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":403,"highlight_id":118142068,"highlight_start":206,"highlight_text":"استظهرنا اعتباره فیه بلا تفاوت أصلا نعم یختص النهی بخلاف و هو أن متعلق الطلب فیه هل هو الکف أو مجرد الترک و أن لا یفعل. \r\n\r\nو الظاهر هو الثانی و توهم أن الترک و مجرد أن لا یفعل خارج عن تحت الاختیار","selected":false,"sharh":0,"text_id":11814}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

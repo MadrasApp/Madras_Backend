@@ -1,0 +1,50 @@
+Array
+(
+    [/api/v2/VerifySMS] => 
+    [mac] => 09190489433
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [Message] => 6499
+)
+
+Array
+(
+    [/api/v2/register] => 
+    [username] => hamedtaghirad
+    [mobile] => 09191994772
+    [email] => taghirad1360@gmail.com
+    [password] => 0075054817
+    [mac] => B4:BF:F6:B7:EA:1F
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/45] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [mac] => 09190489433
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

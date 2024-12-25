@@ -1,0 +1,265 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 09337151757
+    [token] => token
+    [data] => {"highlights":{"added":[{"highlight_color":1,"highlight_end":2229,"highlight_id":45,"highlight_start":1316,"highlight_tags":"[]","highlight_text":"","highlight_title":"2- مقدمه دوم، در كتاب الموجز به آن اشاره نشده اما ذكر آن لازم و ضرورى مى‏باشد و آن اينكه [بطور خلاصه و مجمل مى‏گوييم‏] ثمره بحث صحيح و اعم آن است كه قائلين به اعم يعنى كسانى كه معتقد به اين هستند كه الفاظ عبادات براى معنايى اعم از صحيح و فاسد وضع شده‏اند در مواردى كه در جزء يا شرطى از اجزاء و شرائط واجب، شك كنند به راحتى مى‏توانند به اصالة الاطلاق تمسك كرده و نسبت به لزوم آن جزء يا شرط مشكوك برائت جارى نمايند اما قائلين به صحيح و كسانى كه معتقدند كه الفاظ عبادات فقط براى عبادت صحيح وضع شده‏اند در چنين مواردى حتما بايد احتياط نمايند.\r\nمثلا اگر شخص فقيه شك كرد كه آيا جلسه استراحت يا سوره در نماز واجب است يا نه؟ در اينجا اگر او صحيحى باشد بايد احتياط كند و در نماز جلسه استراحت را انجام داده و سوره را نيز بخواند اما اعمى‏ها مى‏توانند به اطلاق دليل مراجعه كرده و نسبت به جلسه استراحت يا سوره مشكوك اللزوم، برائت را جارى نمايند. [براى توضيح بيشتر در اين رابطه مى‏توانيد به اصول الفقه مرحوم مظفر مراجعه نماييد]","selected":false,"sharh":1,"text_id":8092},{"highlight_color":3,"highlight_end":2612,"highlight_id":46,"highlight_start":2231,"highlight_tags":"[]","highlight_text":"","highlight_title":"ثمره ديگرى را كه براى بحث صحيح و اعم ذكر كرده‏اند نيز اين است كه: اگر ما نذر كنيم كه پولى را به شخص نمازخوان بدهيم در اين صورت اگر صحيحى باشيم حتما بايد آن پول را به فردى بدهيم كه نماز صحيح مى‏خواند اما اگر اعمى باشيم در اين صورت مخير هستيم و مى‏توانيم آن پول را به هركسى كه نماز مى‏خواند بدهيم اگرچه نمازش باطل باشد چرا كه براساس قول اعمى‏ها به نماز باطل هم لفظ صلات اطلاق مى‏شود.","selected":false,"sharh":1,"text_id":8092},{"highlight_color":1,"highlight_end":2229,"highlight_id":45,"highlight_start":1316,"highlight_tags":"[]","highlight_text":"","highlight_title":"2- مقدمه دوم، در كتاب الموجز به آن اشاره نشده اما ذكر آن لازم و ضرورى مى‏باشد و آن اينكه [بطور خلاصه و مجمل مى‏گوييم‏] ثمره بحث صحيح و اعم آن است كه قائلين به اعم يعنى كسانى كه معتقد به اين هستند كه الفاظ عبادات براى معنايى اعم از صحيح و فاسد وضع شده‏اند در مواردى كه در جزء يا شرطى از اجزاء و شرائط واجب، شك كنند به راحتى مى‏توانند به اصالة الاطلاق تمسك كرده و نسبت به لزوم آن جزء يا شرط مشكوك برائت جارى نمايند اما قائلين به صحيح و كسانى كه معتقدند كه الفاظ عبادات فقط براى عبادت صحيح وضع شده‏اند در چنين مواردى حتما بايد احتياط نمايند.\r\nمثلا اگر شخص فقيه شك كرد كه آيا جلسه استراحت يا سوره در نماز واجب است يا نه؟ در اينجا اگر او صحيحى باشد بايد احتياط كند و در نماز جلسه استراحت را انجام داده و سوره را نيز بخواند اما اعمى‏ها مى‏توانند به اطلاق دليل مراجعه كرده و نسبت به جلسه استراحت يا سوره مشكوك اللزوم، برائت را جارى نمايند. [براى توضيح بيشتر در اين رابطه مى‏توانيد به اصول الفقه مرحوم مظفر مراجعه نماييد]","selected":false,"sharh":1,"text_id":8092},{"highlight_color":3,"highlight_end":2612,"highlight_id":46,"highlight_start":2231,"highlight_tags":"[]","highlight_text":"","highlight_title":"ثمره ديگرى را كه براى بحث صحيح و اعم ذكر كرده‏اند نيز اين است كه: اگر ما نذر كنيم كه پولى را به شخص نمازخوان بدهيم در اين صورت اگر صحيحى باشيم حتما بايد آن پول را به فردى بدهيم كه نماز صحيح مى‏خواند اما اگر اعمى باشيم در اين صورت مخير هستيم و مى‏توانيم آن پول را به هركسى كه نماز مى‏خواند بدهيم اگرچه نمازش باطل باشد چرا كه براساس قول اعمى‏ها به نماز باطل هم لفظ صلات اطلاق مى‏شود.","selected":false,"sharh":1,"text_id":8092}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => 09337151757
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => 09337151757
+    [token] => token
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => hamidhamid
+    [token] => q1agFpxzCXySkJfHQelUZMW6d4D5mB7G
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/Tags] => 
+    [token] => q1agFpxzCXySkJfHQelUZMW6d4D5mB7G
+    [mac] => hamidhamid
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [token] => q1agFpxzCXySkJfHQelUZMW6d4D5mB7G
+    [mac] => hamidhamid
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => hamidhamid
+    [token] => q1agFpxzCXySkJfHQelUZMW6d4D5mB7G
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => hamidhamid
+    [token] => q1agFpxzCXySkJfHQelUZMW6d4D5mB7G
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => hamidhamid
+    [token] => q1agFpxzCXySkJfHQelUZMW6d4D5mB7G
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+

@@ -1,0 +1,53 @@
+Array
+(
+    [/api/v2/getPrice/level/43] => 
+    [mac] => aminmthr
+    [token] => 5ftgJp4bU7qDXHKMW8IjisaQ9m2nYRNd
+    [code] => bale503324
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getPrice/level/43] => 
+    [mac] => aminmthr
+    [token] => 5ftgJp4bU7qDXHKMW8IjisaQ9m2nYRNd
+    [code] => bale503324
+)
+
+Array
+(
+    [/api/v2/getPrice/level/43] => 
+    [mac] => aminmthr
+    [token] => 5ftgJp4bU7qDXHKMW8IjisaQ9m2nYRNd
+    [code] => bale503324
+)
+
+Array
+(
+    [/api/v2/getPrice/level/43] => 
+    [mac] => aminmthr
+    [token] => 5ftgJp4bU7qDXHKMW8IjisaQ9m2nYRNd
+    [code] => bale503324
+)
+
+Array
+(
+    [/api/v2/getPrice/level/43] => 
+    [mac] => aminmthr
+    [token] => 5ftgJp4bU7qDXHKMW8IjisaQ9m2nYRNd
+    [code] => bale503324
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => aminmthr
+    [token] => 5ftgJp4bU7qDXHKMW8IjisaQ9m2nYRNd
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+

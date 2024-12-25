@@ -1,0 +1,148 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [token] => gW4dYTjPkJX3uifa9C8UFNZBDI6AhH5G
+    [mac] => jafar313
+)
+
+Array
+(
+    [/api/v2/Tags] => 
+    [token] => gW4dYTjPkJX3uifa9C8UFNZBDI6AhH5G
+    [mac] => jafar313
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => jafar313
+    [token] => gW4dYTjPkJX3uifa9C8UFNZBDI6AhH5G
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[{"end":43,"not_id":4004475,"not_text":"\n","not_text_user":"🌷آخوند:تعددعنوان مطلق موجب تعددمعنون نمیشود.\n🌷نائینی:تعددعنوان موجب تعددمعنون میشودمطلقا.\n🌷خوئی(نظرمصنف):دربعضی مواردتعددعنوان موجب تعددمعنون میشودودربعضی مواردنمیشود.\n","notstart":47,"selected":false,"sharh":0,"text_id":4004,"title":"تعددعنوان موجب تعددعنوان میشودیانه؟"},{"end":851,"not_id":40048592,"not_text":"موجودتان","not_text_user":"🌷متاصله:زید.عمر.درخت\n🌷انتزاعیه:فوقیت.تحتیت\n🌷اعتباریه:ملکیت.زوجیت\n","notstart":859,"selected":false,"sharh":0,"text_id":4004,"title":"موجودات"},{"end":1159,"not_id":400311625,"not_text":"مثل","not_text_user":"مانند:صلاه ومکان غصب برفردخارجی","notstart":1162,"selected":false,"sharh":1,"text_id":4003,"title":""},{"end":1332,"not_id":400414285,"not_text":"کالأبیض بالقیاس إلی الجسم فإن صدق الأبیض علیه باعتبار عروض صفة البیاض علیه الخارجة عن مقام ذاته،","not_text_user":"محمول بالضمیمه","notstart":1428,"selected":false,"sharh":0,"text_id":4004,"title":""},{"end":1431,"not_id":400415294,"not_text":"وأخری یکون منتزعا منه باعتبار نفس ذاته بلا ضم حیثیة زائدة علی الذات کالأبیض بالقیاس إلی نفس البیاض","not_text_user":"محمول بالصمیمه","notstart":1529,"selected":false,"sharh":0,"text_id":4004,"title":""},{"end":2356,"not_id":400423615,"not_text":"الغصب","not_text_user":"غصب:تصرف مال غیربدون اجازه مالکش.\n","notstart":2361,"selected":false,"sharh":0,"text_id":4004,"title":""},{"end":2015,"not_id":404120181,"not_text":"کان","not_text_user":"حرکات خروجیه واجب نفسی\u003dخلاصی از غصب.\nحرکات خروجیه خودش غصب است و این خلاصی از اصل غصب نیست.","notstart":2018,"selected":false,"sharh":0,"text_id":4041,"title":""},{"end":2660,"not_id":404126675,"not_text":"الخروج","not_text_user":"مرادازخروج واجب غیری است نه نفسی","notstart":2667,"selected":false,"sharh":0,"text_id":4041,"title":""},{"end":1288,"not_id":140012885,"not_text":" ","not_text_user":"زن صاحب فرزندازهمان شوهر\u003dاز تمام ترکه ارث میبرد.\nزن بدون فرزندازهمان شوهر:\n۱:ازعین ترکه ارث میبرد\n۲:فقط از قیمت ترکه ارث میبرد\n۳:نه از عین ونه از قیمت ارث میبرد ","notstart":1288,"selected":false,"sharh":0,"text_id":1400,"title":""},{"end":748,"not_id":40587506,"not_text":"إن","not_text_user":"🌷ارشادی:به انگیزه بیان شرایط معامله⬅خارج از بحث است چونتحقق بیع موردش است.\n🌷مولوی:۱.نهی ازخودبیع است.\n             ۲.نهی از نتیجه بیع                است(ملکیت).","notstart":750,"selected":false,"sharh":0,"text_id":4058,"title":"نهی درمعاملات"},{"end":1658,"not_id":432716603,"not_text":"من","not_text_user":"امارات حجت هستند(خبرواحد)","notstart":1660,"selected":false,"sharh":0,"text_id":4327,"title":""}],"edited":[],"deleted":[]},"sounds":{"added":[{"id":0,"isPlay":false,"selected":false,"text_id":3997},{"id":0,"isPlay":false,"selected":false,"text_id":1474}],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => jafar313
+    [token] => gW4dYTjPkJX3uifa9C8UFNZBDI6AhH5G
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => jafar313
+    [token] => gW4dYTjPkJX3uifa9C8UFNZBDI6AhH5G
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

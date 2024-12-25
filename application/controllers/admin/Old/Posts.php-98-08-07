@@ -1,0 +1,382 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Posts extends CI_Controller {
+	
+	
+	function __construct(){
+		
+		parent::__construct();
+		$this->load->model('m_user','user');
+		
+		if(!$this->user->check_login())
+		{
+			redirect('admin/login');
+		}
+		else
+		{
+			$this->user->checkAccess();
+		}
+		$this->load->model('admin/m_post','post');			
+	}
+	
+	public function index()
+	{			
+		$data = $this->settings->data;
+		$data['_title'] = ' | Products ';
+		$this->load->view('admin/v_header',$data);
+		$this->load->view('admin/v_sidebar',$data);	
+		$this->load->view('admin/v_post',$data);
+		$this->load->view('admin/v_footer',$data);
+
+	}
+		
+	public function addedit($type="post",$op="add",$id=NULL)
+	{		
+		$data = $this->settings->data;
+		
+		global $POST_TYPES;
+		
+		if( isset($POST_TYPES[$type]) )
+		{
+			$data['form'] = $POST_TYPES[$type]['support'];
+		}
+		else
+		{	
+			show_404();
+			return;
+		}
+		
+		switch($op)
+		{
+			case 'add':
+			if( $this->user->can('creat_'.$type) )
+			{
+				$data['_title'] = ' | New '.$type;
+				$this->post->deleteEmpty();
+				$data['post_id'] = $this->post->addEmpty($type);
+			}
+			else
+			{	
+				show_404();
+				return;
+			}			
+			break;
+			case 'edit':
+			if( $this->user->can('edit_'.$type) )
+			{
+				$data['_title'] = ' | Edit '.$type;
+				$data['post_id'] = $id;				
+			}
+			else
+			{	
+				show_404();
+				return;
+			}			
+			break;			
+		}
+		
+		$data['type'] = $type;
+		
+		$data['meta'] = array();
+		
+		$post_meta = $this->post->getPostMeta($data['post_id']);
+		
+		if(is_array($post_meta))
+		foreach($post_meta as $index => $row)
+		{
+			$data['meta'][$row->meta_key] = $row->meta_value; 
+		}
+		
+		$data['post']  = $this->db->where('id',$data['post_id'])->get('posts',1)->result_array();
+		$data['users'] = $this->db->where('level !=','user')->get('users')->result_array();
+
+		
+		if( isset(  $data['post'][0] ) )
+		{
+			$data['post'] = $data['post'][0];
+			
+			if( $data['post']['type'] == $type )
+			{
+                if($type == 'book')
+                {
+                    $this->load->model('m_book','book');
+                    //$this->load->model('m_group','group');
+                    //$data['indexes'] = $this->group->creatSelect(INDEX_ID,NULL,'<select class="form-control index-select">','</select>');
+
+                    if($op == 'edit')
+                    {
+						//========= Paerts =========//
+                        //$this->db->select('p.*, g.name as index_name');
+                        //$this->db->join('ci_group g','g.id=p.index','left',FALSE);
+                        //$this->db->where('p.book_id',(int)$id);
+                        //$this->db->order_by('p.order','asc');
+                        //$data['parts'] = $this->db->get('book_meta p')->result();
+
+						//========= Indexes ========//
+                        //$this->db->select('gp.id');
+                        //$this->db->join('ci_group g','g.id=p.index','inner',FALSE);
+                        //$this->db->join('ci_group gp','gp.id=g.parent','inner',FALSE);
+                        //$this->db->where('p.index IS NOT NULL');
+                        //$this->db->where('p.book_id',(int)$id);
+                        //$index_group = $this->db->get('book_meta p',1)->row();
+
+                        //if( isset($index_group->id) )
+						//	$data['group_book_id'] = $index_group->id;
+						
+						//========== Tests ========//
+						$data['tests'] = $this->book->getBookTests($id);
+                    }
+                }
+                $this->load->view('admin/v_header',$data);
+				$this->load->view('admin/v_sidebar',$data);	
+				$this->load->view('admin/posts/v_edit',$data);
+				$this->load->view('admin/v_footer',$data);
+				
+			}else show_404();
+			
+		}else show_404();
+	}
+	
+	public function fehrestBook($id=NULL){//Alireza Balvardi
+	
+		$data = $this->settings->data;
+		$type = 'book';
+		
+		global $POST_TYPES;
+		
+		$data['form'] = $POST_TYPES[$type]['support'];
+		
+		$data['_title']  = ' | فهرست کتاب';
+		$data['post_id'] = (int)$id;
+		$data['type']    = $type;
+		$data['meta']    = [];
+		
+		$post_meta = $this->post->getPostMeta($data['post_id']);
+		
+		if(is_array($post_meta))
+		foreach($post_meta as $index => $row)
+			$data['meta'][$row->meta_key] = $row->meta_value; 
+		
+		
+		$data['post'] = $this->db->where('id',$data['post_id'])->get('posts',1)->result_array();
+
+		
+		if( isset(  $data['post'][0] ) )
+		{
+			$data['post'] = $data['post'][0];
+			
+			if( $data['post']['type'] == $type )
+			{
+				$this->db->select('g.*,p.text');
+				$this->db->join('ci_group g','g.id=p.index','inner',FALSE);
+				$this->db->where('p.index IS NOT NULL');
+				$this->db->where('p.book_id',(int)$id);
+				$parts = $this->db->get('book_meta p',1)->result();
+				$parent = 0;
+				if(count($parts)){
+					$parent = $parts[0]->parent;
+					$this->db->select('g.*,"" AS `text`');
+					$this->db->where('g.id = ',(int)$parent);
+					$parts = $this->db->get('ci_group g',1)->result();
+				}
+
+				$this->db->select('g.*,p.text');
+				$this->db->join('ci_group g','g.id=p.index','left',FALSE);
+				$this->db->where('p.index IS NOT NULL');
+				$this->db->where('p.book_id',(int)$id);
+				$data['parts'] = $this->db->get('book_meta p')->result();
+				if(count($parts)){
+					$data['parts'] = array_merge($parts,$data['parts']);
+				}
+
+                $this->load->view('admin/v_header',$data);
+				$this->load->view('admin/v_sidebar',$data);	
+				$this->load->view('admin/posts/v_fehrest_book',$data);
+				$this->load->view('admin/v_footer',$data);
+				
+			}else  show_404();
+			
+		}else show_404();
+	}
+	public function editBook($id=NULL)
+	{
+		$data = $this->settings->data;
+		$type = 'book';
+		
+		global $POST_TYPES;
+		
+		$data['form'] = $POST_TYPES[$type]['support'];
+		
+		$data['_title']  = ' | ویرایش محتوای کتاب';
+		$data['post_id'] = (int)$id;
+		$data['type']    = $type;
+		$data['meta']    = [];
+		
+		$post_meta = $this->post->getPostMeta($data['post_id']);
+		
+		if(is_array($post_meta))
+		foreach($post_meta as $index => $row)
+			$data['meta'][$row->meta_key] = $row->meta_value; 
+		
+		
+		$data['post'] = $this->db->where('id',$data['post_id'])->get('posts',1)->result_array();
+
+		
+		if( isset(  $data['post'][0] ) )
+		{
+			$data['post'] = $data['post'][0];
+			
+			if( $data['post']['type'] == $type )
+			{
+                if($type == 'book')
+                {
+                    $this->load->model('m_group','group');
+                    $data['indexes'] = $this->group->creatSelect(INDEX_ID,NULL,'<select class="form-control index-select">','</select>');
+
+					//========= Parts =========//
+					$this->db->select('p.*, g.name as index_name');
+					$this->db->join('ci_group g','g.id=p.index','left',FALSE);
+					$this->db->where('p.book_id',(int)$id);
+					$this->db->order_by('p.order','asc');
+					$data['parts'] = $this->db->get('book_meta p')->result();
+
+					//========= Indexes ========//
+					$this->db->select('gp.id');
+					$this->db->join('ci_group g','g.id=p.index','inner',FALSE);
+					$this->db->join('ci_group gp','gp.id=g.parent','inner',FALSE);
+					$this->db->where('p.index IS NOT NULL');
+					$this->db->where('p.book_id',(int)$id);
+					$index_group = $this->db->get('book_meta p',1)->row();
+
+					if( isset($index_group->id) )
+						$data['group_book_id'] = $index_group->id;
+                    
+                }
+                $this->load->view('admin/v_header',$data);
+				$this->load->view('admin/v_sidebar',$data);	
+				$this->load->view('admin/posts/v_edit_book',$data);
+				$this->load->view('admin/v_footer',$data);
+				
+			}else  show_404();
+			
+		}else show_404();
+	}	
+	
+	public function category_page($post_type = NULL,$op = "view",$id = NULL)
+	{		
+		if( ! $this->user->can('category_'.$post_type) OR ! $post_type OR ($op == "edit" && $id == NULL) )
+		{
+			show_404();
+			return;
+		}
+		$data = $this->settings->data;
+		
+		if($op == "edit")
+		{
+			$data['Cat'] = $this->db->where('id',$id)->get('category')->row();
+			
+			if( ! $data['Cat'] OR $data['Cat']->type != $post_type)
+			{
+				show_404();
+				return;				
+			}
+		}
+		else
+		$data['Cat'] = NULL;		
+		
+		$data['_title'] = ' | '. ucwords($post_type) .' category';
+		$data['type']   = $post_type;
+		//$data['category'] = $this->db->where('type',$post_type)->get('category')->result();
+		
+		$this->load->view('admin/v_header',$data);
+		$this->load->view('admin/v_sidebar',$data);	
+		$this->load->view('admin/posts/v_category',$data);
+		$this->load->view('admin/v_footer',$data);
+	}
+	
+	/****************  List Of Posts  ***************/
+	public function viewlist($post_type = NULL , $action = 'primary')
+	{
+		global $POST_TYPES;
+		
+		if( ! isset($post_type) OR ! isset($POST_TYPES[$post_type]) OR ! $this->user->can('read_'.$post_type))
+		{
+			show_404();
+			return;
+		}
+		
+		$type_name = $POST_TYPES[$post_type]['g_name'];
+		
+		$data = $this->settings->data;
+		
+		$data['type'] = $post_type;
+		
+		$this->db->where(array('type'=>$post_type,'published'=>1));
+		$data['_tabs']['primary'] = array('name'=>$type_name,'count'=>$this->db->count_all_results('posts'));
+		
+		$this->db->where('type',$post_type)->where('draft is not null');
+		$data['_tabs']['draft'] = array('name'=>'پیش نویس','count'=>$this->db->count_all_results('posts'));		
+		
+		$this->db->where(array('type'=>$post_type,'published'=>0))->where('draft is null');
+		$data['_tabs']['recyclebin'] = array('name'=>'زباله دان','count'=>$this->db->count_all_results('posts'));		
+		
+		$data['query'] = "";
+		
+		$data['query'] .= "where type='$post_type' ";			
+		
+		switch($action)
+		{
+			case'primary':
+			$data['query'] .= " and  published=1 and draft is null ";
+			$ops = array('delete','suspend','edit');	
+			break;
+			/***************/
+			case'draft':
+			$data['query'] .= " and  draft is not null "; 
+			$ops = array('submit','delete','suspend','edit');
+			break;	
+			/***************/		
+			case'recyclebin':
+			$data['query'] .= " and  published=0  and  draft is null ";
+			$ops = array('submit','delete','edit');
+			break;
+		}
+		
+		if( $this->user->can('edit_'.$post_type) && in_array('edit',$ops) )
+		{
+			//$data['options'][] = array('name'=>'ویرایش سریع','icon'=>'pencil','click'=>'quickEdit([FLD])');
+			$data['options'][] = array('name'=>'ویرایش','icon'=>'pencil','href'=>site_url("admin/$post_type/edit/[FLD]"));
+            $data['user_can_edit'] = TRUE;
+		}
+		if( $this->user->can('submit_'.$post_type) && in_array('submit',$ops) )	
+		$data['options'][] = array('name'=>'انتشار','icon'=>'check','click'=>'_pdtd(this,\'publish\',[FLD])');		
+				
+		if( $this->user->can('suspend_'.$post_type) && in_array('suspend',$ops) )	
+		$data['options'][] = array('name'=>'زباله دان','icon'=>'trash','click'=>'_pdtd(this,\'trash\',[FLD])');				
+		
+		if( $this->user->can('delete_'.$post_type) && in_array('delete',$ops) )	
+		$data['options'][] = array('name'=>'حذف','icon'=>'trash-o','click'=>'_pdtd(this,\'delete\',[FLD])');
+		
+		$data['_title'] = ' | '. $type_name;
+		
+		$data['tableName'] = 'posts';		
+		
+		$data['query'] .= " order by  `";
+		
+		$order = $this->input->get($data['tableName'].'_order'); 
+		
+		$data['query'] .= ($order ? $order:'date_modified')."` ";
+		
+		$sort = $this->input->get($data['tableName'].'_sort'); 
+		
+		$data['query'] .= ($sort ? $sort:'desc');
+		
+		$this->load->view('admin/v_header',$data);
+		$this->load->view('admin/v_sidebar',$data);	
+		$this->load->view('admin/posts/v_table',$data);
+		$this->load->view('admin/v_footer',$data);		
+	}
+
+	
+	
+}

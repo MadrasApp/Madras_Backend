@@ -1,0 +1,169 @@
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => d78040f847510de81ebdad10d87839384387e0dc
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => d78040f847510de81ebdad10d87839384387e0dc
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => dd6ecc33eb8abeed85eaf64dbdfc76a096887df4
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => dd6ecc33eb8abeed85eaf64dbdfc76a096887df4
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => 19fb3fc7a4afb75f0e13f8026e670905a706e222
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => 19fb3fc7a4afb75f0e13f8026e670905a706e222
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => 6a69115a764ba03f34938ceb5fc0778bc5846990
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [ci_session] => 556d61f3422c29dbdd215b803ce9275068ee073a
+    [site_lang] => persian
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 263
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [site_lang] => persian
+    [ci_session] => qmbd2pfddpvlvf2mfiuctlndoq51u1ak
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 263
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [site_lang] => persian
+    [ci_session] => 31fa427967b4451923e28290412d90898ff478df
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 263
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [site_lang] => persian
+    [ci_session] => 49e640e88aed9672183fd80f0c942303b33ddcb1
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 263
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [site_lang] => persian
+    [ci_session] => cdb08d4d4c596a2684b7dd852324de69795d576d
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 232
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [site_lang] => persian
+    [ci_session] => 3fdec6bc65ca396ec8c68d46fffdf17814b89c9c
+    [API] => 1
+)
+
+=================================

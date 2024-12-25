@@ -1,0 +1,115 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 1245600
+    [token] => RJFM1CvirfpsoxXPjQHUL0OSG7dIYDmK
+    [data] => {"highlights":{"added":[{"highlight_color":1,"highlight_end":279,"highlight_id":121372744,"highlight_start":274,"highlight_text":"القبض","selected":false,"sharh":0,"text_id":12137},{"highlight_color":1,"highlight_end":418,"highlight_id":111914114,"highlight_start":411,"highlight_text":"غیره فی","selected":false,"sharh":0,"text_id":11191},{"highlight_color":1,"highlight_end":349,"highlight_id":109043454,"highlight_start":345,"highlight_text":"ذهنی","selected":false,"sharh":1,"text_id":10904},{"highlight_color":3,"highlight_end":368,"highlight_id":109043644,"highlight_start":364,"highlight_text":"دیگر","selected":false,"sharh":1,"text_id":10904},{"highlight_color":2,"highlight_end":236,"highlight_id":109042318,"highlight_start":231,"highlight_text":"هستند","selected":false,"sharh":1,"text_id":10904},{"highlight_color":2,"highlight_end":483,"highlight_id":109124795,"highlight_start":479,"highlight_text":"دارد","selected":false,"sharh":1,"text_id":10912}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => 1245600
+    [token] => RJFM1CvirfpsoxXPjQHUL0OSG7dIYDmK
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

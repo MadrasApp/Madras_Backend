@@ -1,0 +1,44 @@
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] =>  rahmat1990
+    [token] => cVDO7ZXGY0mxzt3RQeiSq2sPJWkphy8F
+    [book_id] => 11
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] =>  rahmat1990
+    [token] => cVDO7ZXGY0mxzt3RQeiSq2sPJWkphy8F
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] =>  rahmat1990
+    [token] => cVDO7ZXGY0mxzt3RQeiSq2sPJWkphy8F
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getPrice/level/57] => 
+    [mac] =>  rahmat1990
+    [token] => cVDO7ZXGY0mxzt3RQeiSq2sPJWkphy8F
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] =>  rahmat1990
+    [token] => cVDO7ZXGY0mxzt3RQeiSq2sPJWkphy8F
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+

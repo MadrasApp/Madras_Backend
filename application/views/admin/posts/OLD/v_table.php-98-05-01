@@ -1,0 +1,215 @@
+<?php  defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<style>
+.text-success {
+    color: #0d95e0;
+}
+</style>
+<?php
+
+	$this->load->helper('inc');
+	
+	$inc = new inc;
+	
+	$cols[''] = array(
+		'field_name'=>'thumb',
+		'td-attr'=>'style="padding:0;width:40px;"',
+		'function'=>function($col,$row){
+
+			global $CI;
+
+			$col = file_exists($col) ? $col : $CI->settings->data['default_post_thumb'];
+
+			$img  = '<img src="'.base_url().thumb($col,150).'" width="40" height="40">';
+			$url  = site_url().'[ID]/preview-post';
+			$link = '<a href="'.$url.'" target="_blank">'.$img.'</a>';
+			return $img;
+		}
+	);
+
+	$cols['شماره'] = array(
+		'field_name'=>'id',
+		'link'=>true,
+		'td-attr'=>'style="width:50px"',
+	);
+	
+	$cols['عنوان'] = array(
+		'field_name'=>'title',
+		'link'=>true,
+		'html'=>'<div class="wb" style="font-size:13px">[FLD]</div>',
+		'max'=>200
+	);
+		
+	if($type == 'book')
+	{
+		$cols['دسته بندی'] = array(
+            'field_name'=>'category_name',
+            'link'=>FALSE,
+		);
+		
+		$cols['حجم کتاب'] = array(
+            'field_name'=>'size',
+            'link' => FALSE,
+			'td-attr'=>'class="text-center en"',
+			'type' => 'filesize'
+		);
+		
+		$cols['قیمت'] = array(
+            'field_name'=>'price',
+            'link'=>FALSE,
+			'type'=>'price',
+            'td-attr'=>'style="width:100px"',
+		);
+		
+		$cols['تعداد صفحه'] = array(
+            'field_name'=>'pages',
+            'link'=>FALSE,
+            'td-attr'=>'style="width:70px"',
+			'function'=>function($col,$row){
+				return count(explode(',',$col));
+			}
+		);
+
+		$cols['فهرست'] = array(
+            'field_name'=>'fehrest',
+            'link' => FALSE,
+			'html'=>'<a title="فهرست کتاب" style="display:block;padding:10px" href="'.site_url("admin/posts/fehrestBook/[ID]").'"><i class="fa fa-lg fa-th-list"></i></a>',
+            'td-attr'=>'style="width:70px;padding:0"',
+		);//Alireza Balvardi
+
+		$cols['تعداد پاراگراف'] = array(
+            'field_name'=>'part_count',
+            'link' => FALSE,
+			'html'=>'<a title="ویرایش محتوای کتاب" style="display:block;padding:10px" href="'.site_url("admin/posts/editBook/[ID]").'">[FLD]</a>',
+            'td-attr'=>'style="width:70px;padding:0"',
+		);
+		
+		$cols['دارای شرح'] = array(
+            'field_name'=>'has_description',
+            'link'=>FALSE,
+            'td-attr'=>'style="width:50px"',
+			'html' => '<i class="fa fa-lg fa-align-center [FLD]"></i>'
+		);
+		
+		$cols['دارای صوت'] = array(
+            'field_name'=>'has_sound',
+            'link'=>FALSE,
+            'td-attr'=>'style="width:50px"',
+			'html' => '<i class="fa fa-lg fa-volume-up [FLD]"></i>'
+		);
+		$cols['دارای آزمون'] = array(
+            'field_name'=>'has_test',
+            'link'=>FALSE,
+            'td-attr'=>'style="width:50px"',
+			'html' => '<i class="fa fa-lg fa-file-text-o [FLD]"></i>'
+		);
+	}
+
+		
+	$cols['نویسنده'] = array(
+		'field_name'=>'author',
+		'link'=>true,
+		'td-attr'=>'style="width:100px"',
+	);
+	
+	$cols['تاریخ به روزرسانی'] = array(
+		'field_name'=>'date_modified',
+		'link'=>true,
+		'type'=>'date',
+		'td-attr'=>'style="width:150px"'
+	);
+
+	$cols[' '] = array(
+		'field_name'=>'id',
+		'type'=>'op',
+		'items'=> $options,
+		'td-attr'=>'align="center" style="padding:0;width:30px;"'
+	);
+
+    if(isset($user_can_edit) && $user_can_edit)
+    {
+        $cols['عنوان'] = array(
+            'field_name'=>'title',
+            'link'=>true,
+            'html'=>'<div class="wb" style="font-size:13px"><a href="'.site_url("admin/{$type}/edit/[ID]").'">[FLD]</a></div>',
+            'max'=>200
+        );
+    }
+
+	if( isset( $_tabs ) )
+	foreach( $_tabs as $tab=>$tab_data )
+	{
+		$href = site_url( "admin/$type/".$tab );
+		$class = $this->uri->segment(3) === $tab ? "w-btn active":"w-btn";
+		
+		echo "<a href='$href' class='$class'>".$tab_data['name'].
+			 " (<span class='row-count row-$tab'>".$tab_data['count']."</span>)</a>";
+		
+	}
+	
+	$q =
+	"SELECT id,title,thumb,date_modified
+	,(SELECT displayname FROM ci_users WHERE id=p.author) AS author ";
+	
+	if($type == 'book')
+	{
+		
+		$q .= //Alireza Balvardi
+		",(SELECT COUNT(id) FROM ci_book_meta where book_id=p.id ) AS part_count
+		,1 AS `fehrest` 
+		,(SELECT IF(COUNT(*) > 0, 'text-success', 'text-muted') FROM ci_book_meta WHERE (book_id=p.id AND sound IS NOT NULL)) AS has_sound
+		,(SELECT IF(COUNT(*) > 0, 'text-success', 'text-muted') FROM ci_book_meta WHERE (book_id=p.id AND description IS NOT NULL)) AS has_description
+		,(SELECT IF(COUNT(*) > 0, 'text-success', 'text-muted') FROM ci_tests     WHERE book_id=p.id) AS has_test
+		,(SELECT meta_value FROM ci_post_meta WHERE post_id=p.id AND meta_key='price') AS price
+		,(SELECT meta_value FROM ci_post_meta WHERE post_id=p.id AND meta_key='pages') AS pages
+		,(SELECT parent FROM ci_category WHERE id=p.category)  AS category_parent_id
+		,CONCAT(
+			(SELECT name FROM ci_category WHERE id=category_parent_id),
+			' &nbsp; <i class=\"fa fa-angle-double-left\"></i> &nbsp ',
+			(SELECT name FROM ci_category WHERE id=p.category)
+		) AS category_name
+		,(SELECT 
+			SUM(IF( `text` IS NULL ,0,LENGTH(`text`)))	+
+			SUM(IF( `description` IS NULL ,0,LENGTH(`description`))) +	
+			SUM(IF( `sound` IS NULL ,0,LENGTH(`sound`)))
+			FROM ci_book_meta WHERE book_id=p.id
+		) AS size ";		
+	}
+	
+	$q .= " FROM ci_posts p $query ";
+	
+	$inc->createTable($cols,$q,'id="table" class="table light2" ',$tableName,60);
+?>
+
+<script>
+$(document).ready(function(e) {
+	
+});
+
+
+function _pdtd(btn,op,id){
+	
+	var text;
+	
+	switch(op){
+		case 'publish': text = 'این مطلب قابل مشاهده برای همه خواهد بود . <br/> ادامه می دهید ؟'; break;
+		case 'trash'  : text = 'این مطلب به زباله دان انتقال می یابد . <br/> ادامه می دهید ؟'; break;
+		case 'delete' : text = 'این مطلب حذف می شود . <br/> ادامه می دهید ؟'; break;		
+	}
+	
+	var options = {
+		url :'post/'+op+'/'+id,
+		data:{id:id},
+		success:function(data){	
+			$(btn).closest('tr').remove();
+			var tabs = data.data;
+			for(var tab in tabs)
+			$('.row-count.row-'+tab).html(tabs[tab]);
+		},
+		//loader:$(btn).closest(ul.length?'.cat-item-div':'li'),
+		Dhtml:text,
+		Did:'_pdtd'+id
+	};
+	Confirm(options);
+}
+
+</script>	

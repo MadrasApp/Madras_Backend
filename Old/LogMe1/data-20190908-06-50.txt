@@ -1,0 +1,30 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/VerifySMS] => 
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [Message] => 6499
+    [mac] => 09190489433
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [mac] => 09190489433
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+)
+

@@ -1,0 +1,9 @@
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => naderooo
+    [token] => oTjEkG0qY2inBzD4xSMhXFmKfA1cN7bC
+    [id] => 8303
+    [case] => sound
+)
+

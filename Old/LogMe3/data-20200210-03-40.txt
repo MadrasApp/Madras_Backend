@@ -1,0 +1,114 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => mudaqeq
+    [token] => d8gbZJ1K0Ffuzxp35VtaSsejcDHEn7vP
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":478,"highlight_id":112064538,"highlight_start":453,"highlight_text":" محل تأمل و الله العالم.\r","selected":false,"sharh":0,"text_id":11206},{"highlight_color":3,"highlight_end":193,"highlight_id":112051647,"highlight_start":164,"highlight_text":". قال فی القواعد لو باع العبد","selected":false,"sharh":0,"text_id":11205},{"highlight_color":3,"highlight_end":904,"highlight_id":111758618,"highlight_start":861,"highlight_text":"لزوم توقف الشی‌ء علی ما یصلح أن یتوقف علیه ","selected":false,"sharh":0,"text_id":11175},{"highlight_color":3,"highlight_end":48,"highlight_id":11177452,"highlight_start":45,"highlight_text":"أما","selected":false,"sharh":0,"text_id":11177},{"highlight_color":3,"highlight_end":108,"highlight_id":111771020,"highlight_start":102,"highlight_text":"فغایته","selected":false,"sharh":0,"text_id":11177}],"edited":[],"deleted":[]},"notes":{"added":[{"end":451,"not_id":112064860,"not_text":"لة محل تأمل و الله العالم.\r","not_text_user":"","notstart":486,"selected":false,"sharh":0,"text_id":11206,"title":"حذف، پایان محدوده محذوف"},{"end":166,"not_id":112051932,"not_text":"قال فی القواعد لو باع العبد ","not_text_user":"ابتدای محدوده محذوف","notstart":193,"selected":false,"sharh":0,"text_id":11205,"title":"حذف"},{"end":1022,"not_id":1117510275,"not_text":"یستند","not_text_user":"علی صیغة المجهول","notstart":1027,"selected":false,"sharh":0,"text_id":11175,"title":""},{"end":192,"not_id":111761978,"not_text":"مساوق","not_text_user":"خبر از مبتدا","notstart":197,"selected":false,"sharh":0,"text_id":11176,"title":"ترکیب"},{"end":192,"not_id":111761970,"not_text":"مساوق","not_text_user":"خبر از مبتدا","notstart":197,"selected":false,"sharh":0,"text_id":11176,"title":"ترکیب"},{"end":193,"not_id":111761977,"not_text":"ساوق","not_text_user":"خبر از مبتدا","notstart":197,"selected":false,"sharh":0,"text_id":11176,"title":"ترکیب"},{"end":1341,"not_id":1117613453,"not_text":"بدیل","not_text_user":"نقیض","notstart":1345,"selected":false,"sharh":0,"text_id":11176,"title":"معنی"},{"end":1398,"not_id":1117614025,"not_text":"طبعا","not_text_user":"تقدم اجزای علت ناقصه را تقدم طبعی گویند","notstart":1402,"selected":false,"sharh":0,"text_id":11176,"title":"تبیین"},{"end":1433,"not_id":1117614363,"not_text":"عدم","not_text_user":"عدمه","notstart":1436,"selected":false,"sharh":0,"text_id":11176,"title":"تصحیح"},{"end":45,"not_id":11177486,"not_text":"أما","not_text_user":"دلیل دوم اصولی‌ها برای منع الإقتضا من جهة التلازم","notstart":48,"selected":false,"sharh":0,"text_id":11177,"title":"تبیین"}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => mudaqeq
+    [token] => d8gbZJ1K0Ffuzxp35VtaSsejcDHEn7vP
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => mudaqeq
+    [token] => d8gbZJ1K0Ffuzxp35VtaSsejcDHEn7vP
+    [id] => 11180
+    [case] => sound
+)
+

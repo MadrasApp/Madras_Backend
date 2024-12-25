@@ -1,0 +1,184 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Payment extends CI_Controller
+{
+    function __construct()
+    {
+        parent::__construct();
+		
+		$this->load->model('m_book','book');
+		
+		$error[-1]  = 'خطا در پردازش اطلاعات ارسالی';
+		$error[-3]  = 'ورودیها حاوی کارکترهای غیرمجاز میباشند';
+		$error[-4]  = 'کلمه عبور یا کد فروشنده اشتباه است';
+		$error[-6]  = 'سند قبلا برگشت کامل یافته است';
+		$error[-7]  = 'رسید دیجیتالی تهی است';
+		$error[-8]  = 'طول ورودیها بیشتر از حد مجاز است';
+		$error[-9]  = 'وجود کارکترهای غیرمجاز در مبلغ برگشتی';
+		$error[-10] = 'رسید دیجیتالی به صورت Base64 نیست';
+		$error[-11] = 'طول ورودیها کمتر از حد مجاز است';
+		$error[-12] = 'مبلغ برگشتی منفی است';
+		$error[-13] = 'مبلغ برگشتی برای برگشت جزئی بیش از مبلغ برگشت نخورده ی رسید دیجیتالی است';
+		$error[-14] = 'چنین تراکنشی تعریف نشده است';
+		$error[-15] = 'مبلغ برگشتی به صورت اعشاری داده شده است';
+		$error[-16] = 'خطای داخلی سیستم';
+		$error[-17] = 'برگشت زدن جزیی تراکنش مجاز نمی باشد';
+		$error[-18] = 'IP Address فروشنده نا معتبر است';
+		
+		$this->error = $error;
+    }
+
+	
+	/*==================================
+				PAYMENT
+	===================================*/
+    function pay($id=null)
+    {
+		try {
+			
+			$id = (int)$id; 
+			$this->_pay($id);
+            
+        } catch (Exception $e) {
+			$data['error']      = $e->getMessage();
+			$data['error_code'] = $e->getCode();
+			$data['config']     = $this->settings->data;
+			$this->load->view('client/v_header',$data);
+			$this->load->view('client/v_error',$data);
+			$this->load->view('client/v_footer',$data);
+        }
+    }
+	
+	private function _pay($id) 
+	{
+		$factor = $this->book->getFactor($id);
+		
+		if(!isset($factor->id))		
+			throw new Exception("شماره سفارش اشتباه است", 1);
+		
+		if($factor->status != '')		
+			throw new Exception("تراکنش مربوط به این سفارش قبلا صورت گرفته است", 1);
+		
+		$this->book->updatetFactor($id,['state' => 'انتقال به بانک']);
+		
+		$data['config'] = $this->settings->data;
+		$data['factor'] = $factor;
+		
+		$this->load->view('client/v_header',$data);
+		$this->load->view('client/v_payment_form',$data);
+		$this->load->view('client/v_footer',$data);
+	}
+	
+	/*==================================
+				VERIFY
+	===================================*/	
+    function verify()
+    {
+		try {
+			$this->_verify();
+        } catch (Exception $e) {
+			$data['error']      = $e->getMessage();
+			$data['error_code'] = $e->getCode();
+			$data['config']     = $this->settings->data;
+			
+			$id     = (int)$this->input->post('ResNum');
+			$ref_id = $this->input->post('RefNum');
+			
+			if($id){
+				
+				$factor = $this->book->getFactor($id);
+				
+				if($factor->status == ''){
+					$this->book->updatetFactor($id,[
+						'state'  => 'پرداخت نا موفق : ' . $data['error'] ,
+						'status' => NULL,
+						'ref_id' => $ref_id,
+						'pdate'  => time()
+					]);
+					$this->db->where('status', NULL);
+					$this->db->where('id', $id);
+					$this->db->delete('factors');
+					$this->db->where('factor_id', $id);
+					$this->db->delete('factor_detail');
+				}
+			}
+			
+			$this->load->view('client/v_header',$data);
+			$this->load->view('client/v_error',$data);
+			$this->load->view('client/v_footer',$data);
+        }
+    }
+
+	private function _verify() 
+	{
+		$config = $this->settings->data;
+		$state  = $this->input->post('State');
+		
+		if($state == '')
+			throw new Exception("اطلاعات ورودی اشتباه است", 1);
+		
+		if($state != 'OK')
+			throw new Exception($state, 1);
+		
+		$input = $this->input->post();
+		
+		$client = new soapclient('https://acquirer.samanepay.com/payments/referencepayment.asmx?WSDL');
+		$result = $client->VerifyTransaction($input['RefNum'], $config['saman_id']);
+
+		if( $result <= 0 )
+			throw new Exception($this->error[$result], 1);
+
+		$factor = $this->book->getFactor($input['ResNum']);
+		
+		if(!isset($factor->id))
+		{
+			// return amount to customer ...
+			$rev = $client->reverseTransaction($input['RefNum'],$config['saman_id'],$config['saman_username'],$config['saman_password']);
+			
+			throw new Exception("سفارش مربوط به این تراکنش پیدا نشد.<br>در نتیجه این تراکنش برگشت خورده و به حساب پرداخت کننده باز خواهد گشت.", 1);
+		}
+		
+		if($factor->status != '')		
+			throw new Exception("تراکنش مربوط به این سفارش قبلا صورت گرفته است", 1);
+		
+		$this->book->updatetFactor($factor->id,['paid'=>$result/10]);
+		
+		if($factor->price*10 != $result)
+		{
+			// return amount to customer ...
+			
+			$rev = $client->reverseTransaction($input['RefNum'],$config['saman_id'],$config['saman_username'],$config['saman_password']);
+			
+			throw new Exception("مبلغ پرداخت شده با مبلغ سفارش برابر نیست.<br>در نتیجه این تراکنش برگشت خورده و به حساب پرداخت کننده باز خواهد گشت.", 1);
+		}
+		
+		if($this->db->where('ref_id',$input['RefNum'])->count_all_results('factors') > 0)
+			throw new Exception("رسید دیجیتالی این تراکنش قبلا برای سفارش دیگری استفاده شده است و دیگر نمیتوان دوباره از آن استفاده کرد.", 1);
+		
+		
+		$this->book->setFactorPaid($factor->id,$input['RefNum']);
+		
+		if($factor->discount_id != '')
+		{
+			$discountCode = @$this->db->where('id',$factor->discount_id)->get('discounts')->row()->code;
+			
+			$this->book->setDiscountUsed($factor->discount_id,$factor->id);
+			
+			$this->book->updatetFactor($factor->id,[
+				'state' => "پرداخت موفق، استفاده از کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)"
+			]);
+		}
+		
+		$data['config'] = $config;
+		$data['factor'] = $factor;
+		
+		$this->load->view('client/v_header',$data);
+		$this->load->view('client/v_payment_result',$data);
+		$this->load->view('client/v_footer',$data);
+	}
+	
+	function go_to_app()
+	{
+		exit('---');	
+	}	
+}

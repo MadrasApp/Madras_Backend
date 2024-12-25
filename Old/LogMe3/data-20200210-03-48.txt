@@ -1,0 +1,8 @@
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => hekmat10
+    [token] => lNyKsJ4gpqurMojh9kTz3ZHE6tO0Yn5U
+    [book_id] => 50
+)
+

@@ -1,0 +1,40 @@
+Array
+(
+    [/api/v2/SaveAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 1
+    [azmoon_time] => 5
+    [azmoon_questions] => 7
+    [azmoon_true] => 1
+    [azmoon_false] => 6
+    [azmoon_none] => 0
+    [azmoon_result] => 0
+    [azmoon_mahdoode] => از صفحه 1 تا صفحه 10
+    [azmoon_date] => 
+)
+
+Array
+(
+    [/api/v2/GetUserAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 1
+    [azmoon_time] => 0
+)
+
+Array
+(
+    [/api/v2/GetUserAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 2
+    [azmoon_time] => 0
+)
+

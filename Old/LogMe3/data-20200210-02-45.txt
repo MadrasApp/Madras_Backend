@@ -1,0 +1,19 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => 3031781555
+    [token] => kMA0wvKl2EQqxJVs14agHuL9fFjIRUhP
+    [id] => 1521
+    [case] => sound
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

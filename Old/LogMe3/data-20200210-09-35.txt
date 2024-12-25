@@ -1,0 +1,8 @@
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => bitab
+    [token] => paxrjKC6YRQZkqWh2o841AXctmnfIV9H
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+

@@ -1,0 +1,55 @@
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 263
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 252
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 252
+    [type] => json
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 252
+    [type] => zip
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [API] => 1
+)
+
+=================================
+Array
+(
+    [/api/v2/getBook] => 
+    [mac] => 09131789658
+    [id] => 263
+    [type] => zip
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [API] => 1
+)
+
+=================================

@@ -1,0 +1,58 @@
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+=================================
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+=================================
+Array
+(
+    [/api/v2/getLastClasses] => 
+    [section] => book
+    [start] => 0
+    [limit] => 10
+)
+
+=================================
+Array
+(
+    [/api/v2/getLastClasses] => 
+    [section] => specialbook
+    [start] => 0
+    [limit] => 10
+)
+
+=================================
+Array
+(
+    [/api/v2/DayClassOnline] => 
+    [mac] => USER_MAC
+    [dayofweek] => 0
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+)
+
+=================================
+Array
+(
+    [/api/v2/getLastClasses] => 
+    [section] => favbook
+    [start] => 0
+    [limit] => 10
+)
+
+=================================
+Array
+(
+    [/api/v2/getClassOnlineAccounts] => 
+    [mac] => USER_MAC
+    [token] => C36ZKdE02Nf89MIylUpbgL5VDnjArHmX
+    [limit] => 1000
+    [start] => 0
+)
+
+=================================

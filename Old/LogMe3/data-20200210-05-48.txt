@@ -1,0 +1,252 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => hamid86
+    [token] => KifYcI3MBGk86tdrsD2nAoRUba7lQO1w
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => hamid86
+    [token] => KifYcI3MBGk86tdrsD2nAoRUba7lQO1w
+    [data] => {"highlights":{"added":[{"highlight_color":5,"highlight_end":1864,"highlight_id":3812,"highlight_start":1861,"highlight_tags":"[]","highlight_text":"حَکَمَ","highlight_title":"حکم","selected":false,"sharh":0,"text_id":10473},{"highlight_color":5,"highlight_end":1820,"highlight_id":3813,"highlight_start":1816,"highlight_tags":"[]","highlight_text":"یُجعَل","highlight_title":"یجعل","selected":false,"sharh":0,"text_id":10473},{"highlight_color":5,"highlight_end":1864,"highlight_id":3812,"highlight_start":1861,"highlight_tags":"[]","highlight_text":"حَکَمَ","highlight_title":"حکم","selected":false,"sharh":0,"text_id":10473},{"highlight_color":5,"highlight_end":1820,"highlight_id":3813,"highlight_start":1816,"highlight_tags":"[]","highlight_text":"یُجعَل","highlight_title":"یجعل","selected":false,"sharh":0,"text_id":10473}],"edited":[],"deleted":[]},"notes":{"added":[{"end":207,"not_id":144092123,"not_text":"\r\n","not_text_user":"استعمال← لفظ نماز در این اعمال\n","notstart":212,"selected":false,"sharh":0,"text_id":14409,"title":""},{"end":965,"not_id":144099947,"not_text":"\r\n","not_text_user":"ادله ظنیه بر اصول عملیه حکومت دارند!","notstart":994,"selected":false,"sharh":0,"text_id":14409,"title":""},{"end":32,"not_id":13220385,"not_text":"ا","not_text_user":"صحت :{ 1؛ در اعتقادات \n۲: در اقوال\n۳: در افعال","notstart":38,"selected":false,"sharh":0,"text_id":13220,"title":""},{"end":213,"not_id":132202135,"not_text":" ","not_text_user":"از کلمه اذکر بودن چنین استعمال می شود که شخص به احتمال قوی نقصی در عمل باقی نگذاشته است.","notstart":213,"selected":false,"sharh":0,"text_id":13220,"title":""},{"end":583,"not_id":132205897,"not_text":"بالغير","not_text_user":"غیر رکنی یا غیر غیر رکنی","notstart":589,"selected":false,"sharh":0,"text_id":13220,"title":""},{"end":492,"not_id":144115027,"not_text":"\r\n","not_text_user":"قاعد فراغ : \n۱: روایاتی که عامه هستند\n{1: صرف فراغ کافی است\n۲:فراغ + دخول در عمل دیگر نیاز است\n۳: روایاتی که صورشان فقط فراغ و ذیل آنها فراغ + دخول در عمل دیگر را شرط می کند. }\n\n۲: روایاتی که خاصه هستند","notstart":502,"selected":false,"sharh":0,"text_id":14411,"title":""},{"end":260,"not_id":132172672,"not_text":"\r\n","not_text_user":"مراد از محلی که اگر از آن تجاوز صورت بگیرد ، فراغ صدق می کند ، چیست؟\n۱: محل شرعی؛ محلی که شرع برای آن چیز قرار داده است.\n۲:محل عقلی؛ بعنوان مثال ر در الله اکبر بعد از  ب قرار دارد.\n۳: محل عرفی؛ عرفا در آن محل قرار دارد\n۴: اعتیاد یا عادتی","notstart":267,"selected":false,"sharh":0,"text_id":13217,"title":""},{"end":810,"not_id":132158165,"not_text":"كثيرة","not_text_user":"اطلاقات در وجوب انجام واجبات","notstart":816,"selected":false,"sharh":0,"text_id":13215,"title":""},{"end":524,"not_id":132145297,"not_text":"عاجلا","not_text_user":"بدون تدبر","notstart":529,"selected":false,"sharh":0,"text_id":13214,"title":""},{"end":549,"not_id":132145516,"not_text":"كّ","not_text_user":"در صورت شک بعد از عادت","notstart":551,"selected":false,"sharh":0,"text_id":13214,"title":""},{"end":671,"not_id":132146776,"not_text":"الظاهر","not_text_user":"ظاهر حال شخص","notstart":677,"selected":false,"sharh":0,"text_id":13214,"title":""},{"end":386,"not_id":132133922,"not_text":"الأوّل","not_text_user":"جمع اول:\nحمل موید بر غالب","notstart":392,"selected":false,"sharh":0,"text_id":13213,"title":""},{"end":398,"not_id":132134054,"not_text":"التعليل","not_text_user":"برای عدم اعتنا به شک","notstart":405,"selected":false,"sharh":0,"text_id":13213,"title":""},{"end":375,"not_id":132133857,"not_text":"\r\n","not_text_user":"تجاوز و فراغ:\n۱: طبق بعضی روایات ، تجاوز + فراغ\n۲: طبق بعضی صرف تجاوز","notstart":385,"selected":false,"sharh":0,"text_id":13213,"title":""},{"end":790,"not_id":132137973,"not_text":"التحديد","not_text_user":"تعیین حد","notstart":797,"selected":false,"sharh":0,"text_id":13213,"title":""},{"end":22,"not_id":13212250,"not_text":"ذلك","not_text_user":"بعد از قسمت اول روایت","notstart":25,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":199,"not_id":132122054,"not_text":"الهويّ","not_text_user":"سرازیر شدن","notstart":205,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":296,"not_id":132123036,"not_text":"التوطئة","not_text_user":"مقدمه چینی","notstart":303,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":393,"not_id":132123963,"not_text":"شكّ","not_text_user":"شک در سجده","notstart":396,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":630,"not_id":132126340,"not_text":"بذلك","not_text_user":"به قید ","notstart":634,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":641,"not_id":132126483,"not_text":"للقاعدة","not_text_user":"قاعده در ذ یل روایت","notstart":648,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":804,"not_id":132128073,"not_text":"هذا","not_text_user":"صدر روایت","notstart":807,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":863,"not_id":132128677,"not_text":"يكفي","not_text_user":"کفایت نمی کند (در نماز) برای اجرای قاعده فراغ","notstart":867,"selected":false,"sharh":0,"text_id":13212,"title":""},{"end":186,"not_id":144121902,"not_text":"ف","not_text_user":"فاء تعلیق","notstart":190,"selected":false,"sharh":0,"text_id":14412,"title":""},{"end":290,"not_id":144123006,"not_text":"هما","not_text_user":"نماز و وضو ","notstart":300,"selected":false,"sharh":0,"text_id":14412,"title":""},{"end":696,"not_id":144127026,"not_text":"اعتبار","not_text_user":"اعتبار برای اجرای  قاعده  فراغ","notstart":702,"selected":false,"sharh":0,"text_id":14412,"title":""},{"end":329,"not_id":144153330,"not_text":"\n","not_text_user":"قرائن بر اینکه وضو امری بسیط است:\n۱_ داخل کردن وضو در قاعده فراغ ، بدون بوجود آمدن اشکالات گذشته\n۲_ موارد مشابه یک جزء بسیط حساب کردند \nروایات وجود دارد\n۳_ حكم وضو برای غسل و تیمم هم هست","notstart":333,"selected":false,"sharh":0,"text_id":14415,"title":""},{"end":362,"not_id":132073706,"not_text":"لا يلاحظ","not_text_user":"یعنی اجزائش را در نظر نمی گیریم","notstart":370,"selected":false,"sharh":0,"text_id":13207,"title":""},{"end":57,"not_id":14416630,"not_text":"الشروط","not_text_user":"قاعده فراغ در شرایط:\n۱_ جاری میشود مطلقا چه بعد از مشروط چه قبل از مشروط ولی آماده برای مشروط شده باشد، چه در حین مشروط وجه نسبت به مشروط بعد از مشروط اول\n۲_ جاری نمی شود مطلقا\n۳_ نظر شیخ انصاری← تفصیل← قبل مشروط شک در شرط کردی اعتنا تلفنی بعد از فراغ از مشروط اعتنا نکن","notstart":63,"selected":false,"sharh":0,"text_id":14416,"title":""},{"end":86,"not_id":14416935,"not_text":"المشروط","not_text_user":"مثلا نماز","notstart":93,"selected":false,"sharh":0,"text_id":14416,"title":""},{"end":220,"not_id":144162286,"not_text":"بأقسامها","not_text_user":"از حدث اکبر یا اصغر","notstart":228,"selected":false,"sharh":0,"text_id":14416,"title":""},{"end":201,"not_id":132052374,"not_text":"عدم العبرة بالشكّ في الشيء بعد تجاوز","not_text_user":"قاعده فراغ","notstart":237,"selected":false,"sharh":0,"text_id":13205,"title":""},{"end":422,"not_id":132054281,"not_text":"مطلقا","not_text_user":"بعد از تجاوز محل حصول صدق می کند نه بعد از انجام مشروط","notstart":428,"selected":false,"sharh":0,"text_id":13205,"title":""},{"end":412,"not_id":132034185,"not_text":"المناط","not_text_user":"مناط قاعده فراغ که تجاوز از محل بود ، که در وصف هم این مناط وجود دارد","notstart":418,"selected":false,"sharh":0,"text_id":13203,"title":""},{"end":456,"not_id":132034623,"not_text":"العموم","not_text_user":"عمومیت قاعده فراغ  که هم شامل جزء  می شود هم شامل کل","notstart":462,"selected":false,"sharh":0,"text_id":13203,"title":""},{"end":558,"not_id":132035647,"not_text":"ومدركه","not_text_user":"مَدرَکُه","notstart":564,"selected":false,"sharh":0,"text_id":13203,"title":""},{"end":840,"not_id":132038441,"not_text":"أذكر","not_text_user":"هوشیارتر\nمتوجه تر","notstart":844,"selected":false,"sharh":0,"text_id":13203,"title":""},{"end":46,"not_id":13202501,"not_text":"الذي","not_text_user":"مکلفی که..\nمتوضئی که...","notstart":50,"selected":false,"sharh":0,"text_id":13202,"title":""},{"end":76,"not_id":14417822,"not_text":"الطارئ","not_text_user":"عارض می شود","notstart":82,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":121,"not_id":144171274,"not_text":"كيفيّة","not_text_user":"صورت","notstart":127,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":248,"not_id":144172532,"not_text":"وجهان","not_text_user":"التفات - عدم التفات","notstart":253,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":256,"not_id":144172586,"not_text":"من","not_text_user":"دلیل التفات","notstart":258,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":410,"not_id":144174117,"not_text":"ه","not_text_user":"حکم","notstart":411,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":419,"not_id":144174353,"not_text":"مورد العلّة","not_text_user":"از جایی که اذکریت جاری می شود","notstart":435,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":438,"not_id":144174441,"not_text":"لا فرق","not_text_user":"در عدم اعتناء بهشک\nیا اجرای قاعده فراغ","notstart":444,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":564,"not_id":144175820,"not_text":"الاحتمالين","not_text_user":"ترک تعمدی و نسیانی","notstart":582,"selected":false,"sharh":0,"text_id":14417,"title":""},{"end":558,"not_id":131995714,"not_text":"دلالة الآيتين","not_text_user":"در دو آیه اخیر حداقل صحبتی از حمل وضعی به معنای حمل آثار شده بود","notstart":571,"selected":false,"sharh":0,"text_id":13199,"title":""},{"end":162,"not_id":131971640,"not_text":"ما","not_text_user":"مثلا عقد به زبان فارسی","notstart":164,"selected":false,"sharh":0,"text_id":13197,"title":""},{"end":438,"not_id":131974398,"not_text":"ه","not_text_user":"مومن","notstart":439,"selected":false,"sharh":0,"text_id":13197,"title":""},{"end":1135,"not_id":1319711388,"not_text":"بما","not_text_user":"حمل بر صحیح","notstart":1138,"selected":false,"sharh":0,"text_id":13197,"title":""},{"end":712,"not_id":131967236,"not_text":"مجرّد الحسن","not_text_user":"نه ترتیب آثار","notstart":723,"selected":false,"sharh":0,"text_id":13196,"title":""},{"end":879,"not_id":131968840,"not_text":"تحقّق","not_text_user":"تُحَقِّق","notstart":884,"selected":false,"sharh":0,"text_id":13196,"title":""},{"end":7,"not_id":14422120,"not_text":"فامض","not_text_user":"اعتنا نکن","notstart":12,"selected":false,"sharh":0,"text_id":14422,"title":""},{"end":21,"not_id":14422274,"not_text":"الثالث","not_text_user":"دلیل سوم بر اصالت صحت","notstart":27,"selected":false,"sharh":0,"text_id":14422,"title":""},{"end":43,"not_id":13251501,"not_text":"المحمول","not_text_user":"صحت","notstart":50,"selected":false,"sharh":0,"text_id":13251,"title":""},{"end":559,"not_id":144235736,"not_text":"قال في المدارك","not_text_user":"سید محمد موسوی آملی ، در کتاب مدارک ، شرح بر","notstart":573,"selected":false,"sharh":0,"text_id":14423,"title":""},{"end":585,"not_id":144235926,"not_text":"المحقّق","not_text_user":"علامه حلی","notstart":592,"selected":false,"sharh":0,"text_id":14423,"title":""},{"end":443,"not_id":132474465,"not_text":"هذا","not_text_user":"این نظر صاحب قواعد","notstart":446,"selected":false,"sharh":0,"text_id":13247,"title":""},{"end":537,"not_id":132475430,"not_text":"اختلفا","not_text_user":"ضامن و مضمون له","notstart":543,"selected":false,"sharh":0,"text_id":13247,"title":""},{"end":134,"not_id":132401388,"not_text":"طبعه","not_text_user":"همیشه مفعول معه است (طبعه)","notstart":138,"selected":false,"sharh":0,"text_id":13240,"title":""},{"end":719,"not_id":132407307,"not_text":"ترتّب الأثر","not_text_user":"اصاله الصحه","notstart":730,"selected":false,"sharh":0,"text_id":13240,"title":""},{"end":164,"not_id":132391694,"not_text":"الإذن","not_text_user":"اصالت بقاء اذن همان اصالت صحت اذن و یا اصالت صحت رجوع هست\nبنا بر اینکه عدم وقوع بیع بعد اذن سبب می شود لغویت اذن را.\n","notstart":169,"selected":false,"sharh":0,"text_id":13239,"title":""},{"end":300,"not_id":132393075,"not_text":"المسألة","not_text_user":"بیع راهن ، مال مرهون را","notstart":307,"selected":false,"sharh":0,"text_id":13239,"title":""},{"end":100,"not_id":132381015,"not_text":"ه","not_text_user":"بیع","notstart":101,"selected":false,"sharh":0,"text_id":13238,"title":""},{"end":106,"not_id":132381075,"not_text":"ه","not_text_user":"اذن","notstart":107,"selected":false,"sharh":0,"text_id":13238,"title":""},{"end":430,"not_id":144284311,"not_text":"ه","not_text_user":"تحقق اون عبادت","notstart":431,"selected":false,"sharh":0,"text_id":14428,"title":""},{"end":18,"not_id":13231464,"not_text":"ورود هذا الأصل على الاستصحاب","not_text_user":"۱_ استصحاب حکمی : \nاستصحاب عدم نقل و انتقال\nاستصحاب فساد\nاصل صحت بر استصحاب مقدم می شود.\n۲_ استصحاب موضوعی:\nالف: بالغ بوده یا خیر\nب: اختبار انجام شده\n] اگر اصاله الصحه اماره باشد مقدم می شود\nاگر اما ره نباشد ← سه نظریه","notstart":46,"selected":false,"sharh":0,"text_id":13231,"title":"تعارض اصاله الصحه با استصحاب"},{"end":58,"not_id":13223658,"not_text":"الأقوال","not_text_user":"۱- از باب اینکه قول هم فعلی از افعال است. یعنی دو قول که فعل مباح انجام داده نه حرام \n۲- از باب اینکه کاشف از قصد متکلم است ، بحث کنیم :\n{ ۱- آیا مکلف از لفظ قصد معنا کرده است یا خیر؟\n۲- آیا مقصود متکلم است یا نیست؟\n۳- آیا مطابق با واقع و حجت است یا نیست؟ }","notstart":65,"selected":false,"sharh":0,"text_id":13223,"title":"اصالت صحت از باب اقوال"},{"end":4,"not_id":10492167,"not_text":"الخامس\r\n","not_text_user":"* بعض معین :\n۱- اضطرار قبل علم  اجمالی او بعد \u003d عدم وجوب الاجتناب عن الباقی\n۲- اضطرار بعد العلم اجمالی \u003d وجوب الاجتناب  عن الباقی\n\n* بعض غیر معین :\n۱- اضطرار قبل العلم \u003d وجوب اجتناب عن الباقی\n۲- اضطرار بعد العلم \u003d وجوب اجتناب\n ","notstart":16,"selected":false,"sharh":0,"text_id":10492,"title":"تنبیه پنجم ، اضطرار به یک طرف شبهه"},{"end":20,"not_id":13284355,"not_text":"تعارض الاستصحاب","not_text_user":"۱- تعارض اصلهایی مثل برائت ، احتیاط --- تمییز با هم\n۲- تعارض استصحاب با برائت :\n{۱- برائت عقلی تعارض که موضوعش عدم البیان ---- استصحاب بر برائت مقدم است\n۲- برائت شرعی\nشک ، ؛{۱- فقط اثبات رخصت می کنند ، حکم نمی کنند --\u003e ادله استصحاب بر آنها وارد می شود\n۲- حکم کردن --\u003e دو نظر است } }","notstart":35,"selected":false,"sharh":0,"text_id":13284,"title":"تعارض استصحاب با اصول عملیه دیگر"},{"end":504,"not_id":132845085,"not_text":"مطلق","not_text_user":"مباح","notstart":508,"selected":false,"sharh":0,"text_id":13284,"title":""},{"end":303,"not_id":132833037,"not_text":" ","not_text_user":"الورود","notstart":303,"selected":false,"sharh":0,"text_id":13283,"title":""}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => hamid86
+    [token] => KifYcI3MBGk86tdrsD2nAoRUba7lQO1w
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [token] => OluCLNZjBdhJRrtT4g5xKA8YvzeUiywI
+    [mac] => seyedvahid
+)
+
+Array
+(
+    [/api/v2/Tags] => 
+    [token] => OluCLNZjBdhJRrtT4g5xKA8YvzeUiywI
+    [mac] => seyedvahid
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => seyedvahid
+    [token] => OluCLNZjBdhJRrtT4g5xKA8YvzeUiywI
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => seyedvahid
+    [token] => OluCLNZjBdhJRrtT4g5xKA8YvzeUiywI
+    [data] => {"highlights":{"added":[{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":217,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":218,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":219,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":220,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229},{"highlight_color":5,"highlight_end":506,"highlight_id":221,"highlight_start":505,"highlight_tags":"[]","highlight_text":"کلاهما خلاف الظاهر\n","highlight_title":"و","selected":false,"sharh":0,"text_id":8798},{"highlight_color":5,"highlight_end":653,"highlight_id":222,"highlight_start":643,"highlight_tags":"[]","highlight_text":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","highlight_title":"العلل","selected":false,"sharh":0,"text_id":9229}],"edited":[],"deleted":[]},"notes":{"added":[{"end":505,"not_id":87985068,"not_text":"و","not_text_user":"کلاهما خلاف الظاهر\n","notstart":506,"selected":false,"sharh":0,"text_id":8798,"title":"سوال امتحانی"},{"end":643,"not_id":92296530,"not_text":"العلل","not_text_user":"1 همه حلقات سلسه موجود باشد\n۲ همه حلقات بالفعل باشد\n۳ حلقات بر یکدیگر علی و معلولی وجودی داشته باشند","notstart":653,"selected":false,"sharh":0,"text_id":9229,"title":"شروط تسلسل"},{"end":1408,"not_id":928814136,"not_text":"\r\n","not_text_user":" خلاف یعنی کسی متعرض این مطلب نشده\nاجماع یعنی همه نسبت به این موضوع متعرض شده اند","notstart":1413,"selected":false,"sharh":0,"text_id":9288,"title":"فرق بلاخلاف و اجماع"},{"end":665,"not_id":88006651,"not_text":" ","not_text_user":"1 در آیه شریفه گفته شده ک خداوند بیع را حلال کرده است\nاز آنجا که این مطلب از واضحات است پس  باید چیزی در تقدیر باشد.\nنتیجه:خداوند جمیع تصرفات بر بیع را حلال کرده است.\n\n۲ تصرفات شامل دو نوع تصرف میشود:\nالف)متوقف برملک\nب)غیر متوقف\nنتیجه:تصرفات متوقف بر ملک و غیر ملک است\n\nسوال:در چه زمانی تصرف ملکی حلال است؟\nج:وقتی بیع منجز به ملکیت بشود.\nمعاطات که بیع است:ملک","notstart":665,"selected":false,"sharh":0,"text_id":8800,"title":"امتحانی\nامتحانی\nامتحانی"},{"end":1034,"not_id":880210457,"not_text":"\r\n","not_text_user":"آیا معاطات از زمان معامله موجب ملک میشود و یا از زمان تصرفاتی که متوقف برملک است؟\n\n","notstart":1045,"selected":false,"sharh":0,"text_id":8802,"title":"سوال"},{"end":1193,"not_id":880211935,"not_text":" ","not_text_user":"اجماع مرکب رو در اینجا اثبات کنید","notstart":1193,"selected":false,"sharh":0,"text_id":8802,"title":"سوال"},{"end":1518,"not_id":880215198,"not_text":".","not_text_user":"یکی از این ۸ مورد با توضیح امتحانی","notstart":1519,"selected":false,"sharh":0,"text_id":8802,"title":"سوال"},{"end":19,"not_id":9232392,"not_text":"إثبات الغایة\r\n","not_text_user":"فی ابتات الغایه فی حرکات الطبیعیه","notstart":39,"selected":false,"sharh":0,"text_id":9232,"title":""},{"end":295,"not_id":88132955,"not_text":" ","not_text_user":"","notstart":295,"selected":false,"sharh":0,"text_id":8813,"title":" سوال امتحانی"},{"end":486,"not_id":92094926,"not_text":"ة","not_text_user":"ماهیت به حمل اولی ذات بدون قید است\nحتی ماهیت صفتی را با بالذات نمیپذیرد\nحتی امکان هم بالعرض همران آن است","notstart":492,"selected":false,"sharh":0,"text_id":9209,"title":"ماهیت"},{"end":512,"not_id":92095146,"not_text":"ما","not_text_user":"ما حقیقیه است\nچیستی را بیان میکند","notstart":514,"selected":false,"sharh":0,"text_id":9209,"title":""},{"end":532,"not_id":92095391,"not_text":"الاتصاف","not_text_user":"ماهیت به حمل شایع","notstart":539,"selected":false,"sharh":0,"text_id":9209,"title":""},{"end":1321,"not_id":920913302,"not_text":"\r\n","not_text_user":"و یحمل بالحمل شایع الصفات و العوارض","notstart":1330,"selected":false,"sharh":0,"text_id":9209,"title":""},{"end":1360,"not_id":920913637,"not_text":"\r\nو","not_text_user":"ملحق شدن هر شی به ماهیت\n\nماهیت بشرط شی(مخلوطه):شی به ماهیت ملحق شود.\n\nماهیت بشرط لا(مجرده):هیچ شی به ماهیت ملحق نشود.\n\nماهیت لابشرط(مطلقه):وجود و عدم شی نسبت به ماهیت علی السویه است در واقع لابشرط فقط شرط ماهیت است.\n\n\nحصر این تقسیم بندی:۲ قضیه منفصله حقیقه شامل شده:\nماهیت یا وجودش وابسته به شی است:ماهیت بشرط شی\nماهیت یا وجودش وابسته به شی نیست:\n1.مشروط به عدم شی است:ماهیت بشرط لا\n2.ماهیت به عدم شی نیست:لابشرط","notstart":1363,"selected":false,"sharh":0,"text_id":9209,"title":"وقتی ک ماهیت با یک امری مقایسه میشود\n\nوقتی که ماهیت با یک امری مقایسه میشود"},{"end":1821,"not_id":920918287,"not_text":"ثانیهما","not_text_user":"شی(صورت)به ماهیت(ماده)ملحق میشود ولی در آن اثر نمیگذارد.","notstart":1828,"selected":false,"sharh":0,"text_id":9209,"title":"قسم دوم از بشرط لا"},{"end":46,"not_id":9211517,"not_text":"مطلقة","not_text_user":"اطلاق شرط است\nهم از وجود هم از عدم","notstart":51,"selected":false,"sharh":0,"text_id":9211,"title":""},{"end":281,"not_id":92112950,"not_text":" الکلی الطبیعی ","not_text_user":"لا بشرط مقسمی به آن میگویند\nاولا اینکه جاری در اقسام است\nدوما از بین نمیرود در اقسام خود\nسوما به تمامه در اقسام خود وجود دارد\n\nمثال مانند آب","notstart":295,"selected":false,"sharh":0,"text_id":9211,"title":""},{"end":430,"not_id":92114360,"not_text":"المقسم","not_text_user":"عقلی:انسان\nمنطقی:کلیت(صدق بر کثرین)\nطبیعی:عقلی/منطقی\n\nکلی طبیعی همان عقلی است که اگر فرار باشد صدق بر کثیرین بکند باید کلی منطقی هم داشته باشد.\n\nمثال آبا پدرها با فرزندان خود\nلابشرط مقسمی همان کلی طبیعی است.","notstart":436,"selected":false,"sharh":0,"text_id":9211,"title":"انواع کلی"},{"end":659,"not_id":92116717,"not_text":"الفصل الثالث ","not_text_user":"1.ذاتی:آن امری که از ماهیت جدا شود به ماهیت لطمه واقع میشود.انسان حیوان ناطق:جنس و فصل\n2.عرضی:آن امری که از ماهیت جدا شود به ماهیت لطمه واقع نمیشود.ضحک و کاتب","notstart":671,"selected":false,"sharh":0,"text_id":9211,"title":"ماهیات"},{"end":680,"not_id":92117043,"not_text":"الذاتی و العرضی","not_text_user":"بنحو اولی:ذاتی\nبنحو شایع:عرضی","notstart":704,"selected":false,"sharh":0,"text_id":9211,"title":"اگر مفهومی بر ماهیت حمل شود"},{"end":806,"not_id":92118192,"not_text":"عرضیات محمولة","not_text_user":"محمول بالضمیه:الجسم ابیض\nمحمول من صمیمه(خارج از محمول):","notstart":819,"selected":false,"sharh":0,"text_id":9211,"title":"اعرض"},{"end":1397,"not_id":881713977,"not_text":" ","not_text_user":"سالبه به انتفا موضوع را تقریر کنید","notstart":1397,"selected":false,"sharh":0,"text_id":8817,"title":" سوال امتحانی"},{"end":1581,"not_id":881715884,"not_text":"الإجماع","not_text_user":"قاعده لطف\nاجماع دخولی\nاجماع حدسی","notstart":1588,"selected":false,"sharh":0,"text_id":8817,"title":"حجیت اجماع"},{"end":242,"not_id":92152461,"not_text":"یظهر","not_text_user":"تفاوت تمیز و تشخص","notstart":246,"selected":false,"sharh":0,"text_id":9215,"title":""},{"end":1229,"not_id":921512455,"not_text":"بالأعراض اللاحقة","not_text_user":"معقولات عشر","notstart":1245,"selected":false,"sharh":0,"text_id":9215,"title":""},{"end":1046,"not_id":921510524,"not_text":"التشخص","not_text_user":"صدرایی وجودی\nمشایی ماهوی","notstart":1052,"selected":false,"sharh":0,"text_id":9215,"title":"تشخص"},{"end":1488,"not_id":921514947,"not_text":"الثانی","not_text_user":"فارابی","notstart":1494,"selected":false,"sharh":0,"text_id":9215,"title":""},{"end":21,"not_id":9216530,"not_text":"المقولات العشر\r\n","not_text_user":"1.جوهر\u003dجواهر:خمسه ۲ تعریف دارد\nاذا وجدت فی الخارج وجدت لا فی الموضوع\nاذا وجدت فی الخارج وجدت فی الموضوع لا مستغنی عنه\nماهیت (صورت)اگر بخواهد در خارج موجود شود به موضوع(ماده)نیازمند است;موضوع(ماده)خودش بی نیاز از ماهیت(صورت)نیست\nماده\nصورت\nنفس\nروح\nعقل\n\n۲.اعراض:تسعه:تباین ذاتی باهم دارند چون جنس الاجناس هستند.\nکم\nکیف\nاین\nمتی\nجده\nان یفعل\nان ینفعل\nوضع\nاضافه","notstart":53,"selected":false,"sharh":0,"text_id":9216,"title":"ماهیت"},{"end":232,"not_id":92172368,"not_text":"فعلا","not_text_user":"در افعالش نیاز به ماده ندارد","notstart":236,"selected":false,"sharh":0,"text_id":9217,"title":""},{"end":1111,"not_id":921711164,"not_text":"صغارا","not_text_user":"صغار صلبه:شی کوچک سرسخت","notstart":1116,"selected":false,"sharh":0,"text_id":9217,"title":""},{"end":1214,"not_id":922012143,"not_text":" ","not_text_user":"نظر علامه طباطبایی","notstart":1214,"selected":false,"sharh":0,"text_id":9220,"title":""},{"end":1442,"not_id":922014471,"not_text":"إصلاح","not_text_user":"1.ماده و صورت در جسم به تحلیل عقلی پیاده میشود.\n\n2.ذره های کوچک قابلیت بی نهایت تقسیم دارد.","notstart":1447,"selected":false,"sharh":0,"text_id":9220,"title":"اصلاحات قول ذی مغراطیس"},{"end":2161,"not_id":922021928,"not_text":"فی إثبات الصور النوعیة","not_text_user":"قوه:استعداد پذیرش دارند،تاثری\nفعل:فاعلی و تاثیری\n\nماده(هیولای اولی)+صورت جسمیه\u003dجسم طبیعی\nجسم طبیعی+صورت نوعیه(آب.خاک.آتش.هوا)\u003dجسم تعلیمی\nجسم تعلیمی+صورت نوعیه\u003dگیاه","notstart":2192,"selected":false,"sharh":0,"text_id":9220,"title":"جسم ۲ بعد دارد"},{"end":3732,"not_id":922037365,"not_text":" أما ","not_text_user":"نیازمندی صورت به ماده در تعین و تشخصش است\nولی نیازمندی ماده به صورت در اصل تحققش است","notstart":3736,"selected":false,"sharh":0,"text_id":9220,"title":"تفاوت ماده و صورت"},{"end":2,"not_id":922292,"not_text":"و ا","not_text_user":"","notstart":9,"selected":false,"sharh":0,"text_id":9222,"title":"حذف"}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => seyedvahid
+    [token] => OluCLNZjBdhJRrtT4g5xKA8YvzeUiywI
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+

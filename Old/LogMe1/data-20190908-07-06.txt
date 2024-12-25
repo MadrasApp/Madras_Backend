@@ -1,0 +1,72 @@
+Array
+(
+    [/api/v2/getBook/4/zip] => 
+)
+
+Array
+(
+    [/api/v2/getBook/4/zip] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => msinak
+    [token] => naboode
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/GetUserAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 1
+    [azmoon_time] => 0
+)
+
+Array
+(
+    [/api/v2/GetUserAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 2
+    [azmoon_time] => 0
+)
+
+Array
+(
+    [/api/v2/getBookTest/5] => 
+)
+
+Array
+(
+    [/api/v2/GetUserAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 2
+    [azmoon_time] => 0
+)
+
+Array
+(
+    [/api/v2/GetUserAzmoon] => 
+    [term] => 1
+    [mac] => msinak
+    [token] => naboode
+    [bookid] => 5
+    [azmoon_type] => 1
+    [azmoon_time] => 0
+)
+
+Array
+(
+    [/api/v2/getBookTest/5] => 
+)
+

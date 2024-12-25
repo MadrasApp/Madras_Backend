@@ -1,0 +1,13 @@
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => bagh
+    [token] => 9n1af5uq2yxzL68BOXQJwKsvmHhpokPG
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

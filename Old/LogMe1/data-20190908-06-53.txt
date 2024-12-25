@@ -1,0 +1,69 @@
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => B4:BF:F6:B7:EA:1F
+    [token] => FTSjksCIMOZQWXY2pqGdzb53N9Jf1xag
+    [book_id] => 21
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/45] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => B4:BF:F6:B7:EA:1F
+    [token] => FTSjksCIMOZQWXY2pqGdzb53N9Jf1xag
+    [book_id] => 70
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/45] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => B4:BF:F6:B7:EA:1F
+    [token] => FTSjksCIMOZQWXY2pqGdzb53N9Jf1xag
+    [book_id] => 80
+)
+

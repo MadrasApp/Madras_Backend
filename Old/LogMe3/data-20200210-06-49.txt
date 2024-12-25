@@ -1,0 +1,115 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => alihadavi
+    [token] => Jc3aTmwFjQyeZNA19stn0lBqIh4PG8Cv
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":9123,"highlight_id":662981071,"highlight_start":8107,"highlight_text":"انواع فعل ماضی یک. مطلق: وقتی سر و صداها خوابید، برگشتمبه اصفهان. دو. استمراری (می + ماضی مطلق): با تک تک سلّول هایش، خدا را حس می کرد.\r\n------\r\n1. از رنجی که می بریم / 39.\r\n2. کنار رود خیّن/ 141.\r\n17\r\nسه. نقلی (ماضی مطلق + ه + فعل معین همان صیغه از مصدرِ اَستن): نیمروزی را تو در سپیده دمِ ما گذرانده ای.\r\nچهار. نقلی مستمر (می + ماضی نقلی): علی(علیه السلام) هر شب با چاه راز می گفته است.\r\nپنج. بعید (ماضی مطلق + ه + فعل معین همان صیغه از مصدرِ بودن): پیامبر اینک در قبله گاه خویش نشسته بود.\r\nشش. اَبعَد (ماضی بعید + ه + فعل معین همان صیغه از مصدرِ اَستن): مرحوم کاشانی مشعل مبارزه شیعی را پیش تر روشن کرده بود. پیش از او هم آیت اللّه مدرّس این مشعل را روشن کرده بوده است.\r\nهفت. التزامی (ماضی مطلق + ه + فعل معین همان صیغه از مصدرِ باشیدن): من که عیب توبه کاران کرده باشم بارها توبه از می، وقت گل، دیوانه باشم گر کنم (حافظ) هشت. ملموس (فعل معین ماضی همان صیغه از مصدرِ داشتن + ماضی استمراری): داشتم می دویدم که خمپاره ای پیش پایم بر زمین خورد. فعل مضارع نشان می دهد که آغاز تحقّق معنای فعل، در زمان حال یا آینده است.","selected":false,"sharh":0,"text_id":6629},{"highlight_color":2,"highlight_end":9938,"highlight_id":662991255,"highlight_start":9125,"highlight_text":"انواع فعل مضارع یک. اِخباری (می + بُن و شناسه مضارع): یاد حسین می افتدو احساس می کند سقف حسینیّه بر سرش هَوار می شود. دو. التزامی (بـ + بن و شناسه مضارع): اکنون، من این همه تنهایی را به کجا ببرم؟ سه. ملموس (فعل معین مضارع همان صیغه از مصدرِ داشتن+ مضارع اِخباری): ساعت ها است که دارم انتظار می کشم.\r\n------\r\n1. پیامبر/ 19.\r\n2. بهشت ارغوان/ 130.\r\n3. نخل های بی سر/ 106.\r\n4. کشتی پهلوگرفته/ 47.\r\n18\r\nتقسیم فعل از لحاظ ساختمان...\r\nفعل مستقبل نشان می دهد که آغاز تحقّق معنای فعل، در زمان آینده خواهد بود. مثال: در تنهاییِ بی تعارف، مهمان دلمان خواهیم بود.\r\nفعل اَمر نشان می دهد که تحقّق معنای فعل طلب شده است. مثال: از ناله مرغ چمن، از بانگ اذان خیز! این فعل گاه با یک باء (\u003d باء زینت) همراه است. باید دانست که فعل نهی، نوعی خاص از فعل نیست، بلکه شکل منفیِ فعل امر است که با افزودن علامت نـ بر سر فعل امر پدید می آید.","selected":false,"sharh":0,"text_id":6629},{"highlight_color":1,"highlight_end":10323,"highlight_id":662999405,"highlight_start":9940,"highlight_text":"تقسیم فعل از لحاظ ساختمان یک. ساده: مولای ما در میان این جمع چون شمعی می تابد.\r\nدو. پیشوندی (پیشوند + قسمت اصلی): سال ها دریچه زخم را فرو بستم.\r\nسه. مرکّب (اسم + قسمت اصلی): سرانجام، نیم دیگر صورتش را نشان می دهد.\r\nچهار. پیشوندی مرکّب (اسم + پیشوند + قسمت اصلی): مردان حقیقی از جهاد سر برمی آورند.\r\nپنج. گروه فعلی (ترکیبی از حرف اضافه و اسم و قسمت اصلی): در راه خدا هرگز از پا ننشین!","selected":false,"sharh":0,"text_id":6629},{"highlight_color":3,"highlight_end":2798,"highlight_id":149527933,"highlight_start":2793,"highlight_text":"وَفِی","selected":false,"sharh":0,"text_id":1495},{"highlight_color":3,"highlight_end":3538,"highlight_id":153735360,"highlight_start":3536,"highlight_text":"طِ","selected":false,"sharh":0,"text_id":1537},{"highlight_color":3,"highlight_end":3539,"highlight_id":153735386,"highlight_start":3538,"highlight_text":" ","selected":false,"sharh":0,"text_id":1537}],"edited":[],"deleted":[]},"notes":{"added":[{"end":8,"not_id":1281786,"not_text":" ","not_text_user":"لیت حرف تمنی غالبا سر امر محال داخل می شود لیت الشباب یعودا\nالبته به صورت کم ممکن هم می اید\nعمل لیت، نصب اسم و رفع خبر\nگاهی هم به اسم هم به خبر نصب می دهند لیت ایام الصبا رواجعا\nاشکال جز لیت یک جزء در تقدیر است و نصب رواجع بنا بر حالیت است\nجر مقدر لیت ایام الصبا اقبلت رواجعا","notstart":8,"selected":false,"sharh":0,"text_id":12817,"title":"توضیح لیت"},{"end":443,"not_id":128174462,"not_text":"ما","not_text_user":"زائده حرفی","notstart":446,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":432,"not_id":128174375,"not_text":"تقترن","not_text_user":"لیت در مقابل ما مقاومت می‌کند و عملش را از دست نمی دهد به خاطر عمل قوی لیت","notstart":437,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":449,"not_id":128174548,"not_text":"حرفیة","not_text_user":"گاهی به لیت حرف ما زائده ملحق می شود و لیتما هنوز اختصاص به جمله اسمیه دارد\nبله موارد کمی ما جلوی عمل لیت را گرفته است","notstart":454,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":96,"not_id":12817998,"not_text":"بما","not_text_user":"ما مصدریه و موصول است","notstart":99,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":327,"not_id":128173294,"not_text":"هو","not_text_user":"این شعر","notstart":329,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":463,"not_id":128174657,"not_text":"ها","not_text_user":"لیت","notstart":465,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":580,"not_id":128175886,"not_text":"الاختصاص","not_text_user":"اختصاص به جمله اسمیه","notstart":588,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":591,"not_id":128175981,"not_text":"إهمالها","not_text_user":"بخاطر اینکه اخوات آن عمل خود را از دست می دهند آن هم اهمال می‌شود\n\nدم امینی اخوات را اشباح می گفتند","notstart":598,"selected":false,"sharh":0,"text_id":12817,"title":""},{"end":1065,"not_id":240710773,"not_text":"الثَّانِیَةُ","not_text_user":"درباره اجاره عین است\nمی‌توان به بیشتر از مقدار اجاره اجاره دهم\nدلایل \nاصل جواز است\nاوفوا بالعقود\n\n","notstart":1077,"selected":false,"sharh":0,"text_id":2407,"title":""},{"end":64,"not_id":2407755,"not_text":"تَقْبِیلُهُ","not_text_user":"قبول","notstart":75,"selected":false,"sharh":0,"text_id":2407,"title":""},{"end":1854,"not_id":662918698,"not_text":"های مَلفوظ","not_text_user":"در مقابلش هاء غیر ملفوظ است","notstart":1869,"selected":false,"sharh":0,"text_id":6629,"title":""},{"end":9,"not_id":12818137,"not_text":"کلمة","not_text_user":"علت گفتن کلمه اختلاف موجود در آن است که بعضی می گویند که حرف است","notstart":13,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":62,"not_id":12818845,"not_text":"لیسَ خَلَقَ الله مثله","not_text_user":"اینجا قرینه عقلی است","notstart":84,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":0,"not_id":1281880,"not_text":"لیس","not_text_user":"لیس کلمه ای است که اگر قرینه بر خلافش نباشد دلالت بر نفی زمان حال می کند\nمثال قرینه عقلی : لیس خلق الله مثله، اینجا حکم عقل است\nمثال قرینه لفظی : لیس عطاء الیوم مانعه غدا","notstart":8,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":0,"not_id":1281887,"not_text":"لیس","not_text_user":"لیس فعل ماضی غیر منصرف بر وزن فَعِلَ که عین الفعل ساکن شده\nو بر وزن فَعَلَ نیست چون وزن تخفیف نمی شود\nبر وزن فَعُلَ نیست چون اجوف یائی بر این وزن فقط هَیُؤَ است","notstart":8,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":896,"not_id":128189287,"not_text":"قد تخرج عن ذلک فی مواضع:","not_text_user":"لیس در چهار مورد از عمل خود جدا میشود\n1 لیس ادات استثناء می‌شود در این صورت فقط بنا بر استثناء نصب می‌دهد.\nاشکال این است که همان لیس ناقصه است که ضمیرش واجب الاستتار است و مستثنی خبر لیس و منصوب است\n2 جایی که نفی لیس به وسیله الاشکسته شود مثل ما نافیه وقتی نفی اش با الا شکسته می شود\nلیسَ زیدُ الاّ قائمٌ","notstart":928,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":4462,"not_id":662944663,"not_text":"ساخت","not_text_user":"ساختمان آوایی ","notstart":4466,"selected":false,"sharh":0,"text_id":6629,"title":""},{"end":5369,"not_id":662954410,"not_text":"تکواژ، واحد معنی داری است که به واحدهای معنی دار کوچک تر بخش پذیر نباشد","not_text_user":"تعریف واژه","notstart":5441,"selected":false,"sharh":0,"text_id":6629,"title":""},{"end":1325,"not_id":1281813324,"not_text":"الثالث","not_text_user":"جایی که بعد از لیس مبتدا و خبر مرفوع و یا جمله فعلیه بیاید\nلیس زید قائمٌ\nجواب لیس از عمل خود جدا نشده بلکه اسم لیس ضمیر شان مقدر است\nو جمله اسمیه و فعلیه جز لیس محلا منصوب","notstart":1332,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":1649,"not_id":1281816564,"not_text":"الرابع","not_text_user":"کوفیون و بغدادیون می‌گویند لیس حرف عطف است به منزله لا عاطفه\nالاشرم المغلوب لیس الغالب\nجواب، غالب اسم لیس است و جزایش ضمیر متصلی بوده که به اشرم عود می کرده و حذف شده و اصلی اش\nلیسه الغالب","notstart":1656,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":1384,"not_id":1281813913,"not_text":"مرفوعین","not_text_user":"جمله اسمیه","notstart":1391,"selected":false,"sharh":0,"text_id":12818,"title":""},{"end":4484,"not_id":147644944,"not_text":"الْمُوقَبِ","not_text_user":"گفعول","notstart":4494,"selected":false,"sharh":0,"text_id":1476,"title":""}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => alihadavi
+    [token] => Jc3aTmwFjQyeZNA19stn0lBqIh4PG8Cv
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

@@ -1,0 +1,14 @@
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => hhosin14
+    [token] => YTkaWKvmU31qVGELQFJsejnXN47fdiPZ
+    [id] => 9845
+    [case] => sound
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

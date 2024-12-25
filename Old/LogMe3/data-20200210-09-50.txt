@@ -1,0 +1,154 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => aina_ammarr
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+    [mac] => aina_ammarr
+)
+
+Array
+(
+    [/api/v2/Tags] => 
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+    [mac] => aina_ammarr
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => aina_ammarr
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => aina_ammarr
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getPrice/level/55] => 
+    [mac] => aina_ammarr
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+)
+
+Array
+(
+    [/api/v2/buyBook] => 
+    [mac] => aina_ammarr
+    [token] => nTjK2VhBGbJYp9rcOaMQCo6ysFe814vX
+    [code] => bale503324
+    [level_id] => 55
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

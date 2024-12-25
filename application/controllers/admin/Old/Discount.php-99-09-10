@@ -1,0 +1,124 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Discount extends CI_Controller {
+	
+	function __construct(){
+		
+		parent::__construct();
+		
+		if( ! $this->user->check_login() )
+		{
+			redirect('admin/login');
+		}
+		else
+		{
+			$this->user->checkAccess('manage_discount');
+		}			
+	}
+	
+	public function LoadSubCategories($id,$level){
+        $this->db->select("*");
+        $this->db->where("parent",$id);
+        $this->db->where("type","book");
+        $this->db->order_by("position");
+		$O = $this->db->get("category")->result();
+		$cats = [];
+		foreach($O as $k=>$v){
+			$v->name = $level?str_repeat("|__",$level)." ".$v->name:$v->name;
+			$cats[$v->id] = $v;
+			$subcats = $this->LoadSubCategories($v->id,$level+1);
+			if(count($subcats))
+				$cats = array_merge($cats,$subcats);
+		}
+		return $cats;
+	}
+	public function index()
+	{
+		$data = $this->settings->data;
+		$data['_title'] = ' | Discount';
+
+        /*******************************
+		$data['options'] = array();
+        if( $this->user->can('edit_user') )
+            $data['options'][] = array('name'=>'ویرایش','icon'=>'pencil','href'=>site_url('profile').'?user=[FLD]');
+
+        if( $this->user->can('delete_user') )
+            $data['options'][] = array('name'=>'حذف','icon'=>'trash-o','click'=>'delete_row(this,\'users\',[FLD])');
+		********************************/
+		
+		/*========================================
+				search
+		=========================================*/
+        $fields = array(
+			'd.code'        => array('name'=>'کد'      , 'type' => 'text'),
+            'd.percent'     => array('name'=>'درصد'    , 'type' => 'text'),
+            'd.category_id' => array('name'=>'سطح'     , 'type' => 'select'),
+            'd.used'        => array('name'=>'وضعیت'   , 'type' => 'select'),
+            'd.cdate'       => array('name'=>'تاریخ '  , 'type' => 'date-from-to' , 'field_type' => 'int'),
+        );
+
+        $fields['d.category_id']['options']['']  = 'انتخاب سطح استفاده شده';
+        $fields['d.category_id']['options']['0']  = 'همه جا';
+        $fields['d.category_id']['options']['-1']  = 'فقط کتابهای خاص';
+        $fields['d.category_id']['options']['-2']  = 'همه کتابها';
+		
+        $fields['d.used']['options']['']  = '';
+        $fields['d.used']['options']['1'] = 'استفاده شده';
+        $fields['d.used']['options']['0'] = 'استفاده نشده';
+
+        
+		/*========================================
+				category
+		=========================================*/
+		$cats = $this->LoadSubCategories(0,0);
+		
+		foreach($cats as $ck => $cat)
+		{
+			$qu = "
+				SELECT SUM(meta_value) AS price
+				FROM `ci_post_meta` `m`
+				WHERE m.meta_key='price' AND m.post_id IN (
+					SELECT `id` FROM `ci_posts` WHERE (`category` IN ( 
+						SELECT `id` FROM `ci_category` WHERE `parent`={$cat->id}
+					) OR `category`={$cat->id})AND `published`=1
+				)";
+			$cats[$ck]->price = $this->db->query($qu)->row()->price;
+			
+			$fields['d.category_id']['options'][$cat->id] = $cat->name;
+		}
+		$data['categories'] = $cats;
+		
+		$data['searchHtml'] = $this->tools->createSearch($fields);
+        $searchQuery        = $this->tools->createSearchQuery($fields,'discounts');
+		/*========================================
+				/# category and search
+		=========================================*/
+		
+        $tableName = 'discounts';
+
+        $query  = "where d.id !=0 $searchQuery ";
+
+        $query .= " order by ";
+
+        $order = $this->input->get($tableName.'_order');
+
+        $query .= ($order ? $order:'d.id')." ";
+
+        $sort = $this->input->get($tableName.'_sort');
+
+        $query .= ($sort ? $sort:'DESC');
+
+        $data['tableName'] = $tableName;
+        $data['query'] = $query;
+
+		$this->_view('v_discount',$data);
+	}
+	
+	public function _view($view,$data)
+	{
+		$this->load->view('admin/v_header',$data);
+		$this->load->view('admin/v_sidebar',$data);	
+		$this->load->view('admin/'.$view,$data);
+		$this->load->view('admin/v_footer',$data);		
+	}	
+}

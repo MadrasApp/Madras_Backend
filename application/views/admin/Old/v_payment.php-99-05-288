@@ -1,0 +1,130 @@
+<?php
+
+$this->load->helper('inc');
+
+$inc = new inc;
+
+$cols = array(
+    '  ' => array(
+        'field_name' => 'id',
+        'td-attr' => 'style="width:40px;padding:7px" align="center"',
+		'link' => false,
+		'html' => '<i class="fa fa-info-circle fa-2x text-info cu view-details" data-id="[ID]"></i>'
+	),	
+    'شماره فاکتور' => array(
+        'field_name' => 'id',
+        'td-attr' => 'style="width:60px;" align="center" class="en"'
+	),
+    'شماره رسید' => array(
+        'field_name' => 'ref_id',
+        'td-attr' => 'style="width:100px;" align="center" class="en"'
+	),
+    'قیمت' => array(
+        'field_name' => 'price',
+		'type'       => 'price',
+        'td-attr'    => 'style="width:100px;" align="center" class="en"'
+	),	
+    'کاربر' => array(
+        'field_name' => 'username',
+        'link' => false,
+		'function' => function($col,$row){
+			
+			return '<a target="_blank" href="'.site_url('admin/users').'?username='.$col.'">'.$col.'</a>';
+			
+			//return '<b>' . $col . " </b> &nbsp; <i class='text-danger'>" . $row['name'] . ' ' . $row['family'] . "</i> &nbsp;";
+		}
+    ),
+    'تلفن' => array(
+        'field_name' => 'tel',
+        'link' => false,
+		'function' => function($col,$row){
+			return 
+			
+			"<i class='text-danger'>" . $col . "</i> &nbsp; " .
+
+			'<a href="mailto:' . $row['email'] . '">' . $row['email'] . '</a>';
+		}
+    ),	
+    'وضعیت' => array(
+        'field_name' => 'status',
+        'link'       => false,
+		'td-attr'    => 'align="center" style="width:40px"',
+		'function'   => function($col,$row){
+			
+			if($col == '') return '<i class="fa fa-spinner fa-lg text-muted" title="در انتظار"></i>';
+			
+			if($col == 0) return '<i title="پرداخت موفق" class="fa fa-check-circle-o fa-lg text-success"></i>';
+			
+			if($col != 0) return '<i class="fa fa-ban fa-lg text-danger" title="پرداخت ناموفق"></i>';
+		}
+    ),	
+    'نتیجه' => array(
+        'field_name' => 'state',
+        'link' => false,
+        'html' => '<div class="wb">[FLD]</div>',
+        'td-attr' => 'align="center"'
+    ),
+    'تاریخ ایجاد'  => array('field_name' => 'cdate', 'link' => true, 'type' => 'strtime', 'td-attr' => 'align="center" style="width:120px"'),
+    'تاریخ پرداخت' => array('field_name' => 'pdate', 'link' => true, 'type' => 'strtime', 'td-attr' => 'align="center" style="width:120px"'),
+);
+
+
+
+	$q =
+		"SELECT f.*, u.id as uid, u.email , u.tel, u.name, u.family, u.username
+		FROM ci_factors f
+		LEFT JOIN `ci_users` `u` ON `u`.`id`=`f`.`user_id` 
+		$query";
+	
+	
+	echo $searchHtml;
+	
+	$inc->createTable($cols, $q , 'id="table" class="table light2" ', $tableName, 60);
+?>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+		
+		$(document).on('click','.view-details',function(){
+			
+			var id = $(this).attr('data-id');
+			
+			details(id);
+		});
+    });
+	
+	
+
+    function details(id)
+    {
+		var $html = $('<div/>',{'id':'view-details'}).append('<div class="text-center"><i class="l c-c blue h3"></i></div>');
+        popupScreen($html);
+		
+		$.ajax({
+			type: "POST",
+			url: 'admin/api/factorDetails/' + id,
+			data: {},
+			dataType: "json",
+			success: function (data) {
+				if (data == "login")
+				{
+					login(function () {
+						details(id)
+					});
+				}
+				else
+				{
+					if(data.done)
+							$html.html(data.html);
+					else
+						$html.html(get_alert(data));
+				}
+			},
+			error: function (a,b,c) {
+				notify('خطا در اتصال', 2);
+			}
+		});        
+    }
+</script>

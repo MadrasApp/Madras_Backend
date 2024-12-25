@@ -1,0 +1,23 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => esmaeelabbasi
+    [token] => Aj7VG8rtME3uSBiLly64W2Yhn5oPegpf
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":2241,"highlight_id":864621004,"highlight_start":2100,"highlight_text":"تعارض تلک بمکاتبة ابن أذینة: عن رجل له خشب فباعه ممن یتخذه صلبانا قال لا و روایة عمرو بن حریث: عن التوت أبیعه ممن یصنع الصلیب أو الصنم قال لا","selected":false,"sharh":0,"text_id":8646},{"highlight_color":2,"highlight_end":2148,"highlight_id":864621438,"highlight_start":2143,"highlight_text":"فباعه","selected":false,"sharh":0,"text_id":8646},{"highlight_color":2,"highlight_end":653,"highlight_id":96885521,"highlight_start":552,"highlight_text":"و من هنا یتمسکون فی إثبات مفهوم الوصف بفهم أبی عبیدة فی حدیث لی الواجد و نحوه غیره من موارد الاستشهاد","selected":false,"sharh":0,"text_id":9688},{"highlight_color":3,"highlight_end":622,"highlight_id":96886124,"highlight_start":612,"highlight_text":" لی الواجد","selected":false,"sharh":0,"text_id":9688},{"highlight_color":1,"highlight_end":826,"highlight_id":96888124,"highlight_start":812,"highlight_text":"مجرد رفع الحظر","selected":false,"sharh":0,"text_id":9688},{"highlight_color":2,"highlight_end":2039,"highlight_id":864920177,"highlight_start":2017,"highlight_text":"استدل المحقق الأردبیلی","selected":false,"sharh":0,"text_id":8649},{"highlight_color":3,"highlight_end":633,"highlight_id":89706080,"highlight_start":608,"highlight_text":"السابقة أو لا فالأول مجری","selected":false,"sharh":0,"text_id":8970},{"highlight_color":1,"highlight_end":708,"highlight_id":89706777,"highlight_start":677,"highlight_text":"التکلیف أو لا فالأول مجری أصالة","selected":false,"sharh":0,"text_id":8970},{"highlight_color":3,"highlight_end":111,"highlight_id":969024,"highlight_start":2,"highlight_text":"  # و من جملة الظنون الخارجة عن الأصل الإجماع المنقول بخبر الواحد \r\n\r\nعند کثیر ممن یقول باعتبار الخبر بالخصوص","selected":false,"sharh":0,"text_id":9690},{"highlight_color":1,"highlight_end":1547,"highlight_id":866014367,"highlight_start":1436,"highlight_text":" أقول و لا مانع من التزام جواز بیع کل ما له نفع ما و لو فرض الشک فی صدق المال علی مثل هذه الأشیاء المستلزم للشک","selected":false,"sharh":0,"text_id":8660},{"highlight_color":1,"highlight_end":4722,"highlight_id":866445718,"highlight_start":4571,"highlight_text":"و الأرجل بالسواد یمکن أن یکون الغالب فیه إرادة إیهام بیاض البدن و صفائه و مثله الخط الأسود فوق الحاجبین أو وصل الحاجبین بالسواد لتوهم طولهما و تقوسهما.","selected":false,"sharh":0,"text_id":8664},{"highlight_color":1,"highlight_end":3726,"highlight_id":930136927,"highlight_start":3692,"highlight_text":"[اعتبار الإضرار فی السحر عند بعض] ","selected":false,"sharh":0,"text_id":9301}],"edited":[],"deleted":[]},"notes":{"added":[{"end":2017,"not_id":864920398,"not_text":"استدل المحقق الأردبیلی","not_text_user":"","notstart":2039,"selected":false,"sharh":0,"text_id":8649,"title":"محقق اردبیلی"},{"end":11,"not_id":9690154,"not_text":"جملة","not_text_user":"","notstart":15,"selected":false,"sharh":0,"text_id":9690,"title":"اجماع منقول"},{"end":3708,"not_id":930137103,"not_text":"فی","not_text_user":"","notstart":3710,"selected":false,"sharh":0,"text_id":9301,"title":"اعتبار الإضرار فی السحر عند بعض] \r \n @madrasapp\nhttp://madras.app "}],"edited":[],"deleted":[]},"sounds":{"added":[{"id":0,"selected":false,"text_id":9642}],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

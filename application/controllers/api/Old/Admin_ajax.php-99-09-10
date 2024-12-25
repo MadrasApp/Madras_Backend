@@ -1,0 +1,2445 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+/*
+		echo "<pre>";
+		print_r();
+		echo "</pre>";
+		die;
+*/
+
+class Admin_ajax extends CI_Controller {
+	
+	public $setting;
+
+	function __construct(){
+		
+		parent::__construct();
+		
+		//if( ! $this->input->is_ajax_request() ) exit('No direct script access allowed 2');//Alaki
+				
+		$this->load->model('m_user','user');
+		
+		if( ! $this->user->check_login() && $this->uri->segment(3) != 'login' )
+		{
+            exit($this->tools->out('login'));
+		}
+
+		$this->setting = $this->settings->data;			
+	}
+	
+	public function login()
+	{
+		$done = 0;
+		$msg = "";
+		
+		$data = $this->input->post(NULL,TRUE);
+		if( $data )
+		{
+			if($this->user->login($data))
+			$done = 1;
+			else
+			$msg = "<span class=red>نام کاربری یا گذرواژه اشتباه است</span>";
+		}
+		else
+		{
+			$msg = "<span class=red>داده ای ارسال نشده</span>";
+		}
+		$data = array('done'=>$done,'msg'=>$msg);
+		echo $this->MakeJSON($data);
+	}
+
+	public function userinfo()
+	{
+		$data = array(
+			'data'=>$this->user->data,
+			'can'=>$this->user->can,
+		);
+		echo $this->MakeJSON($data);
+	}
+	
+	public function media($type='images',$begin=0,$total=10)
+	{
+		$this->load->model('admin/m_media','media');
+		
+		$class = ""; $attr = "";
+		
+		$include    = $this->input->post('include');
+		$exclude    = $this->input->post('exclude');
+		$selectable = $this->input->post('selectable');
+		$multiple   = $this->input->post('multiple');
+		$options    = $this->input->post('options');
+
+		if( ! $include && ! $exclude)
+		{
+			$include = $type == 'images' ? array('jpg','jpe','jpeg','png','gif') : '';
+			$exclude = $type == 'files'  ? array('jpg','jpe','jpeg','png','gif') : '';
+		}
+		
+		if( $selectable == 'true'  ) $class .= " selectable ";
+		if( $multiple   == 'false' ) $attr  .= ' unique-group="media-select" ';
+		
+		$options = $options == 'true' ? TRUE : FALSE;	
+		
+		
+		$dir = "uploads/";
+		if( $user_dir = $this->input->post('dir') )
+		{
+			if($this->user->is_admin() OR $user_dir == $this->user->data->username)
+			$dir .= $user_dir;
+			else 
+			$dir .=  $this->user->data->username;
+		}
+		else
+		{
+			$dir .=  $this->user->data->username;
+		}
+			
+		$this->media->scanDir($dir);
+		$this->media->filter($include,$exclude);
+		$this->media->Sort('time','desc');
+		$this->media->setLimit($begin,$total);
+		$this->media->addInfo();
+		$data = $this->media->data['files'];	
+		
+		if( empty($data) ) return;
+		
+		foreach($data as $key => $file)
+		{
+			echo $this->media->getTemplateFile($file ,$type ,$class ,$attr ,$options);
+		}
+	}
+	
+	public function mediadirlist()
+	{
+		$this->load->model('admin/m_media','media');
+		
+		$permission = TRUE; $dir = array();
+		
+		if($this->user->is_admin())
+		{
+			$dir = $this->media->scanPrimaryDir('uploads');
+			$permission = TRUE;
+		}
+		$data = array('permission'=>$permission,'user'=>$this->user->data->username,'list'=>$dir);
+		echo $this->MakeJSON($data);
+	}
+	
+	public function deletefile()
+	{
+		$done = FALSE;
+		$msg = "";
+		
+		if( $this->user->can('delete_file') )
+		{
+			$this->load->model('admin/m_media','media');
+			
+			$file = $this->input->post('file');
+			
+			$dir = explode('/',$file);
+			
+			if( ! $this->user->is_admin() && $dir[1] != $this->user->data->username )
+			{
+				$msg = "you are not allowed to delete this file !";
+			}
+			elseif($this->media->deleteFile($file))
+			{
+				$done = TRUE;
+				$msg = "file deleted successfully";
+			}
+			else $msg = "can not delete file '$file' !";
+		}
+		else $msg = "you are not allowed to delete this file !";
+		$data = array('done'=>$done,'file'=>$file,'msg'=>$msg);
+		echo $this->MakeJSON($data); 
+	}
+	
+	
+	/***********************************
+				 Books
+	***********************************/
+    public function getCategoryBooks($value=NULL){
+		try
+		{
+			if( !strlen($value) )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+			if( ! $this->user->can('manage_users') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+			$value = urldecode($value);
+			$values = str_replace(",","",$value);
+			$this->db->select("p.id,p.title,c.name,m.meta_value price,c.id cid");
+			$this->db->join('ci_category c','p.category=c.id','right',FALSE);
+			$this->db->order_by('c.id,p.title','asc');
+			$this->db->join('ci_post_meta m','m.post_id=p.id','inner',FALSE);
+			$this->db->where("m.meta_key = 'price'");
+			$this->db->where("m.meta_value != '0'");
+			if(is_numeric($values))
+			$this->db->where("c.id IN($value)");
+			else
+			$this->db->where("c.name LIKE '%$value%'");
+			$result = $this->db->get('posts p')->result();
+
+			$data = array();
+			foreach($result as $k=>$v){
+				$data[] = array("label"=>"($v->name) $v->title","title"=>"($v->name) $v->title","idx"=>$v->id,"price"=>$v->price,"cid"=>$v->cid);
+			}
+			$this->tools->outS(0,'OK',array("result"=>$data));
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}//Alireza Balvardi
+    public function getBooks($value=NULL){
+		try
+		{
+			if( !strlen($value) )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+			if( ! $this->user->can('manage_users') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+			$value = urldecode($value);
+			$values = str_replace(",","",$value);
+			$this->db->select("p.id,p.title,c.name,m.meta_value price");
+			$this->db->join('ci_category c','p.category=c.id','right',FALSE);
+			$this->db->order_by('p.title','asc');
+			$this->db->join('ci_post_meta m','m.post_id=p.id','inner',FALSE);
+			$this->db->where("m.meta_key = 'price'");
+			$this->db->where("m.meta_value != '0'");
+			if(is_numeric($values))
+			$this->db->where("p.id IN($value)");
+			else
+			$this->db->where("p.title LIKE '%$value%'");
+			$result = $this->db->get('posts p')->result();
+
+			$data = array();
+			foreach($result as $k=>$v){
+				$data[] = array("label"=>"($v->name) $v->title (ID : $v->id)","title"=>"($v->name) $v->title","idx"=>$v->id,"price"=>$v->price);
+			}
+			$this->tools->outS(0,'OK',array("result"=>$data));
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}//Alireza Balvardi
+	/***********************************
+				 User Books
+	***********************************/
+    public function deleteUserBooks($id=NULL){
+		try
+		{
+			if( ! $id )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+			if( ! $this->user->can('manage_users') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+			$id = intval($id);
+
+			$this->db->where('id',$id)->delete('user_books');
+			$this->tools->outS(0,'OK');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}//Alireza Balvardi
+    public function addUserBooks(){
+        try
+        {
+            $data = $this->input->post();
+            $bid = isset($data['bid'])?$data['bid']:0;
+            $uid = isset($data['uid'])?$data['uid']:0;
+            if( !$bid || !$uid )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('manage_users') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+			$adminid = $this->user->user_id;
+			$this->db->select("id");
+			$this->db->where("`user_id` = $uid");
+			$this->db->where("`price` = 0");
+			$this->db->where("`ref_id` = '$adminid'");
+			$result = $this->db->get('factors')->result();
+			$factor_id = 0;
+			if(count($result)){
+				$factor_id = $result[0]->id;
+			}
+
+			$this->db->select("id");
+			$this->db->where("`user_id` = $uid");
+			$this->db->where("`book_id` = $bid");
+			$result = $this->db->get('user_books')->result();
+			if(!count($result)){
+				$data = array("user_id"=>$uid,"state"=>"ثبت شده توسط ".$this->user->data->username,"ref_id"=>$adminid,"price"=>0,"cprice"=>0,"cdate"=> time(),"status"=>0);
+				$this->db->insert('factors',$data);
+				$factor_id = $this->db->insert_id();
+				$data = array("user_id"=>$uid,"book_id"=>$bid,"factor_id"=>$factor_id);
+				$this->db->insert('user_books',$data);
+			}
+			$this->db->select('ub.id ubid,b.id,b.title,c.name AS cname,d.name AS sath');
+			$this->db->join('ci_posts b','ub.book_id=b.id','right',FALSE);
+			$this->db->join('ci_category c','b.category=c.id','right',FALSE);
+			$this->db->join('ci_category d','c.parent=d.id','right',FALSE);
+			$this->db->where('ub.user_id',$uid);
+			$books = $this->db->get('user_books ub')->result();
+
+            $this->tools->outS(0,'OK',array("books"=>$books));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }//Alireza Balvardi
+	public function getBookTest($id=NULL){
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+			$this->db->select('t.id,t.testnumber,t.category,t.question,t.true_answer,t.answer_1,t.answer_2,t.answer_3,t.answer_4,t.page,t.term');
+			$test = $this->db->where('book_id',(int)$id)->order_by('category','asc')->order_by('id','asc')->get('tests t')->result();
+            $this->tools->outS(0,'OK',array('test'=>$test));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }//Alireza Balvardi
+	public function saveBookTest(){
+        try
+        {
+			if( ! $this->user->can('edit_post') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+			$data = $this->input->post();
+			if( ! isset($data["bookid"]) )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+			$tests = @$data["book"]["test"];
+			$id = $data["bookid"];
+			$deletedTests = @$data["book"]["deleted_test"];
+			$message = array();
+			if(is_array($deletedTests)){
+				foreach ($deletedTests as $testId)
+					$this->db->where('id',$testId)->delete('tests');
+				$message[] = sprintf("تعداد %s سوال تستی حذف گردید",count($deletedTests));
+				$data = array('date_modified'=>date("Y-m-d H:i:s"));
+				$this->db->where('id',$id)->update('posts',$data);
+			}
+			
+			if(is_array($tests)){
+				$this->load->model('m_book','book');
+				foreach ($tests as $test)
+					$this->book->addBookTest($id,$test);
+				$message[] = sprintf("تعداد %s سوال تستی ثبت / بروزرسانی گردید",count($tests));
+				$data = array('date_modified'=>date("Y-m-d H:i:s"));
+				$this->db->where('id',$id)->update('posts',$data);
+			}
+			$ubData = array(
+				'need_update'   => 1,
+			);
+			$this->db->where('book_id',$id)->update('user_books',$ubData);
+            $this->tools->outS(0,implode(".",$message));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+	public function deleteBookTest(){
+        try
+        {
+			if( ! $this->user->can('edit_post') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+			$data = $this->input->post();
+			if( ! isset($data["bookid"]) )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+			$id = $data["bookid"];
+			$message = array();
+			$this->db->where('book_id',$id)->delete('tests');
+			$message[] = "تمامی سوال های تستی کتاب انتخابی حذف گردید";
+			$ubData = array(
+				'need_update'   => 1,
+			);
+			$this->db->where('book_id',$id)->update('user_books',$ubData);
+            $this->tools->outS(0,implode(".",$message));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+	public function getBookTashrihi($id=NULL){
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+			$this->db->select('t.id,t.testnumber,t.category,t.question,t.answer,t.page,t.term,t.barom');
+			$tashrihi = $this->db->where('book_id',(int)$id)->order_by('category','asc')->order_by('id','asc')->get('tashrihi t')->result();
+            $this->tools->outS(0,'OK',array('tashrihi'=>$tashrihi));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }//Alireza Balvardi
+	public function saveBookTashrihi(){
+        try
+        {
+			if( ! $this->user->can('edit_post') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+			$data = $this->input->post();
+			if( ! isset($data["bookid"]) )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+			$tashrihis = @$data["book"]["tashrihi"];
+			$id = $data["bookid"];
+			$deletedTashrihis = @$data["book"]["deleted_tashrihi"];
+			$message = array();
+			if(is_array($deletedTashrihis)){
+				foreach ($deletedTashrihis as $tashrihiId)
+					$this->db->where('id',$tashrihiId)->delete('tashrihi');
+				$message[] = sprintf("تعداد %s سوال تشریحی حذف گردید",count($deletedTashrihis));
+			}
+			if(is_array($tashrihis)){
+				$this->load->model('m_book','book');
+				foreach ($tashrihis as $tashrihi)
+					$this->book->addBookTashrihi($id,$tashrihi);
+				$message[] = sprintf("تعداد %s سوال تشریحی ثبت / بروزرسانی گردید",count($tashrihis));
+			}
+			$ubData = array(
+				'need_update'   => 1,
+			);
+			$this->db->where('book_id',$id)->update('user_books',$ubData);
+            $this->tools->outS(0,implode(".",$message));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+	public function deleteBookTashrihi(){
+        try
+        {
+			if( ! $this->user->can('edit_post') )
+				throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+			$data = $this->input->post();
+			if( ! isset($data["bookid"]) )
+				throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+			$id = $data["bookid"];
+			$deletedTashrihis = @$data["book"]["deleted_tashrihi"];
+			$message = array();
+			$this->db->where('book_id',$id)->delete('tashrihi');
+			$message[] = "تمامی سوال های تشریحی کتاب انتخابی حذف گردید";
+			$ubData = array(
+				'need_update'   => 1,
+			);
+			$this->db->where('book_id',$id)->update('user_books',$ubData);
+            $this->tools->outS(0,implode(".",$message));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+    public function getUserBooks($id=NULL){
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('manage_users') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('users') )
+                throw new Exception( 'این کاربر حذف شده است', 2);
+
+            $user = $this->db//->select('id,username,name,family,displayname,email,avatar,cover,type,active,level,approved,last_seen,date')
+                             ->where('id',$id)->get('users')->row();
+
+            if( $user->cover == '' )
+                $user->cover = $this->setting['default_user_cover'];
+
+            if( $user->avatar == '' )
+                $user->avatar = $this->setting['default_user_avatar'];
+
+			$this->db->select('ub.id ubid,b.id,b.title,c.name AS cname,d.name AS sath');
+			$this->db->join('ci_posts b','ub.book_id=b.id','right',FALSE);
+			$this->db->join('ci_category c','b.category=c.id','right',FALSE);
+			$this->db->join('ci_category d','c.parent=d.id','right',FALSE);
+			$this->db->join('ci_factors f','(ub.factor_id=f.id AND f.status IN(0,2))','right',FALSE);
+			$this->db->where('ub.user_id',$id);
+			$this->db->group_by('b.id');
+			$books = $this->db->get('user_books ub')->result();
+
+            $this->tools->outS(0,'OK',array('user'=>$user,'books'=>$books));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }//Alireza Balvardi
+    public function getUserHL($user_id=NULL){
+		$user_id = (int)$user_id;
+        try
+        {
+            if( ! $user_id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('manage_users') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+	
+		$this->db->select("h.id      as highlight_id");
+		$this->db->select("h.part_id as text_id");
+		$this->db->select("h.title   as highlight_title");
+		$this->db->select("h.text    as highlight_text");
+		$this->db->select("h.description   as highlight_description");
+		$this->db->select("h.color   as highlight_color");
+		$this->db->select("h.start   as highlight_start");
+		$this->db->select("h.end     as highlight_end");
+		$this->db->select("h.sharh");
+		$this->db->select("(SELECT p.title FROM ci_book_meta AS m INNER JOIN ci_posts AS p ON p.id=m.book_id WHERE m.id=h.part_id) AS bookname");
+		$this->db->where('h.user_id',$user_id);
+		$result = $this->db->get('highlights h')->result();
+		foreach($result as $k=>$v){
+			$tags = $this->getHighlightTag($v->highlight_id);
+			$result[$k]->tag = $tags;
+		}
+
+            $user = $this->db->where('id',$user_id)->get('users')->row();
+
+            $this->tools->outS(0,'OK',array('user'=>$user,'result'=>$result));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+	public function getHighlightTag($highlight_id)
+	{
+		$this->db->select("h.id      as hightag_id");
+		$this->db->select("h.title   as hightag_title");
+		$this->db->select("h.public");
+		$this->db->where('h.hid',$highlight_id);
+		
+		return $this->db->get('hightag h')->result();
+	}
+    public function getUserMobiles($user_id=NULL){
+		$user_id = (int)$user_id;
+        try
+        {
+            if( ! $user_id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('manage_users') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+		
+			$this->db->select("m.*");
+			$this->db->where('m.user_id',$user_id);
+			$result = $this->db->get('user_mobile m')->result();
+			$user = $this->db->where('id',$user_id)->get('users')->row();
+			$this->tools->outS(0,'OK',array('user'=>$user,'result'=>$result));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+	public function DeleteUserMobile($id=NULL){
+		$id = (int)$id;
+        try
+        {
+            if(!$id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if(!$this->user->can('manage_users') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+		
+			$this->db->where('id',$id)->delete('user_mobile');
+			$this->tools->outS(0,'OK');
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}//Alireza Balvardi
+	/***********************************
+				 Users 
+	***********************************/
+    public function getUserInfo($id=NULL)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('manage_users') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('users') )
+                throw new Exception( 'این کاربر حذف شده است', 2);
+
+            $user = $this->db//->select('id,username,name,family,displayname,email,avatar,cover,type,active,level,approved,last_seen,date')
+                             ->where('id',$id)->get('users')->row();
+
+            if( $user->cover == '' )
+                $user->cover = $this->setting['default_user_cover'];
+
+            if( $user->avatar == '' )
+                $user->avatar = $this->setting['default_user_avatar'];
+
+            $this->tools->outS(0,'OK',array('user'=>$user));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+	//Alireza Balvardi Start
+	public function addUser(){
+
+        try
+        {
+            if( ! $this->user->can('edit_user')  )
+                throw new Exception( 'شما به این بخش دسترسی ندارید' , 2);
+            $data = $this->input->post();
+            $data['username'] = strtolower($data['username']);
+            $data['email']    = strtolower($data['email']);
+            $username = $data['username'];
+            $email = $data['email'];
+
+            $user = $this->db->where('username',$username)->get('users')->row();
+            if(is_object($user) && isset($user->id))
+                throw new Exception( 'نام کاربری '.$username.' قبلا استفاده شده است' , 2);
+
+            $user = $this->db->where('email',$email)->get('users')->row();
+            if(is_object($user) && isset($user->id))
+                throw new Exception( 'ایمیل '.$email.' قبلا استفاده شده است' , 2);
+
+            $this->load->library('form_validation');
+
+			$this->form_validation->set_rules('username', 'نام کاربری','trim|xss_clean|required|alpha_numeric|is_unique[users.username]|min_length[4]|max_length[30]');
+			$this->form_validation->set_rules('email', 'ایمیل','trim|xss_clean|valid_email');
+            //$this->form_validation->set_rules('name', 'نام', 'trim|xss_clean|max_length[50]');
+            //$this->form_validation->set_rules('family', 'نام خانوادگی', 'trim|xss_clean|max_length[50]');
+            $this->form_validation->set_rules('tel', 'موبایل', 'trim|xss_clean|is_unique[users.tel]');
+            $this->form_validation->set_rules('displayname', 'نام نمایشی', 'trim|xss_clean|max_length[50]');
+            $this->form_validation->set_rules('password', 'رمز', 'trim|xss_clean');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors() , 2);
+
+
+            $allowed = array(
+				//'name','family',
+				'email','displayname','cover','avatar',
+				'pending_reason','approved','password',
+				'gender','age','tel','national_code','birthday',
+				'city','state','country','postal_code','address','username'
+			);
+
+
+            if( $this->user->can('edit_user_role'))
+                $allowed[] = 'level';
+
+            $data = array_intersect_key($data,array_flip($allowed));
+
+            if( trim($data['displayname']) == "" )
+                $data['displayname'] = $username;
+
+            if( trim($data['password']) != "" )
+                $data['password'] = do_hash($data['password']);
+            else
+                unset($data['password']);
+
+            if( isset($data['cover']) && $data['cover'] == $this->setting['default_user_cover'] )
+                $data['cover'] = NULL;
+
+            if( isset($data['avatar']) && $data['avatar'] == $this->setting['default_user_avatar'] )
+                $data['avatar'] = NULL;
+
+            if( ! $this->db->insert('users',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+			
+			if(isset($data['active']))
+			{
+				if($data['active']==1)
+				{
+					$url = site_url('user')."/".$username;
+					$mail = "همراه گرامی، پروفایل شما توسط تیم پشتیبانی تولید شد! <br>";
+					$mail .= "لینک پروفایل شما در ابزاربر : <a href=\"{$url}\">{$username}</a>";
+					$this->tools->sendEmail($email,"پروفایل شما تایید شد!",$mail);
+				}
+			}
+			
+            $this->tools->outS(0,"اطلاعات کاربری جدید ذخیره شد !");
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+	//Alireza Balvardi End
+    public function updateUser($id=NULL)
+    {
+
+        try
+        {
+            $id = intval($id);
+            if( ! $id OR ! $this->db->where('id',$id)->count_all_results('users') )
+                throw new Exception( 'کاربری با این شماره پیدا نشد' , 1);
+
+            if( ! $this->user->can('edit_user')  )
+                throw new Exception( 'شما به این بخش دسترسی ندارید' , 2);
+
+            $user = $this->db->where('id',$id)->get('users')->row();
+
+            if( $user->level == 'admin' && $this->user->data->level != 'admin' )
+                throw new Exception( 'شما نمی توانید اطلاعات مدیر را ویرایش کنید' , 1);
+
+            $this->load->library('form_validation');
+
+            //if( $user->username != $this->input->post('username') )
+                //$this->form_validation->set_rules('username', 'نام کاربری','trim|xss_clean|required|alpha_numeric|is_unique[users.username]|min_length[4]|max_length[30]');
+
+            if( $user->email != $this->input->post('email') )
+                $this->form_validation->set_rules('email', 'ایمیل','trim|xss_clean|valid_email|is_unique[users.email]');
+
+            $this->form_validation->set_rules('name', 'نام', 'trim|xss_clean|max_length[50]');
+            $this->form_validation->set_rules('family', 'نام خانوادگی', 'trim|xss_clean|max_length[50]');
+            $this->form_validation->set_rules('displayname', 'نام نمایشی', 'trim|xss_clean|max_length[50]');
+            $this->form_validation->set_rules('password', 'رمز', 'trim|xss_clean');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors() , 2);
+
+            $data = $this->input->post();
+
+            $data['username'] = strtolower($data['username']);
+            $data['email']    = strtolower($data['email']);
+
+            $allowed = array(
+				'name','family','email','displayname','cover','avatar',
+				'pending_reason','approved','password',
+				'gender','support','age','tel','national_code','birthday',
+				'city','state','country','postal_code','address',
+			);
+
+            if( $this->user->can('edit_user_role') /*&& $user->level != 'admin' && $data['level'] != 'admin' */)
+                $allowed[] = 'level';
+
+            if( $user->level != 'admin')
+                $allowed[] = 'active';
+
+            $data = array_intersect_key($data,array_flip($allowed));
+
+            if( trim($data['displayname']) == "" )
+                $data['displayname'] = $user->username;
+
+            if( trim($data['password']) != "" )
+                $data['password'] = do_hash($data['password']);
+            else
+                unset($data['password']);
+
+            if( isset($data['cover']) && $data['cover'] == $this->setting['default_user_cover'] )
+                $data['cover'] = NULL;
+
+            if( isset($data['avatar']) && $data['avatar'] == $this->setting['default_user_avatar'] )
+                $data['avatar'] = NULL;
+
+            if( ! $this->db->where('id',$id)->update('users',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+			
+			if(isset($data['active']))
+			{
+				if($user->active == 0 && $data['active']==1)
+				{
+					$url = site_url('user')."/".$user->username;
+					$mail = "همراه گرامی، پروفایل شما توسط تیم پشتیبانی مورد تایید قرار گرفت! <br>";
+					$mail .= "لینک پروفایل شما در ابزاربر : <a href=\"{$url}\">{$user->username}</a>";
+					$this->tools->sendEmail($user->email,"پروفایل شما تایید شد!",$mail);
+				}
+				if($user->active == 1 && $data['active']==0)
+				{
+					$mail = "همراه گرامی، متاسفانه پروفایل شما مسدود شد <br>";
+					$mail .= "دلیل مسدود شدن حساب کاربری : " . $data['pending_reason'];
+					$this->tools->sendEmail($user->email,"پروفایل شما مسدود شد!",$mail);
+				}
+			}
+			
+            $this->tools->outS(0,"اطلاعات به روز شد !");
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function adduserlevel($id)
+	{
+		$done = FALSE;	
+		$data = $this->input->post('level');
+		
+		if( isset($id) && ! empty($data))
+		{
+			//$data['id'] = (int)$id;
+			if($this->user->addLevel($id,$data))
+			$done = TRUE;
+		}
+		$data = array('done'=>$done);
+		echo $this->MakeJSON($data); 
+	}
+	
+	public function updateuserlevel($id)
+	{
+		$done = FALSE;
+		$data = $this->input->post('level');
+		if($this->user->updateLevel($id,$data))
+		$done = TRUE;
+		$data = array('done'=>$done);
+		echo $this->MakeJSON($data); 
+	}	
+			
+	public function deleteuserlevel($id,$replace)
+	{
+		$done = FALSE;
+		
+		if($this->user->deleteLevel($id,$replace))
+		$done = TRUE;
+		$data = array('done'=>$done);
+		echo $this->MakeJSON($data); 
+	}
+		
+	/***********************************
+				 Posts
+	***********************************/
+	public function post($op="save" ,$action="publish")
+	{
+
+		
+        global $POST_TYPES;
+
+        /*$post = $this->input->post('book[test]');
+
+        echo '<pre style="direction:ltr;">';
+
+        print_r($post);
+
+        echo '</pre>';
+
+        return;*/
+
+		switch($op)
+		{
+			case 'save':
+				
+                $id = $this->input->post('id');
+                $d_data = array(
+                    'title'         => '',
+                    'content'       => '',
+                    'excerpt'       => '',
+                    'category'      => '',
+                    'tags'          => '',
+                    'thumb'         => '',
+                    'author'        => $this->user->user_id,
+                    'date_modified' => '',
+                    'date'          => ''
+                );
+                //================= base data ===================//
+                $data     = $this->input->post('data');
+                $tags     = $this->input->post('tags',TRUE);
+                $dt       = $this->input->post('date');
+                $md       = $this->input->post('mdate');
+                $category = $this->input->post('category');
+                $type     = $this->input->post('data[type]');
+                $postType = @$POST_TYPES[$type];
+                $meta     = NULL;
+                $nashr     = NULL;
+
+                if(isset($data['title']))
+                    $data['title']            = $this->security->fixString($data['title']);
+
+                if(isset($data['content']))
+                    $data['content']          = $this->security->fixString($data['content']);
+
+                if(isset($data['excerpt']))
+                    $data['excerpt']          = $this->security->fixString($data['excerpt']);
+
+                if(isset($data['meta_keywords']))
+                    $data['meta_keywords']    = $this->security->fixString($data['meta_keywords']);
+
+                if(isset($data['meta_description']))
+                    $data['meta_description'] = $this->security->fixString($data['meta_description']);
+
+                if($tags)
+                {
+                    usort($tags,function($a,$b){
+                        return mb_strlen($a) > mb_strlen($b);
+                    });
+                    $data['tags'] = implode('+',$tags);
+                }
+                if($category) $data['category'] = implode(',',$category);
+
+                $dt = jalaliToGregorian($dt['y'],$dt['m'],$dt['d'],'-').' '.$dt['H'].':'.$dt['i'].':00';
+                $md = jalaliToGregorian($md['y'],$md['m'],$md['d'],'-').' '.$md['H'].':'.$md['i'].':00';
+
+                $data['date'] = $dt; $data['date_modified'] = $md;
+
+                $data = array_merge($d_data,$data);
+
+                //================= download box ===================//
+                if( isset($postType['support']) && in_array('dl_box',$postType['support']) )
+                {
+                    $metaDl  = $this->input->post('meta[dl]');
+                    $_metaDl = NULL;
+                    
+                    if( $metaDl )
+                        for($i=0;$i< count($metaDl['file']);$i++)
+                            $_metaDl[$i] = array('name'=>$metaDl['name'][$i],'file'=>$metaDl['file'][$i]);
+
+                    $meta['dl_box'] = $_metaDl;
+                }
+				
+				if($type == 'book')
+                {
+                    $metaDl2  = $this->input->post('meta[dlbook]');
+                    $_metaDl2 = NULL;
+                    
+                    if( $metaDl2 )
+                        for($i=0;$i< count($metaDl2['file']);$i++)
+                            $_metaDl2[$i] = array('name'=>$metaDl2['name'][$i],'file'=>$metaDl2['file'][$i]);
+
+                    $meta['dl_book'] = $_metaDl2;
+                }
+
+                //=============== gallery =============//
+                if( isset($postType['support']) && in_array('gallery',$postType['support']))
+                    $meta['post_thumb']   = $this->input->post('meta[thumb]');
+
+                //=============== meta product =============//
+                if( $type == "product" )
+                    $meta['product_data'] = $this->input->post('meta[product]');
+
+                //================= additional meta ===================//
+                if( isset($postType['meta']) && is_array($postType['meta']) )
+                {
+                    foreach ($postType['meta'] as $mik=>$mi)
+                    {
+                        // $this->form_validation->set_rules('meta['.$mik.']', $mi['name'], $mi['validation']);
+                        $meta[$mik] = $this->input->post('meta['.$mik.']');
+                    }
+                }
+                //================= additional nashr ===================//
+                if( isset($postType['nashr']) && is_array($postType['nashr']) )
+                {
+                    foreach ($postType['nashr'] as $mik=>$mi)
+                    {
+                        // $this->form_validation->set_rules('nashr['.$mik.']', $mi['name'], $mi['validation']);
+                        $nashr[$mik] = $this->input->post('nashr['.$mik.']');
+						if(is_array($nashr[$mik])){
+							$nashr[$mik] = implode(",",$nashr[$mik]);
+						}
+                    }
+                }
+
+                //================= book data ===================//
+                if( $type == 'book' )
+                {
+					$this->load->model('m_book','book');
+					//========== parts =========//
+                    $deletedParts = $this->input->post('deleted');
+                    if(is_array($deletedParts))
+                        foreach ($deletedParts as $partId)
+                            $this->db->where('id',$partId)->delete('book_meta');
+                }
+
+                //=============== save =============//
+                $this->post->savePost($id,$data,$meta,$action,$nashr);
+                if( $type == 'book' )
+                {
+                    echo '<script>setTimeout(function(){location.href="'.(site_url('admin/book/primary')).'"},700)</script>';
+                }
+
+			break;
+			case 'publish':
+			case 'draft':
+			case 'trash':
+			case 'delete':
+			case 'test'://Alireza Balvardi
+			$this->_pdtd($op,$action);
+			break;			
+		}
+	}
+	
+	private function _pdtd($op = NULL,$id = NULL) 	
+	{
+		
+		$this->load->model('admin/m_post','post');
+		
+		$done = FALSE; $msg = "انجام نشد"; $return = array();
+		
+		if( ! $id OR ! $op )
+		{
+			$data = array('done'=>FALSE,'msg'=>'no data','data'=>'');
+			echo $this->MakeJSON($data);
+			return NULL;
+		}
+		
+		$post_type = $this->db->get_field('type','posts',$id);
+		
+		switch($op)
+		{
+			case 'publish':
+			if($this->user->can('submit_'.$post_type) && $this->post->publish($id))
+			{
+				$done = true; $msg = "منتشر شد";			 
+			}
+			break;
+			case 'draft':
+			if($this->user->can('submit_'.$post_type) && $this->post->toDruft($id))
+			{
+				$done = true; $msg = "به پیش نویس انتقال یافت";		 
+			}			
+			break;/**/
+			case 'test'://Alireza Balvardi
+			if($this->user->can('submit_publish') && $this->post->test($id))
+			{
+				$done = true; $msg = "آماده انتشار شد";			 
+			}
+			break;//Alireza Balvardi
+			case 'trash':
+			if($this->user->can('suspend_'.$post_type) && $this->post->toTrashs($id))
+			{
+				$done = true; $msg = "به زباله دان انتقال یافت";	 
+			}			
+			break;						
+			case 'delete':
+			if($this->user->can('delete_'.$post_type) && $this->post->delete($id))
+			{
+				$done = true; $msg = "حذف شد";				 
+			}			
+			break;			
+		}
+		
+		$this->db->where(array('type'=>$post_type,'published'=>1,'draft'=>NULL));
+		$all_posts = $this->db->count_all_results('posts');
+		
+		$this->db->where(array('type'=>$post_type,'published'=>0,'draft IS NOT NULL'=>NULL));//Alireza Balvardi
+		$all_drafts = $this->db->count_all_results('posts');
+		
+		
+		$this->db->where(array('type'=>$post_type,'published'=>0,'draft'=>NULL));
+		$all_trashs = $this->db->count_all_results('posts');
+		
+		$this->db->where(array('type'=>$post_type,'published'=>2));//Alireza Balvardi
+		$all_tests = $this->db->count_all_results('posts');
+		$return = array(
+			'primary'=>$all_posts,
+			'draft'=>$all_drafts,
+			'recyclebin'=>$all_trashs,
+			'test'=>$all_tests//Alireza Balvardi
+		);
+		$data = array('done'=>$done,'msg'=>$msg,'data'=>$return);
+		echo $this->MakeJSON($data);		
+		 
+	}
+	
+	public function save_part($book_id=NULL)
+	{
+		$result = ['done'=>TRUE];
+		
+		$this->load->model('m_book','book');
+		$ubData = array(
+			'need_update'   => 1,
+		);
+		$this->db->where('book_id',$book_id)->update('user_books',$ubData);
+		
+		$id = $this->book->addBookPart((int)$book_id, $this->input->post());
+		
+		if(is_numeric($id)) $result['part']['id'] = $id;
+		
+		echo $this->MakeJSON($result);
+	}
+	public function save_questionpart($question_id=NULL)
+	{
+		$result = ['done'=>TRUE];
+		$post = $this->input->post();
+		
+		$this->load->model('m_question','question');
+		
+		$id = $this->question->addQuestionPart((int)$question_id, $post);
+		
+		if(is_numeric($id) && $id){
+			$result['part']['id'] = $id;
+			$result['part']['master'] = $post['master'];
+			$result['part']['qid'] = $post['qid'];
+		} else {
+			$result = ['done'=>FALSE,'message'=>"لطفا ابتدا پشتیبانی را ذخیره نمایید و سپس پاسخ آن را ذخیره نمایید"];
+		}
+		echo $this->MakeJSON($result);
+	}
+
+	public function delete_questionpart($id=NULL)
+	{
+		$this->db->where('id',(int)$id)->delete('questions');
+	}
+	
+	public function delete_part($id=NULL)
+	{
+		$this->db->where('id',(int)$id)->delete('book_meta');
+	}
+	
+	public function save_pages($book_id=NULL)
+	{
+		$result = [
+			'done' => $this->post->updatePostMeta((int)$book_id, 'pages', $this->input->post('pages'))
+		];
+		$ubData = array(
+			'need_update'   => 1,
+		);
+		$this->db->where('book_id',$book_id)->update('user_books',$ubData);
+		echo $this->MakeJSON($result);
+	}
+	
+	
+	public function category($op="add")
+	{
+		$this->load->model('admin/m_post','post');
+		
+		$done = FALSE; $msg = "انجام نشد"; $return = array();
+		$data = $this->input->post();
+		
+		switch($op)
+		{
+			case 'add':
+			if($return = $this->post->addCategory($data))
+			{
+				$done = true; $msg = "ذخیره شد";
+				$return->menu = $this->post->getCategorySelectMenu($data['type'],0);				 
+			}
+			break;
+			case 'update':
+			if($return = $this->post->updateCategory($data))
+			{
+				$done = true; $msg = "ذخیره شد";
+				$return->menu = $this->post->getCategorySelectMenu($data['type'],0);				 
+			}			
+			break;			
+			case 'delete':
+			if( isset($data['id']) && $return = $this->post->deleteCategory($data['id']))
+			{
+				$done = true; $msg = "حذف شد";				 
+			}			
+			break;			
+		}
+		$data = array('done'=>$done,'msg'=>$msg,'data'=>$return);
+		echo $this->MakeJSON($data);
+	}	
+
+    public function saveSetting()
+    {
+        try
+        {
+            $data = $this->input->post('data');
+
+            if( ! $data )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            foreach($data as $key=>$value)
+            {
+                if( $this->db->where('name',$key)->count_all_results('settings') )
+                    $this->db->set('value',$value)->where('name',$key)->update('settings');
+                else
+                    $this->db->insert('settings',array('name'=>$key,'value'=>$value));
+            }
+
+            $this->tools->outS(0,'ذخیره شد');
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function getCommentInfo($id=NULL)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('read_comment') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('comments') )
+                throw new Exception( 'این نظر حذف شده است', 2);
+
+            $msg = $this->db->where('id',$id)->get('comments')->row();
+
+            $this->tools->outS(0,'OK',array('info'=>$msg));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function updateComment($id=NULL)
+    {
+        $data = $this->input->post();
+
+        try
+        {
+            if( ! $data OR ! $id )
+                throw new Exception("اطلاعات ارسالی صحیح نیست" , 1);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('comments') )
+                throw new Exception( 'این نظر حذف شده است', 2);
+
+            $this->load->library('form_validation');
+
+            $this->form_validation->set_rules('name', 'نام', 'trim|required|xss_clean|max_length[30]');
+
+            $this->form_validation->set_rules('text', 'نظر', 'trim|required|xss_clean|max_length[3000]');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors() , 2);
+
+            $data = array(
+                'name'  => $this->input->post('name'),
+                'text'  => $this->input->post('text'),
+                'email' => $this->input->post('email'),
+            );
+
+            if( ! $id = $this->db->where('id',$id)->update('comments',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+
+            $msg = " ثبت شد !";
+            $this->tools->outS(0,$msg);
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function replyComment($id=NULL)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception("اطلاعات ارسالی صحیح نیست" , 1);
+
+            $id = intval($id);
+            $comment = $this->db->where('id',$id)->get('comments')->row();
+
+            if( ! $comment )
+                throw new Exception( 'این نظر حذف شده است' , 1);
+
+            $this->load->library('form_validation');
+
+            $this->form_validation->set_rules('r-text', 'نظر', 'trim|required|xss_clean|max_length[3000]');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors() , 2);
+
+
+            $text = $this->input->post('r-text');
+            $data = array(
+                'table'     => $comment->table,
+                'row_id'    => $comment->row_id,
+                'submitted' => 1,
+                'user_id'   => $this->user->data->id,
+                'name'      => $this->user->data->displayname,
+                'text'      => $text,
+                'ip'        => $this->input->ip_address(),
+                'email'     => $this->user->data->email,
+                'date'      => date('Y-m-d H:i:s'),
+                'parent'    => $comment->id,
+            );
+
+            if( ! $this->db->insert('comments',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+
+            $msg = "نظر ثبت شد !";
+            $this->tools->outS(0,$msg);
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+    public function getQuestionInfo($id=NULL){
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('read_msg') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('questions') )
+                throw new Exception( 'این پشتیبانی جزئیات ندارد', 2);
+
+            $msg0 = $this->db->where('id',$id)->get('questions')->result();
+            $msg1 = $this->db->where('qid',$id)->get('questions')->result();
+			$msg = array_merge($msg0,$msg1);
+            $this->tools->outS(0,'OK',array('info'=>$msg));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+    public function messageInfo($id=NULL)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('read_msg') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('admin_inbox') )
+                throw new Exception( 'این پیام حذف شده است', 2);
+
+            $this->db->where('id',$id)->set('visited',1)->update('admin_inbox');
+            $msg = $this->db->where('id',$id)->get('admin_inbox')->row();
+
+            $this->tools->outS(0,'OK',array('info'=>$msg));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function replyMsg($id)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعات ارسالی صحیح نمی باشند', 1);
+
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('ansver','متن پاسخ','trim|xss_clean|required');
+            $this->form_validation->set_rules('subject', 'موضوع','trim|xss_clean');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors(), 2);
+
+            $ansver  = $this->input->post('ansver');
+            $subject = $this->input->post('subject');
+
+            if( ! $this->user->can('reply_msg') )
+                throw new Exception( 'شما به این قسمت دسترسی ندارید', 2);
+
+            $id = intval($id);
+
+            if( ! $this->db->where('id',$id)->count_all_results('admin_inbox') )
+                throw new Exception( 'این پیام حذف شده است', 2);
+
+            $msg = $this->db->where('id',$id)->get('admin_inbox')->row();
+
+            if( ! $this->tools->sendEmail($msg->email,$subject,$ansver) )
+                throw new Exception( 'پیام ارسال نشد', 2);
+
+            $this->db->where('id',$id)->set('ansver',$ansver)->update('admin_inbox');
+
+            $this->tools->outS(0,'پیام شما ارسال شد');
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function deleteRow($table=NULL,$id=NULL)
+    {
+        try
+        {
+            if( ! isset($id) OR empty($id) OR ! isset($table) OR empty($table) )
+                throw new Exception("اطلاعات ارسالی صحیح نیست" , 2);
+
+            if( ! $this->db->table_exists($table) )
+                throw new Exception("امکان انجام این عملیات وجود ندارد" , 1);
+
+            $access = array(
+                'admin_inbox' => $this->user->can('delete_msg'),
+                'comments'    => $this->user->can('delete_comment'),
+                'instruments' => $this->user->can('delete_tools'),
+                'logs'        => FALSE,
+                'onlines'     => FALSE,
+                'posts'       => FALSE,
+                'post_meta'   => FALSE,
+                'rates'       => FALSE,
+                'settings'    => FALSE,
+                'users'       => $this->user->can('delete_user'),
+                'user_level'  => FALSE,
+            );
+
+            if( isset($access[$table]) && ! $access[$table] )
+                throw new Exception("شما به این قسمت دسترسی ندارید" , 2);
+
+            if( $table == 'users' && $id == 1 )
+                throw new Exception("مدیر نمی تواند حذف شود" , 1);
+
+            if( ! $this->tools->deleteRow($table,$id) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+			if($table=='questions'){
+				$this->db->where('qid',$id)->delete('questions');
+			}
+            $this->tools->outS(0,"حذف شد");
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function toggleField()
+    {
+        $data = $this->input->post();
+
+        try
+        {
+            if( ! isset( $data['table'],$data['field'],$data['id'] ) )
+                throw new Exception("اطلاعات ارسالی صحیح نیست" , 2);
+
+            if( ! $this->tools->toggleField($data['table'],$data['field'],$data['id']) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+			if($data['table']=='questions' && $data['field']=='published'){
+	            $row = $this->db->where('id',$data['id'])->get('questions')->row();
+				$xdata = array('published'=>$row->published);
+				$this->db->where('qid',$data['id'])->update('questions',$xdata);
+			}
+            $this->tools->outS(0,"انجام شد");
+
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    /******************************
+               GROUP
+    ******************************/
+
+    public function addGroup()
+    {
+        try
+        {
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('name','نام گروه','trim|xss_clean|required');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors(), 2);
+
+            if( ! $this->user->can('edit_group') )
+                throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+            $name = $this->input->post('name');
+
+            if( $this->db->where('name',$name)->where('parent',0)->count_all_results('group') )
+                throw new Exception("گروهی با این نام قبلا ایجاد شده است" , 2);
+
+            $data = array(
+                'name'   => $name,
+                'parent' => 0,
+            );
+
+            if( ! $this->db->insert('group',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+
+            $this->tools->outS(0,"انجام شد");
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function addChild()
+    {
+        try
+        {
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('name'     ,'نام گروه' ,'trim|xss_clean|required');
+            $this->form_validation->set_rules('parent'   ,'والد'     ,'trim|xss_clean|required');
+            $this->form_validation->set_rules('position' ,'موقعیت'   ,'trim|xss_clean|required');
+            $this->form_validation->set_rules('book_id'   ,'کتاب'     ,'trim|xss_clean|required');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors(), 2);
+
+            if( ! $this->user->can('edit_group') )
+                throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+            $name = $this->input->post('name');
+            $parent = $this->input->post('parent');
+            $book_id = $this->input->post('book_id');
+
+            if( $this->db->where('name',$name)->where('parent',$parent)->count_all_results('group') )
+                throw new Exception("گروهی با این نام قبلا ایجاد شده است" , 2);
+            $row = $this->db->where('parent',$parent)->order_by('position DESC')->get('group')->row();
+			$position = intval(@$row->position)+1;
+            $data = array(
+                'name'     => $name,
+                'book_id'   => $book_id,
+                'parent'   => $parent,
+                'position' => $position
+            );
+
+            if( ! $this->db->insert('group',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+
+            $id = $this->db->insert_id();
+
+            $row = $this->db->where('id',$id)->get('group')->row();
+
+            $this->tools->outS(0,"انجام شد",array('row'=>$row));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function deleteGroup($id=NULL)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            if( ! $this->user->can('delete_group') )
+                throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+            $id = intval($id);
+
+            $this->load->model('m_group','group');
+            
+            if( ! $this->group->deleteGroup($id) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+
+            $this->tools->outS(0,'حذف شد');
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function saveList()
+    {
+        try
+        {
+            if( ! $this->user->can('edit_group') )
+                throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+            $data = $this->input->post('data');
+
+            foreach($data as $item)
+            {
+                $id = $item['id'];
+                unset($item['id']);
+                $this->db->where('id',$id)->update('group',$item);
+
+            }
+            /*if( ! $this->group->deleteGroup($id) )
+                throw new Exception("خطا در انجام عملیات" , 1);*/
+
+
+
+            $this->tools->outS(0,'اطلاعات ذخیره شد',array('data'=>$data));
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function factorCancel($id=NULL)
+    {
+        try
+        {
+            if( !$id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            $id        = intval($id);
+			$html      = '';
+			$book_html = '';
+			$f         = $this->db->where('id',$id)->get('factors',1)->row();
+			
+			if(!isset($f->id))
+			    throw new Exception( 'فاکتور مورد نظر پیدا نشد', 1);
+				
+			$data = array('status'=>2);
+			$this->db->where('id',$id)->update('factors',$data);
+
+            $this->tools->outS(0,'برگشت خورد');
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+	}
+    public function factorDetails($id=NULL)
+    {
+        try
+        {
+            if( ! $id )
+                throw new Exception( 'اطلاعاتی ارسال نشده', 1);
+
+            $id        = intval($id);
+			$html      = '';
+			$book_html = '';
+			$f         = $this->db->where('id',$id)->get('factors',1)->row();
+			
+			if(!isset($f->id))
+			    throw new Exception( 'فاکتور مورد نظر پیدا نشد', 1);
+				
+			$books = $this->post->getPosts([
+				'type'     => 'book',
+				'where'    => ["p.id IN (SELECT `book_id` FROM `ci_user_books` WHERE `factor_id`={$id})"],
+			]);
+			
+			foreach($books as $book)
+			{
+				$book_html .= 
+				"<tr>
+					<td class=en><b>#{$book->id}</b></td>
+					<td>{$book->title}</td>
+					<td>".number_format($book->price)." تومان</td>
+				</tr>";
+			}
+
+			$html = 
+			"<div class=\"row\">
+				<div class=\"col-sm-6\">
+					<div class=\"alert alert-info\">جزئیات فاکتور</div>
+					<table class=\"table light2\">
+						<tr>
+							<th>شماره فاکتور</th>
+							<th><b class=\"en\" style=\"font-size:16px;\">#{$f->id}</b></th>
+						</tr>
+						<tr>
+							<td>رسید دیجیتالی</td>
+							<td class=en>{$f->ref_id}</td>
+						</tr>
+						<tr>
+							<td>وضعیت</td>
+							<td>"
+							.(
+								($f->status==0 && $f->status!='') ? 
+								'<span class="text-success"> <i class="fa fa-check-circle-o fa-lg"></i>  موفق </span>':
+								(
+									$f->status == 1 ? 
+									'<span class="text-danger"> <i class="fa fa-ban fa-lg"></i> ناموفق</span>':(
+									$f->status == 2 ? 
+									'<span class="text-primary"> <i class="fa fa-mail-reply fa-lg"></i> برگشت خورده</span>':
+									' <i class="fa fa-spinner fa-lg text-muted"></i> در انتظار'
+									)
+								)
+							).
+							"</td>
+						</tr>
+						<tr>
+							<td>نتیجه</td>
+							<td>{$f->state}</td>
+						</tr>
+						<tr>
+							<td>مبلغ فاکتور</td>
+							<td>".number_format($f->cprice)." تومان</td>
+						</tr>
+						<tr>
+							<td>تخفیف لحاظ شده</td>
+							<td class=en>{$f->discount}%</td>
+						</tr>
+						<tr>
+							<td>مبلغ برای پرداخت</td>
+							<td>".number_format($f->price)." تومان</td>
+						</tr>
+						<tr>
+							<td>مبلغ  پرداخت شده</td>
+							<td>".number_format($f->paid)." تومان</td>
+						</tr>
+						<tr>
+							<td>تاریخ ایجاد</td>
+							<td>".jdate('d F y - H:i',$f->cdate)."</td>
+						</tr>
+						<tr>
+							<td>تاریخ پرداخت</td>
+							<td>".($f->pdate != '' ? jdate('d F y - H:i',$f->pdate):'---')."</td>
+						</tr>
+					</table>				
+				</div>
+				<div class=\"col-sm-6\">
+					<div class=\"alert alert-info\">لیست کتابهای خریداره شده</div>
+					<table class=\"table light2\">
+					<tr>
+						<th>شماره</th>
+						<th>نام</th>
+						<th>قیمت</th>
+					</tr>
+					{$book_html}
+					</table>
+				</div>
+				<div class=\"col-sm-12\">
+					<div class=\"text-muted\" style=\"margin:30px 0 0 0\">قیمت کتاب ها در سمت چپ مربوط به اکنون می باشد و قیمت  لحاظ شده در فاکتور مربوط به تاریخ ایجاد فاکتور است.</div>
+				</div>				
+			</div>";
+			
+            $this->tools->outS(0,'حذف شد',['html'=>$html]);
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+	
+	/*================================
+				Azmoon
+	================================*/
+	public function addAzmoon(){
+		try
+        {
+            if( ! $this->user->can('manage_post') )
+                throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+			$file_temp = $_FILES['excelfile']['tmp_name'];
+			$file_name = $_FILES['excelfile']['name'];
+			
+			$this->load->library('form_validation');
+            $this->form_validation->set_rules('exceltype'     ,'نوع آزمون'    ,'trim|xss_clean|required|alpha_numeric');
+			if(!strlen($file_name))
+            $this->form_validation->set_rules('excelfile'  ,'فایل اکسل آزمونها'  ,'trim|required|file');
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors(), 2);
+			require(BASEPATH.'excelfile/excel_reader.php');
+			require(BASEPATH.'excelfile/SpreadsheetReader.php');
+			$ext = pathinfo($file_name, PATHINFO_EXTENSION);
+			$Filepath = FCPATH.'temp/'.uniqid().'.'.$ext;
+			move_uploaded_file($file_temp,$Filepath);
+
+			$Spreadsheet = new SpreadsheetReader($Filepath);
+			$BaseMem = memory_get_usage();
+	
+			$Sheets = $Spreadsheet -> Sheets();
+		echo '<link type="text/css" rel="stylesheet" href="'.base_url().'style/_master/css/_admin/bootstrap.css">';
+		echo '<script type="text/javascript" src="'.base_url().'js/jquery.min.js"></script>';
+		$data = $this->input->post();
+		$exceltype = $data["exceltype"];
+		$data = array();
+		foreach ($Sheets as $Index => $Name)
+		{
+			echo '<p>&nbsp;</p>';
+			echo '<p>&nbsp;</p>';
+			echo '<p>&nbsp;</p>';
+			echo '<p>&nbsp;</p>';
+			echo '<p>&nbsp;</p>';
+			echo '<center>*** Sheet '.$Name.' ***</center>';
+			echo '<center>---------------------------------</center>';
+			$Time = microtime(true);
+			$Spreadsheet -> ChangeSheet($Index);
+			echo '<table class="table" dir="rtl">';
+			foreach ($Spreadsheet as $Key => $Row)
+			{
+				echo '<tr id="row'.$Key.'">';
+				if ($Row)
+				{
+					if($Key==1){
+						echo '<th>ردیف</th>';
+						foreach($Row as $k=>$v){
+							echo '<th>'.$v.'</th>';
+						}
+					} else {
+						$data[$Key] = array();
+						echo '<th>'.($Key-1).'</th>';
+						foreach($Row as $k=>$v){
+							echo '<td>'.$v.'</td>';
+							$data[$Key][] = $v;
+						}
+					}
+				}
+				else
+				{
+					var_dump($Row);
+				}
+				$CurrentMem = memory_get_usage();
+				echo '</tr>';
+			}
+			echo '</table>';
+			
+		}
+		$alert = array();
+		switch($exceltype){
+			case "tests":
+				foreach($data as $k=>$v){
+					$i = 0;
+					$testsData = [
+						'category'        => $v[$i],
+						'term'        => $v[$i++],
+						'book_id'     => $v[$i++],
+						'testnumber'  => $v[$i++],
+						'page'        => $v[$i++],
+						'question'        => $v[$i++],
+						'answer_1'        => $v[$i++],
+						'answer_2'        => $v[$i++],
+						'answer_3'        => $v[$i++],
+						'answer_4'        => $v[$i++],
+						'true_answer'        => $v[$i++]
+					];
+					$this->db->select("id");
+					$this->db->where("book_id",$v[1]);
+					$this->db->where("question",$v[4]);
+					$this->db->where("answer_1",$v[5]);
+					$O = $this->db->get($exceltype)->result();
+					if(count($O)==0){
+						$this->db->insert($exceltype,$testsData);
+						$data = array('date_modified'=>date("Y-m-d H:i:s"));
+						$this->db->where('id',$v[1])->update('posts',$data);
+					}else{
+						$this->db->where('id',$O[0]->id)->update($exceltype,$testsData);
+						$alert[] = "#row".$k;
+					}
+				}
+			break;
+			case "tashrihi":
+				foreach($data as $k=>$v){
+					$i = 0;
+					$testsData = [
+						'category'        => $v[$i],
+						'term'        => $v[$i++],
+						'book_id'        => $v[$i++],
+						'testnumber'  => $v[$i++],
+						'page'        => $v[$i++],
+						'barom'        => $v[$i++],
+						'question'        => $v[$i++],
+						'answer'        => $v[$i++]
+					];
+					$this->db->select("id");
+					$this->db->where("book_id",$v[1]);
+					$this->db->where("question",$v[5]);
+					$O = $this->db->get($exceltype)->result();
+					if(count($O)==0){
+						$this->db->insert($exceltype,$testsData);
+						$data = array('date_modified'=>date("Y-m-d H:i:s"));
+						$this->db->where('id',$v[1])->update('posts',$data);
+					} else {
+						$this->db->where('id',$O[0]->id)->update($exceltype,$testsData);
+						$alert[] = "#row".$k;
+					}
+				}
+			break;
+		}
+            echo '<center>
+				<div class="dropdown-backdrop" style="height: 100px;">
+					<div class="btn btn-success"><h1>اطلاعات ذخیره شد'.(count($alert)?' <strong>[ موارد تکراری قرمز شد ]</strong>':'').'</h1></div>
+					<a href="'.base_url().'admin/azmoon" class="btn btn-primary pull-left"><h2>بازگشت</h2></a>
+				</div>
+				</center>';
+				if(count($alert)){
+				echo '<script>';
+				echo '$("'.implode(",",$alert).'").attr("style","color:white;background-color:red;");';
+				echo '</script>';
+				}
+        }
+        catch(Exception $e)
+        {
+            echo '<center>
+				<div class="dropdown-backdrop" style="height: 100px;">
+					<div class="btn btn-danger"><h1>اطلاعات ذخیره نشد</h1>'.$e->getMessage().'</div>
+					<a href="'.base_url().'admin/azmoon" class="btn btn-primary pull-left"><h2>بازگشت</h2></a>
+				</div>
+				</center>';
+        }
+    }
+	/*================================
+				Catquest
+	================================*/
+	public function SaveCatquest(){
+		try
+		{
+		if( ! $this->user->can('manage_catquest') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('title'        , 'زبان'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('title'        , 'زبان'  , 'trim|required|is_unique[catquest.title]');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$title = $post["title"];
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("title"=>$title,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('catquest',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('catquest',$data);
+		}
+		$this->tools->outS(0,'زبان '.$title.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	/*================================
+				Publisher
+	================================*/
+	public function SavePublisher(){
+		try
+		{
+		if( ! $this->user->can('manage_publisher') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('title'        , 'نام انتشارات'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('title'        , 'نام انتشارات'  , 'trim|required|is_unique[publisher.title]');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$title = $post["title"];
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("title"=>$title,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('publisher',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('publisher',$data);
+		}
+		$this->tools->outS(0,'انتشارات '.$title.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	/*================================
+				Writer
+	================================*/
+	public function SaveWriter(){
+		try
+		{
+		if( ! $this->user->can('manage_writer') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('title'        , 'نام نویسنده'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('title'        , 'نام نویسنده'  , 'trim|required|is_unique[writer.title]');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$title = $post["title"];
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("title"=>$title,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('writer',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('writer',$data);
+		}
+		$this->tools->outS(0,'نویسنده '.$title.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	/*================================
+				Translator
+	================================*/
+	public function SaveTranslator(){
+		try
+		{
+		if( ! $this->user->can('manage_translator') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('title'        , 'نام انتشارات'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('title'        , 'نام انتشارات'  , 'trim|required|is_unique[translator.title]');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$title = $post["title"];
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("title"=>$title,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('translator',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('translator',$data);
+		}
+		$this->tools->outS(0,'مترجم '.$title.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	/*================================
+	/*================================
+				Supplier
+	================================*/
+	public function SaveSuppliertype(){
+		try
+		{
+		if( ! $this->user->can('manage_suppliertype') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('title'        , 'زبان'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('title'        , 'زبان'  , 'trim|required|is_unique[suppliertype.title]');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$title = $post["title"];
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("title"=>$title,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('suppliertype',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('suppliertype',$data);
+		}
+		$this->tools->outS(0,'زبان '.$title.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	public function SaveSupplier(){
+		try
+		{
+		if( ! $this->user->can('manage_supplier') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		$this->form_validation->set_rules('title'        , 'عنوان'  , 'trim|required|is_unique[supplier.title]');
+		$this->form_validation->set_rules('mobile'        , 'تلفن همراه'  , 'trim|required|is_unique[supplier.mobile]');
+		$this->form_validation->set_rules('ownerpercent'        , 'درصد مالکیت'  , 'trim|required|numeric');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+
+		$regdate = date("Y-m-d H:i:s");
+		$data = array(
+			"title"=>@$post["title"],
+			"description"=>@$post["description"],
+			"optype"=>@$post["optype"],
+			"stype"=>@$post["stype"],
+			"phone"=>@$post["phone"],
+			"mobile"=>@$post["mobile"],
+			"smtype"=>@$post["smtype"],
+			"address"=>@$post["address"],
+			"ownerpercent"=>@$post["ownerpercent"],
+			"regdate"=>$regdate,
+			);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('supplier',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('supplier',$data);
+		}
+		$this->tools->outS(0,''.@$post["title"].' در لیست عرضه کنندگان ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	/*================================
+				Dictionary
+	================================*/
+	public function SaveDiclang(){
+		try
+		{
+		if( ! $this->user->can('manage_diclang') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('title'        , 'زبان'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('title'        , 'زبان'  , 'trim|required|is_unique[diclang.title]');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$title = $post["title"];
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("title"=>$title,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('diclang',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('diclang',$data);
+		}
+		$this->tools->outS(0,'زبان '.$title.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	public function SaveDictionary(){
+		try
+		{
+		if( ! $this->user->can('manage_dictionary') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$post = $this->input->post();
+		$id = intval($post["id"]);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('id'        , 'ID'  , 'trim');
+		if($id)
+		$this->form_validation->set_rules('kalameh'        , 'کلمه'  , 'trim|required');
+		else
+		$this->form_validation->set_rules('kalameh'        , 'کلمه'  , 'trim|required');
+		$this->form_validation->set_rules('translate'        , 'ترجمه'  , 'trim|required');
+		$this->form_validation->set_rules('fromlang'        , 'زبان مبدا'  , 'trim|required|alpha_numeric');
+		$this->form_validation->set_rules('tolang'        , 'زبان ترجمه'  , 'trim|required|alpha_numeric');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+
+		
+		$fromlang = (int)$post["fromlang"];
+		$tolang = (int)$post["tolang"];
+		$kalameh = $post["kalameh"];
+
+		$this->db->select('*');
+		$this->db->where("d.kalameh = '$kalameh'");
+		$this->db->where("d.fromlang = $fromlang");
+		$this->db->where("d.tolang = $tolang");
+		$result = $this->db->get('dictionary d')->result();
+		if(count($result)){
+                throw new Exception("خطا : کلمه $kalameh در زبان انتخابی قبلا ترجمه شده است" , 1);
+		}
+		$translate = trim(strip_tags($post["translate"]));
+		$regdate = date("Y-m-d H:i:s");
+		$data = array("fromlang"=>$fromlang,"tolang"=>$tolang,"kalameh"=>$kalameh,"translate"=>$translate,"regdate"=>$regdate);
+		if($id){
+            if( ! $this->db->where('id',$id)->update('dictionary',$data) )
+                throw new Exception("خطا در انجام عملیات" , 1);
+		} else {
+			$data["uid"] = $this->user->user_id;
+			$this->db->insert('dictionary',$data);
+		}
+		$this->tools->outS(0,'کلمه '.$kalameh.' ثبت شد');
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	public function LoadDicOffer($id){
+        $this->db->select("*");
+        $this->db->where("kid",$id);
+        $this->db->order_by("translate");
+		$O = $this->db->get("dicoffer")->result();
+		$cats = [];
+		foreach($O as $k=>$v){
+			$cats[] = $v;
+		}
+		$this->tools->outS(0,$cats);
+	}
+	public function DeleteOffer($id){
+		$result = $this->db->where('id',$id)->select('*')->get('dicoffer')->row();
+		if(! is_object($result) )
+			throw new Exception("خطا در انجام عملیات : ترجمه پیشنهادی یافت نشد" , 1);
+		$kid = $result->kid;
+		$this->db->where('id',$id)->delete('dicoffer');
+		$result = $this->db->where('kid',$kid)->select('COUNT(*) offer')->get('dicoffer')->row();
+		if(! is_object($result) )
+			throw new Exception("خطا در انجام عملیات : ترجمه پیشنهادی یافت نشد" , 1);
+		$offer = $result->offer > 0?$result->offer-1:0;
+		$data = array("offer"=>$offer);
+		$this->db->where('id',$kid)->update('dictionary',$data);
+
+		$this->tools->outS(0,'OK');
+	}
+	public function ReplaceOffer($id){
+		
+        $this->db->select("kid,translate");
+        $this->db->where("id",$id);
+		$O = $this->db->get("dicoffer")->row();
+		if(! is_object($O) )
+			throw new Exception("خطا در انجام عملیات : ترجمه پیشنهادی یافت نشد" , 1);
+		$data = array();
+		$data["translate"] = $O->translate;
+		$kid = $O->kid;
+		if( ! $this->db->where('id',$kid)->update('dictionary',$data) )
+			throw new Exception("خطا در انجام عملیات" , 1);
+		$this->tools->outS(0,'جایگزینی با موفقیت انجام شد');
+	}
+	/*================================
+				Discount
+	================================*/
+	public function addDiscount(){
+        try
+        {
+            if( ! $this->user->can('manage_discount') )
+                throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+			
+			$this->load->library('form_validation');
+            $this->form_validation->set_rules('code'     ,'کد'    ,'trim|xss_clean|required|alpha_numeric|is_unique[discounts.code]');
+            $this->form_validation->set_rules('percent'  ,'درصد'  ,'trim|required|less_than_equal_to[100]');
+            $this->form_validation->set_rules('maxallow'  ,'سقف استفاده'  ,'trim|required|greater_than[0]');
+            $this->form_validation->set_rules('level[]'    ,'سطح'   ,'trim|xss_clean|required');
+            $this->form_validation->set_rules('expdate'    ,'تاریخ انقضا'   ,'trim|xss_clean|date|required');//Alireza Balvardi
+
+            if( $this->form_validation->run() == FALSE )
+                throw new Exception( validation_errors(), 2);
+			
+			$data = $this->input->post();
+			$expdate = explode("-",$data["expdate"]);//Alireza Balvardi
+			$data["expdate"] = jmktime(23,59,59,$expdate[1],$expdate[2],$expdate[0]);//Alireza Balvardi
+			
+			foreach($data['level'] as $level){
+				switch($level){
+					case -3:
+						$value = $data['categoryid'];
+						$this->db->select("p.id,p.title,c.name,m.meta_value price,c.id cid");
+						$this->db->join('ci_category c','p.category=c.id','right',FALSE);
+						$this->db->order_by('c.id,p.title','asc');
+						$this->db->join('ci_post_meta m','m.post_id=p.id','inner',FALSE);
+						$this->db->where("m.meta_key = 'price'");
+						$this->db->where("m.meta_value != '0'");
+						$this->db->where("c.id IN($value)");
+						$result = $this->db->get('posts p')->result();
+			
+						foreach($result as $k=>$v){
+							$discountData = [
+								'code'        => $data['code'],
+								'percent'     => (int)$data['percent'],
+								'maxallow'     => (int)$data['maxallow'],
+								'category_id' => -1,
+								'price'       => $data['price'],
+								'expdate'       => $data['expdate'],//Alireza Balvardi
+								'fee'     => (int)$data['fee'],
+								'bookid' => $v->id,
+								'used'        => 0,
+								'cdate'       => time()
+							];
+							$this->db->insert('discounts',$discountData);
+						}
+					break;
+					case -4:
+						$value = $data['multibookid'];
+						$this->db->select("p.id,p.title,c.name,m.meta_value price,c.id cid");
+						$this->db->join('ci_category c','p.category=c.id','right',FALSE);
+						$this->db->order_by('c.id,p.title','asc');
+						$this->db->join('ci_post_meta m','m.post_id=p.id','inner',FALSE);
+						$this->db->where("m.meta_key = 'price'");
+						$this->db->where("m.meta_value != '0'");
+						$this->db->where("p.id IN($value)");
+						$result = $this->db->get('posts p')->result();
+			
+						foreach($result as $k=>$v){
+							$discountData = [
+								'code'        => $data['code'],
+								'percent'     => (int)$data['percent'],
+								'maxallow'     => (int)$data['maxallow'],
+								'category_id' => -1,
+								'price'       => $data['price'],
+								'expdate'       => $data['expdate'],//Alireza Balvardi
+								'fee'     => (int)$data['fee'],
+								'bookid' => $v->id,
+								'used'        => 0,
+								'cdate'       => time()
+							];
+							$this->db->insert('discounts',$discountData);
+						}
+					break;
+					case 0:
+						$this->tools->outS(1,'خطا : اطلاعات صحیح نیست');
+					break;
+					default:
+						$discountData = [
+							'code'        => $data['code'],
+							'percent'     => (int)$data['percent'],
+							'maxallow'     => (int)$data['maxallow'],
+							'category_id' => (int)$level,
+							'price'       => $data['price'],
+							'expdate'       => $data['expdate'],//Alireza Balvardi
+							'fee'     => (int)$data['fee'],
+							'bookid' => (int)$data['bookid'],
+							'used'        => 0,
+							'cdate'       => time()
+						];
+						$this->db->insert('discounts',$discountData);
+				}
+            }
+            $this->tools->outS(0,'اطلاعات ذخیره شد');
+        }
+        catch(Exception $e)
+        {
+            $this->tools->outE($e);
+        }
+    }
+
+	private function MakeJSON($data){
+		return json_encode($data,JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_TAG);
+	}//Alireza Balvardi
+	/*===================================
+		SMS
+	===================================*/
+	public function SendUserSMS(){
+		try
+		{
+		if( ! $this->user->can('manage_discount') )
+			throw new Exception("شما به این بخش دسترسی ندارید" , 1);
+
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('mobile'        , 'شماره همراه'  , 'trim|required');
+		$this->form_validation->set_rules('message'        , 'پیام'  , 'trim|required');
+		if( $this->form_validation->run() == FALSE ){
+			throw new Exception( implode(' | ',$this->form_validation->error_array()) , 1);
+		}
+		$config = $this->settings->data;
+		$post = $this->input->post();
+		$mobile = $post["mobile"];
+		$message = trim(strip_tags($post["message"]));
+		if(!$this->form_validation->required($message))
+			throw new Exception( 'متن پیام نمی تواند خالی باشد' , 1);
+		$message = str_replace('  ',' ',$message);
+		$message = str_replace('  ',' ',$message);
+		$message = str_replace('  ',' ',$message);
+		$message = trim($message);
+		$smsdata = array("mobile"=>$mobile,"text"=>$message);
+		$dataid = $this->user->user_id;
+		$re = $this->SendSMS($smsdata,$dataid,3);
+		
+		$this->tools->outS(0,$re);
+		}
+		catch(Exception $e)
+		{
+			$this->tools->outE($e);
+		}
+	}
+	public function SendSMS($smsdata,$dataid=0,$side=0){
+		$config = $this->settings->data;
+		$smsCenter = $config['smsCenter'];
+		$smsUN = $config['smsUN'];
+		$smsPass = $config['smsPass'];
+		$smsNumber = $config['smsNumber'];
+		$smsType = $config['smsType'];
+		$res = 0;
+		$mobile	= $smsdata["mobile"];
+		if($smsType && $mobile){
+		$path = BASEPATH;
+		$path = str_replace(DIRECTORY_SEPARATOR.'system','',$path);
+		$file = $path.DIRECTORY_SEPARATOR.'sms'.DIRECTORY_SEPARATOR.$smsType.".php";
+		$file = str_replace("/",DIRECTORY_SEPARATOR,$file);
+		include_once($file);
+		$message	= $smsdata["text"];
+		if(!strlen($mobile))
+			return "Error : Mobile number empty";
+		$smsType = str_replace(".php","",$smsType);
+		eval("\$Panel = new $smsType;");
+		$X = $Panel->LoadSmsPanel("send",$smsUN,$smsPass,$smsNumber,$smsCenter,array($mobile),$message);
+			$regdate = date("Y-m-d H:i:s");
+			if(is_array($X) && count($X)==2){
+				list($res,$delivery) = $X;
+				if(is_array($delivery))
+					$delivery = $delivery["message"];
+				$delivery = str_replace("'","",$delivery);
+				$data = array("mobile"=>$mobile,"message"=>$message,"dataid"=>$dataid,"side"=>$side,"regdate"=>$regdate,"delivery"=>$delivery,"status"=>1);
+				$X = "پیام با موفقیت ارسال شد";
+			} else {
+				$data = array("mobile"=>$mobile,"message"=>$message,"dataid"=>$dataid,"side"=>$side,"regdate"=>$regdate);
+			}
+			$this->db->insert('sended',$data);
+		}
+		return $X;
+	}
+	public function LoadSubCategories($id,$level=1){
+        $this->db->select("id,name");
+        $this->db->where("parent",$id);
+        $this->db->where("type","book");
+        $this->db->order_by("position");
+		$O = $this->db->get("category")->result();
+		$cats = [['id'=>'','name'=>'بدون انتخاب']];
+		foreach($O as $k=>$v){
+			$cats[] = $v;
+		}
+		$this->tools->outS(0,$cats);
+	}
+	public function LoadBookPrice($id){
+        $this->db->select("m.meta_value,p.title");
+        $this->db->where("m.post_id",$id);
+        $this->db->where("m.meta_key","price");
+		$this->db->join('ci_posts p','p.id=m.post_id','INNER',FALSE);
+		$O = $this->db->get("post_meta as m")->result();
+		$cats = ['id'=>$id,'price'=>0,'title'=>'کتاب موجود نیست'];
+		foreach($O as $k=>$v){
+			$cats['price'] = $v->meta_value;
+			$cats['title'] = $v->title;
+		}
+		$this->tools->outS(0,'OK',['data'=>$cats]);
+	}
+	public function getBookPayment($id){
+		$payments = array();
+		$this->db->select('f.id factorid,f.discount_id,dc.code,dc.percent,dc.price note,dc.fee,pdate(FROM_UNIXTIME(f.cdate,\'%Y-%m-%d\')) cdate,f.state,f.price fprice');
+		$this->db->join('ci_factors f','(ub.factor_id=f.id AND f.status=0)','right',FALSE);
+		$this->db->join('ci_discounts dc','f.discount_id=dc.id','left',FALSE);
+		$this->db->where('ub.book_id',$id);
+		$payments = $this->db->get('user_books ub')->result();
+		$this->tools->outS(0,'OK',['result'=>$payments]);
+	}
+}
+?>

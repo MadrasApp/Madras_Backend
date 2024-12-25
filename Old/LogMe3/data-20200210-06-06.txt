@@ -1,0 +1,58 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => sadat8940
+    [token] => rK9FzWcEGpYHX4SZfPl7soBa2xthUQO3
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[{"end":432,"not_id":112848908,"not_text":"#  فمن سخیف القول ما قال بعضهم إن الوجود مشترک لفظی وهو فی کل ماهیة یحمل علیها بمعنی تلک الماهیة. ویرده لزوم سقوط الفائدة فی الهلیات البسیطة مطلقا کقولنا الواجب موجود والممکن موجود والجوهر موجود والعرض موجود. علی أن من الجائز أن یتردد بین وجود الشی‌ء وعدمه مع العلم بماهیته ومعناه کقولنا هل الاتفاق موجود أو لا. وکذا التردد فی ماهیة الشی‌ء مع الجزم بوجوده کقولنا هل النفس الإنسانیة الموجودة جوهر أو عرض والتردد فی أحد الشیئین مع الجزم بالآخر یقضی بمغایرتهما. ","not_text_user":"","notstart":890,"selected":false,"sharh":0,"text_id":11284,"title":"سؤال ۱"},{"end":890,"not_id":112848902,"not_text":" ","not_text_user":"چرا مردود است؟!","notstart":890,"selected":false,"sharh":0,"text_id":11284,"title":"سؤال ۱"},{"end":1400,"not_id":1128414052,"not_text":"\r\n","not_text_user":"چرا مردود است؟!","notstart":1405,"selected":false,"sharh":0,"text_id":11284,"title":"سوال ۱"}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/SendUserSMS] => 
+    [token] => token
+    [mac] => 09139063081
+    [MessageType] => 2
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/VerifySMS] => 
+    [token] => token
+    [mac] => 09139063081
+    [Message] => 4740
+)
+
+Array
+(
+    [/api/v2/Highlights] => 
+    [token] => token
+    [mac] => 09139063081
+)
+
+Array
+(
+    [/api/v2/Tags] => 
+    [token] => token
+    [mac] => 09139063081
+)
+

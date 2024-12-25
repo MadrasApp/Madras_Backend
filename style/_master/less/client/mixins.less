@@ -1,0 +1,27 @@
+
+
+.box-sh(top; @side: inset){
+	box-shadow: 0px @box-sh-y @box-sh-blur -1px @box-sh-color @side;
+}
+.box-sh(bottom; @side: inset){
+	box-shadow: 0px -@box-sh-y @box-sh-blur -1px @box-sh-color @side;
+}
+.box-sh(right; @side: inset){
+	box-shadow: -@box-sh-x 0px @box-sh-blur -1px @box-sh-color @side;
+}
+.box-sh(left; @side: inset){
+	box-shadow: @box-sh-x 0px @box-sh-blur -1px @box-sh-color @side;
+}
+
+.vm(){
+	position:relative;
+	top:50%;
+	transform:translate(0,-50%);
+}
+.hover-dark(){
+
+	transition:background-color .2s linear;
+	&:hover{
+		background-color:rgba(0,0,0,.2);
+	}
+}

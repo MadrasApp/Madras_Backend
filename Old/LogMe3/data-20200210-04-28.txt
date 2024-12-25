@@ -1,0 +1,9 @@
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => 00:87:01:8E:5F:ED
+    [token] => Si1UEx9KDoJ54ftHgNs7mabpzFydCVhY
+    [id] => 4782
+    [case] => sound
+)
+

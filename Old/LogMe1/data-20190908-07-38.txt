@@ -1,0 +1,13 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/login] => 
+    [username] => حسین
+    [password] => 1590
+    [mac] => C8:D7:B0:A8:D9:12
+)
+

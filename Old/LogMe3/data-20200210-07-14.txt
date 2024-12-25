@@ -1,0 +1,36 @@
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => 1234
+    [token] => HKeoqTaEXNfG3JhWitzAlwp7QV4vnD9j
+    [data] => {"highlights":{"added":[],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => 1234
+    [token] => HKeoqTaEXNfG3JhWitzAlwp7QV4vnD9j
+    [id] => 9663
+    [case] => sound
+)
+
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => 1234
+    [token] => HKeoqTaEXNfG3JhWitzAlwp7QV4vnD9j
+    [id] => 9663
+    [case] => sound
+)
+

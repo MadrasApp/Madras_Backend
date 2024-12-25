@@ -1,0 +1,242 @@
+<?php
+	$this->load->helper('inc');
+	$inc = new inc;
+	$cols = array(
+		/*'  ' => array(
+			'field_name' => 'id',
+			'td-attr' => 'style="width:40px;padding:7px" align="center"',
+			'link' => false,
+			'html' => '<i class="fa fa-info-circle fa-2x text-info" data-id="[ID]"></i>'
+		),	*/
+		'شماره' => array(
+			'field_name' => 'id',
+			'td-attr' => 'style="width:60px;" align="center" class="en"'
+		),
+		'کد' => array(
+			'field_name' => 'code',
+			'td-attr'    => 'style="font-weight:bold;padding:0" align="center" class="en"',
+			'function'   => function($col,$row){
+				
+				$bg = $row['used'] == 1 ? '888':'00cc76';
+				$bg = (!is_null($row['expdate']) && $row['expdate'] < time())? 'f00':$bg;
+				return "<div style=\"color:#fff;background-color:#{$bg};padding:4px;font-size:20px\">{$col}</div>";
+			}
+		),
+		'درصد تخفیف' => array(
+			'field_name' => 'percent',
+			'td-attr' => 'align="center" class="en"',
+			'function'   => function($col,$row){
+				if($col < 90) 
+					return $col . '%';
+				else
+					return '<b class="text-danger">'.$col.'%</b>';
+			}
+		),	
+		'سطح' => array(
+			'field_name' => 'level',
+			'td-attr' => ' align="center"'
+		),
+		'یادداشت' => array(
+			'field_name' => 'price',
+			'td-attr' => ' align="center"'
+		),	
+		'سقف استفاده' => array(
+			'field_name' => 'maxallow',
+			'td-attr'    => 'align="center"',
+			'function'   => function($col,$row){
+				return $row['maxallow'];
+			}
+		),	
+		'وضعیت استفاده' => array(
+			'field_name' => 'used',
+			'td-attr'    => 'align="center"',
+			'function'   => function($col,$row){
+				if($col == $row['maxallow']) return '<i class="fa fa-check-circle-o fa-lg text-success"></i> ';
+				if($col && $col < $row['maxallow']) return '<i class="fa fa-check-circle-o fa-lg text-warning"></i> ';
+				if($col == 0) return '<i class="fa fa-ban fa-lg text-muted"></i> ';
+			}
+		),	
+		'تعداد استفاده' => array(
+			'field_name' => 'used',
+			'td-attr'    => 'align="center"',
+			'function'   => function($col,$row){
+				return $row['used'];
+			}
+		),	
+		'شماره فاکتور' => array(
+			'field_name' => 'factor_id',
+			'link' => true,
+			'function' => function($col,$row){
+				
+				if($col == '') return '---';
+				
+				return '<a target="_blank" href="'.site_url('admin/payment').'?f.id='.$col.'">'.$col.'</a>';
+			}
+		),
+		'تاریخ ایجاد'   => array('field_name' => 'cdate', 'link' => true, 'type' => 'strtime', 'td-attr' => 'align="center"'),
+		'تاریخ انقضا'   => array('field_name' => 'expdate', 'link' => true, 'type' => 'strtime', 'td-attr' => 'align="center"'),
+		'تاریخ استفاده' => array('field_name' => 'udate', 'link' => true, 'type' => 'strtime', 'td-attr' => 'align="center"'),
+		'   ' => array(
+			'field_name' => 'id',
+			'link'    => false,
+			'html'    => '<i class="fa fa-trash text-danger cu" onClick="delete_row(this,\'discounts\',[ID])"></i>'
+		),
+	);
+	
+	
+		$q = "SELECT d.* , c.name AS level 
+			FROM ci_discounts d 
+			LEFT JOIN `ci_category` `c` ON `c`.`id`=`d`.`category_id` 
+		$query";
+		
+		echo $searchHtml;
+	?>	
+		
+		<div class="text-center" style="margin-bottom:20px">
+			<button type="button" class="btn btn-success" onclick="LoadCalendar($('#add-div').html());">
+				<i class="fa fa-plus-circle"></i>
+				<span>افزودن</span>
+			</button>
+		</div>
+		
+	<?php $inc->createTable($cols, $q , 'id="table" class="table light2" ', $tableName, 60); ?>
+	
+	
+	<div id="add-div" class="hidden">
+		<form class="clearfix">	
+			<div class="row" style="margin-top:70px">
+				<div class="col-md-6 col-md-offset-3">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="input-group">
+									<input type="text" class="form-control en" name="code" placeholder="کد تخفیف به لاتین" required />
+									<span class="input-group-addon en">کد</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-group">
+									<input type="number" min="1" class="form-control en" name="maxallow" placeholder="تعداد کاربری که می توانند استفاده کنند" required />
+									<span class="input-group-addon en">سقف استفاده</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-group">
+									<input type="text" class="form-control en discount OnlyNum" name="percent" placeholder="?" required />
+									<span class="input-group-addon en">تخفیف %</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-group">
+									<input type="text" class="form-control {dateFormat}" name="expdate" id="{expdate}" placeholder="تاریخ انقضا" required />
+									<span class="input-group-addon en">تاریخ انقضا</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-6">
+								<input type="text" class="form-control" name="price" placeholder="یادداشت" />
+								<p class="text-muted" style="font-size:10px">این فیلد هیچ کاربردی ندارد و فقط جهت به خاطر سپردن می باشد</p>
+							</div>
+							<div class="col-sm-6">
+								<select class="form-control level" name="level[]" required multiple="multiple">
+									<option value="" disabled selected>انتخاب سطح</option>
+									<option value="0" data-price="0">همه جا</option>
+									<?php foreach($categories as $cat){ ?>
+										<option value="<?php echo  $cat->id ?>" data-price="<?php echo  (int)$cat->price ?>"><?php echo  $cat->name ?></option>
+									<?php } ?>
+								</select>
+							</div>
+						</div>
+					</div>				
+					
+					<div class="form-group calc-result"></div>
+					
+					<hr/>
+					<div class="ajax-result" style="margin-bottom: 20px;"></div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-block btn-lg sample-send">
+							<i class="fa fa-check-circle"></i> <span>افزودن</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<script>$('#expdate').datepicker({dateFormat: 'yy-mm-dd',defaultDate:''});</script>
+		</form>
+	</div>
+	
+	<script type="text/javascript">
+	
+	$(document).ready(function(){
+		$(document).on('input','.full-screen .discount',calc_price);
+		$(document).on('change','.full-screen .level',calc_price);
+		
+		$(document).on('submit','.full-screen form',function(e){
+			e.preventDefault();
+			submitForm();
+		});
+	});
+	function LoadCalendar(html){
+		html = html.replace('{dateFormat}','dateFormat');
+		html = html.replace('{expdate}','expdate');
+		popupScreen(html);
+		$('#popup-screen-1').css("zIndex",3);
+	}
+	function calc_price(){
+		var $discount = $('.full-screen .discount'),
+			$level   = $('.full-screen .level option:selected'),
+			$result  = $('.full-screen .calc-result');
+			$keys = Object.keys($level);
+			$result.html("");
+			$level.each(function(i,j){
+				textlevel = $(this).text();
+			var discount = parseInt($discount.val()),
+				price    = parseInt($(this).attr('data-price'));
+			
+			if(isNaN(price) || isNaN(discount))
+				$result.html('---');
+			else if(discount > 100 || discount < 0)
+				$result.html('<h3 class="text-danger">درصد تخفیف باید بین 0 تا 100 باشد</h3>');
+			else	
+				$result.append(
+				'<h3> قیمت کل '+textlevel+': <b class="en">' + formatMoney(price) + '</b>  &nbsp; &nbsp; \
+				قیمت با اعمال تخفیف : <b class="en">' + formatMoney(price - price*discount/100) + '</b> \
+				</h3>'
+			);
+		});
+	}
+	
+	function submitForm()
+	{
+		var $form = $('.full-screen form'),
+			$btn  = $form.find('[type="submit"]'),
+			$html = $form.find('.ajax-result'),
+			data  = $form.serialize();
+			
+		$btn.addClass('l w').prop('disabled',true);
+		$html.html(''); 
+		
+		$.ajax({
+			type: "POST",
+			url: 'admin/api/addDiscount/',
+			data: data,
+			dataType: "json",
+			success: function (data) {
+				if (data == "login")
+					login(submitForm);
+				else
+					$html.html(get_alert(data));
+				
+				$btn.removeClass('l w').prop('disabled',false);
+			},
+			error: function (a,b,c) {
+				$btn.removeClass('l w').prop('disabled',false);
+				notify('خطا در اتصال', 2);
+			}
+		});
+	}
+		
+	</script>

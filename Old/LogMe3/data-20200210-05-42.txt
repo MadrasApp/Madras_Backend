@@ -1,0 +1,29 @@
+Array
+(
+    [/api/v2/getBook/10/zip] => 
+)
+
+Array
+(
+    [/api/v2/getPartData] => 
+    [mac] => 9511301008
+    [token] => AWpN7HtjMfoPznDsw45OSQldL8xK192e
+    [id] => 2736
+    [case] => sound
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+

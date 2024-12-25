@@ -1,0 +1,110 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => naghiamini
+    [token] => MQDtpLxomCTuAsEkd764nZPwJNeOBzUK
+    [data] => {"highlights":{"added":[{"highlight_color":1,"highlight_end":42,"highlight_id":2024304,"highlight_start":30,"highlight_text":"الْمَتَاجِرِ","selected":false,"sharh":0,"text_id":2024},{"highlight_color":3,"highlight_end":115,"highlight_id":38471097,"highlight_start":109,"highlight_text":"اجتماع","selected":false,"sharh":0,"text_id":3847},{"highlight_color":1,"highlight_end":2970,"highlight_id":248025012,"highlight_start":2501,"highlight_text":"بِذِمَّتِهِ، فَلَا یُشَارِکُ الْغُرَمَاءُ الْمُقَرَّ لَهُ) جَمْعًا بَیْنَ الْحَقَّیْنِ.\r\n(وَقَوَّی الشَّیْخُ رَحِمَهُ اللَّهُ) وَ تَبِعَهُ الْعَلَّامَةُ فِی بَعْضِ کُتُبِهِ (الْمُشَارَکَةُ) لِلْخَبَرِ؛ وَ لِعُمُومِ الْإِذْنِ فِی قِسْمَةِ مَالِهِ بَیْنَ غُرَمَائِهِ وَ لِلْفَرْقِ بَیْنَ الْإِقْرَارِ وَ الْإِنْشَاءِ فَإِنَّ الْإِقْرَارَ إخْبَارٌ عَنْ حَقٍّ سَابِقٍ وَ الْحَجْرُ إنَّمَا یُبْطِلَ إحْدَاثَ الْمِلْکِ وَ لِأَنَّهُ کَالْبَیِّنَةِ و مع قِیَامِهَا لَا إشْکَالَ","selected":false,"sharh":0,"text_id":2480},{"highlight_color":3,"highlight_end":2957,"highlight_id":248029478,"highlight_start":2947,"highlight_text":"قِیَامِهَا","selected":false,"sharh":0,"text_id":2480},{"highlight_color":2,"highlight_end":2007,"highlight_id":476620044,"highlight_start":2004,"highlight_text":"محل","selected":false,"sharh":0,"text_id":4766},{"highlight_color":2,"highlight_end":2814,"highlight_id":476628074,"highlight_start":2807,"highlight_text":"فالدلیل","selected":false,"sharh":0,"text_id":4766},{"highlight_color":2,"highlight_end":2817,"highlight_id":476628168,"highlight_start":2816,"highlight_text":" ","selected":false,"sharh":0,"text_id":4766},{"highlight_color":1,"highlight_end":2987,"highlight_id":476629805,"highlight_start":2980,"highlight_text":"العملیة","selected":false,"sharh":0,"text_id":4766},{"highlight_color":2,"highlight_end":3225,"highlight_id":476632114,"highlight_start":3211,"highlight_text":"للمستدل علیه. ","selected":false,"sharh":0,"text_id":4766},{"highlight_color":2,"highlight_end":3505,"highlight_id":476635041,"highlight_start":3504,"highlight_text":" ","selected":false,"sharh":0,"text_id":4766},{"highlight_color":3,"highlight_end":3505,"highlight_id":476635013,"highlight_start":3501,"highlight_text":"هنا ","selected":false,"sharh":0,"text_id":4766},{"highlight_color":2,"highlight_end":3638,"highlight_id":476636337,"highlight_start":3633,"highlight_text":"بمورد","selected":false,"sharh":0,"text_id":4766},{"highlight_color":1,"highlight_end":506,"highlight_id":47705015,"highlight_start":501,"highlight_text":"تناط ","selected":false,"sharh":0,"text_id":4770},{"highlight_color":1,"highlight_end":644,"highlight_id":47706380,"highlight_start":638,"highlight_text":"بنفسه ","selected":false,"sharh":0,"text_id":4770},{"highlight_color":1,"highlight_end":1178,"highlight_id":477011700,"highlight_start":1170,"highlight_text":"والقیافة","selected":false,"sharh":0,"text_id":4770},{"highlight_color":3,"highlight_end":1291,"highlight_id":477012876,"highlight_start":1287,"highlight_text":"تامة","selected":false,"sharh":0,"text_id":4770},{"highlight_color":3,"highlight_end":1291,"highlight_id":477012836,"highlight_start":1283,"highlight_text":"علة تامة","selected":false,"sharh":0,"text_id":4770},{"highlight_color":3,"highlight_end":1571,"highlight_id":477012374,"highlight_start":1237,"highlight_text":"إذا علمنا - بطریقة من الطرق - ان جهة المشابهة علة تامة لثبوت الحکم فی الأصل عند الشارع، ثم علمنا أیضا بأن هذه العلة التامة موجودة بخصوصیاتها فی الفرع، فانه لا محالة یحصل لنا، علی نحو الیقین، استنباط ان مثل هذا الحکم ثابت فی الفرع کثبوته فی الأصل، لاستحالة تخلف المعلول عن علته التامة. ویکون من القیاس المنطقی البرهانی الذی یفید الیقین","selected":false,"sharh":0,"text_id":4770},{"highlight_color":3,"highlight_end":2893,"highlight_id":477026667,"highlight_start":2666,"highlight_text":"نعم إذا ورد نص من قبل الشارع فی بیان علة الحکم فی المقیس علیه فانه یصح الاکتفاء به فی تعدیة الحکم إلی المقیس بشرطین: \r\n(الأول) ان نعلم بان العلة المنصوصة تامة یدور معها الحکم أینما دارت، \r\nو (الثانی) أن نعلم بوجودها فی المقیس. ","selected":false,"sharh":0,"text_id":4770},{"highlight_color":2,"highlight_end":2903,"highlight_id":477028957,"highlight_start":2895,"highlight_text":"والخلاصة","selected":false,"sharh":0,"text_id":4770},{"highlight_color":2,"highlight_end":3136,"highlight_id":477031236,"highlight_start":3123,"highlight_text":"قیاس الأولویة","selected":false,"sharh":0,"text_id":4770},{"highlight_color":1,"highlight_end":3032,"highlight_id":477030204,"highlight_start":3020,"highlight_text":"منصوص العلة ","selected":false,"sharh":0,"text_id":4770}],"edited":[],"deleted":[]},"notes":{"added":[{"end":2004,"not_id":476620070,"not_text":"محل","not_text_user":"موضوع","notstart":2007,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":2807,"not_id":476628161,"not_text":"فالدلیل","not_text_user":"دلیل عبارت است از اثبات یعنی قایس حکم را بر فرع اعطا می‌کند و ثابت می کند که فرع هم باید دارای حکم اصل باشد که در نتیجه بعد از اثبات قایس شارع بالفعل برای فرع حکمی طبق اصل قرار می‌دهد ","notstart":2816,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":2980,"not_id":476629870,"not_text":"العملیة","not_text_user":"تلاش","notstart":2987,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":3259,"not_id":476632610,"not_text":"ان","not_text_user":"نتیجه دلیل","notstart":3261,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":3211,"not_id":476632185,"not_text":"للمستدل","not_text_user":"نتیجه دلیل ","notstart":3218,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":3501,"not_id":476635042,"not_text":"هنا","not_text_user":"از اینجا که دفع مناقشات شد ","notstart":3504,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":3633,"not_id":476636387,"not_text":"بمورد","not_text_user":"مصداق","notstart":3638,"selected":false,"sharh":0,"text_id":4766,"title":""},{"end":501,"not_id":47705058,"not_text":"تناط","not_text_user":"مشروط بودن","notstart":505,"selected":false,"sharh":0,"text_id":4770,"title":""},{"end":638,"not_id":47706437,"not_text":"بنفسه","not_text_user":"بدون دلیل","notstart":643,"selected":false,"sharh":0,"text_id":4770,"title":""},{"end":1170,"not_id":477011780,"not_text":"والقیافة","not_text_user":"قیافه شناسی","notstart":1178,"selected":false,"sharh":0,"text_id":4770,"title":""},{"end":1970,"not_id":477019775,"not_text":"فی ذاته","not_text_user":"بدون طریق سماع","notstart":1977,"selected":false,"sharh":0,"text_id":4770,"title":""},{"end":3020,"not_id":477030313,"not_text":"منصوص العلة","not_text_user":"قیاس منصوص العله در مقابل قیاس مستنبط العله است که اهل سنت معتقد اند ","notstart":3031,"selected":false,"sharh":0,"text_id":4770,"title":""}],"edited":[],"deleted":[]},"sounds":{"added":[],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => naghiamini
+    [token] => MQDtpLxomCTuAsEkd764nZPwJNeOBzUK
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+

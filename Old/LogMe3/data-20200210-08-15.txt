@@ -1,0 +1,273 @@
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getNotification] => 
+)
+
+Array
+(
+    [/api/v2/getSetting] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray] => 
+)
+
+Array
+(
+    [/api/v2/addHighlight] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [highlight_id] => 0
+    [text_id] => 11033
+    [highlight_color] => 3
+    [highlight_title] => 
+    [highlight_text] => المبحث
+    [highlight_description] => 
+    [highlight_start] => 447
+    [highlight_end] => 453
+    [sharh] => 0
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 1985
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 3893
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 3932
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 1985
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 4050
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 3890
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":2095,"highlight_id":2024,"highlight_start":2075,"highlight_tags":"[]","highlight_text":"","highlight_title":"و بالجملة لا یلزم من","selected":false,"sharh":0,"text_id":10978}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[{"id":0,"isPlay":false,"selected":false,"text_id":11860}],"deleted":[]}}
+)
+
+Array
+(
+    [/api/v2/allbookList] => 
+    [price] => 0
+    [catid] => 0
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+)
+
+Array
+(
+    [/api/v2/bookList] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/addHighTag] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [hightag_id] => 0
+    [highlight_id] => 4063
+    [hightag_title] => *
+    [public] => 0
+    [tags] => []
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/80] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/43] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/91] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/79] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/46-47-48-55-56-57] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryArray/44] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/93-92] => 
+)
+
+Array
+(
+    [/api/v2/getCategoryBooks/67-68-76] => 
+)
+
+Array
+(
+    [/api/v2/getAllPayeh] => 
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 1985
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 1985
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 3893
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 3932
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 3890
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/deleteItem] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [id] => 4050
+    [item] => highlight
+)
+
+Array
+(
+    [/api/v2/HNS] => 
+    [mac] => hashemy
+    [token] => vmbcZ6iLNElAM5T2CfDP3njpxHd8a4Be
+    [data] => {"highlights":{"added":[{"highlight_color":3,"highlight_end":2095,"highlight_id":2024,"highlight_start":2075,"highlight_tags":"[]","highlight_text":"","highlight_title":"و بالجملة لا یلزم من","selected":false,"sharh":0,"text_id":10978},{"highlight_color":3,"highlight_end":453,"highlight_id":4063,"highlight_start":447,"highlight_tags":"[]","highlight_text":"","highlight_title":"المبحث","selected":false,"sharh":0,"text_id":11033}],"edited":[],"deleted":[]},"notes":{"added":[],"edited":[],"deleted":[]},"sounds":{"added":[{"id":0,"isPlay":false,"selected":false,"text_id":11860}],"deleted":[]}}
+)
+
