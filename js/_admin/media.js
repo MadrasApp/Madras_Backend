@@ -1,7 +1,6 @@
 
 
 $(document).ready(function(e) {
-	
 	$(document).on("click",".selectable",function(){
 		
 		var un = $(this).attr('unique-group');
@@ -343,6 +342,19 @@ function media(options,button,callback){
 					MediaData('restore','files');
 				}
 				else $tab.append(data);
+
+				$tab.find(
+					'.media-item[data-type="mp4"], ' +
+					'.media-item[data-type="m4s"], ' +
+					'.media-item[data-type="mp3"], ' +
+					'.media-item[data-type="wav"], ' +
+					'.media-item[data-type="ogg"], ' +
+					'.media-item[data-type="aac"], ' +
+					'.media-item[data-type="wma"], ' +
+					'.media-item[data-type="m4a"], ' +
+					'.media-item[data-type="flac"]'
+				).hide();
+				  
 				
 				updateMediaSidbar();
 				

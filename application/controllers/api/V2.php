@@ -6053,6 +6053,8 @@ class V2 extends CI_Controller
     public function getBookDetail()
     {
         try {
+            $user = $this->_loginNeed(TRUE, 'u.id');
+            $uid = (int)@$user->id;
             $id = (int)$this->input->post('id');
             $limit = 20;
             if (!$id) {
@@ -6266,8 +6268,114 @@ class V2 extends CI_Controller
                 }
                 $same_onvan = $data['samembook'];
             }
+            
+            $classonlines = $this->db->select('cid')
+                ->where_in('data_type', ['book', 'hamniaz'])
+                ->where('data_id', $id)
+                ->get('classonline_data')
+                ->result();
 
-            $this->tools->outS(0, 'OK', array('book' => $book, "classroom_data" => $classroom_data, "dorehclass" => $dorehclass, "same_mozoe" => $same_mozoe, "same_onvan" => $same_onvan, "membership" => $membership));
+            $classonline_ids = [0];
+            foreach ($classonlines as $classonline) {
+                $classonline_ids[$classonline->cid] = $classonline->cid;
+            }
+            $classonlines = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_ids)
+                ->order_by('cid,dayofweek,starttime')
+                ->get('classonline_data')
+                ->result();
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            $classonline_dayofweeks = [];
+            foreach ($classonlines as $key => $classonline) {
+                if ($classonline->data_type == "dayofweek") {
+                    $classonline_dayofweeks[$classonline->cid][] = ["dayofweek" => $classonline->dayofweek, "dayname" => $dayofweeks[$classonline->dayofweek], "starttime" => $classonline->starttime, "endtime" => $classonline->endtime];
+                }
+            }
+
+            $this->db->select('c.id AS value,c.displayname as text');
+            $this->db->where_in('c.id');
+            $teachers = $this->db->get('users c')->result();
+
+            $tempteachers = [];
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->value] = $teacher;
+            }
+            $teachers = $tempteachers;
+
+            $classonlines = $this->db->select('*')
+                ->where_in('id', $classonline_ids)
+                ->get('classonline')
+                ->result();
+
+            foreach ($classonlines as $key => $classonline) {
+                if ($classonline->teachername) {
+                    $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines[$key]->capacity = $classaccount;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
+            }
+
+            $book->classonline = $classonlines;
+
+            $classrooms = $this->db->select('cid')
+                ->where_in('data_type', ['book', 'hamniaz'])
+                ->where('data_id', $id)
+                ->get('classroom_data')
+                ->result();
+
+            $classroom_ids = [0];
+            foreach ($classrooms as $classroom) {
+                $classroom_ids[$classroom->cid] = $classroom->cid;
+            }
+
+            $classrooms = $this->db->select('*')
+                ->where_in('id', $classroom_ids)
+                ->get('classroom')
+                ->result();
+
+
+            $book->classroom = $classrooms;
+            $dayofweek = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+
+            $userbook = $this->db->select('*,UNIX_TIMESTAMP(expiremembership) ExpTime')
+                ->where('book_id', $id)
+                ->where('user_id', $uid)
+                ->where('(ISNULL(expiremembership) OR (NOT ISNULL(expiremembership) AND expiremembership > CURDATE()))')
+                ->get('user_books')
+                ->row();
+
+            $this->tools->outS(0, 'OK', 
+                [
+                    "book" => $book,
+                    "dayofweek" => $dayofweek,
+                    "classroom_data" => $classroom_data,
+                    "dorehclass" => $dorehclass,
+                    "same_mozoe" => $same_mozoe,
+                    "same_onvan" => $same_onvan,
+                    "membership" => $membership,
+                    "userbook" => $userbook
+                ]
+            );
         } catch (Exception $e) {
             $this->tools->outE($e);
         }
@@ -6965,24 +7073,121 @@ class V2 extends CI_Controller
     }
 
     //=========================================
-    public function getClassOnline($id = 0)
+    // public function getClassOnline($id = 0)
+    // {
+    //     try {
+    //         $baseurl = base_url();
+
+    //         $limit = (int)$this->input->post('limit');
+    //         $limitstart = (int)$this->input->post('limitstart');
+
+    //         $db = $this->db;
+    //         $data = array();
+            
+    //         $dayofweek = [
+    //             0 => "شنبه",
+    //             1 => "یکشنبه",
+    //             2 => "دوشنبه",
+    //             3 => "سه شنبه",
+    //             4 => "چهارشنبه",
+    //             5 => "پنجشنبه",
+    //             6 => "جمعه"
+    //         ];
+    //         $data["dayofweek"] = $dayofweek;
+
+    //         $db->select('id AS value,displayname AS text');
+    //         $db->where('level', 'teacher');
+    //         $db->limit($limit, $limitstart);
+    //         $data['teacher'] = $db->get('users')->result();
+
+    //         $db->select('c.*');
+    //         $db->where('c.published', 1);
+    //         $db->limit($limit, $limitstart);
+    //         $classonlines = $db->get('classonline c')->result();
+    //         foreach ($classonlines as $key => $classonline) {
+    //             $classaccounts = $db->where('user_id', 0)->where('classonline_id', $classonline->id)->get('classaccount')->num_rows();
+    //             $classonlines[$key]->classaccounts["free"] = $classaccounts;
+    //             $classaccounts = $db->where('user_id > 0')->where('classonline_id', $classonline->id)->get('classaccount')->num_rows();
+    //             $classonlines[$key]->classaccounts["used"] = $classaccounts;
+    //         }
+    //         $data['classonlines'] = $classonlines;
+
+    //         $this->tools->outS(0, 'OK', ["data" => $data]);
+    //     } catch (Exception $e) {
+    //         $this->tools->outE($e);
+    //     }
+    // }
+    public function getClassOnline()
     {
         try {
             $baseurl = base_url();
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
+            $id = (int)$this->input->post('id');
 
             $db = $this->db;
             $data = array();
+            $dayofweek = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+            $data["dayofweek"] = $dayofweek;
 
             $db->select('id AS value,displayname AS text');
             $db->where('level', 'teacher');
-            $db->limit($limit, $limitstart);
-            $data['teacher'] = $db->get('users')->result();
+            $teachers = $db->get('users')->result();
+
+            $tempteachers = [];
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->value] = $teacher;
+            }
+            $teachers = $tempteachers;
+
+            $db->select('c.classonline_id');
+            $db->where('c.user_id', 0);
+            $db->group_by('c.classonline_id');
+            $classaccounts = $db->get('classaccount c')->result();
+            $classonline_id = [-1];
+            foreach ($classaccounts as $classaccount) {
+                $classonline_id[] = $classaccount->classonline_id;
+            }
+
+            $classonlines = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_id)
+                ->order_by('cid,dayofweek,starttime')
+                ->get('classonline_data')
+                ->result();
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            $classonline_dayofweeks = [];
+            foreach ($classonlines as $classonline) {
+                if ($classonline->data_type == "dayofweek") {
+                    $classonline_dayofweeks[$classonline->cid][] = ["dayofweek" => $classonline->dayofweek, "dayname" => $dayofweeks[$classonline->dayofweek], "starttime" => $classonline->starttime, "endtime" => $classonline->endtime];
+                }
+            }
 
             $db->select('c.*');
             $db->where('c.published', 1);
+            if ($id) {
+                $db->where('id', $id);
+            } else {
+                $db->where_in('id', $classonline_id);
+            }
             $db->limit($limit, $limitstart);
             $classonlines = $db->get('classonline c')->result();
             foreach ($classonlines as $key => $classonline) {
@@ -6990,6 +7195,9 @@ class V2 extends CI_Controller
                 $classonlines[$key]->classaccounts["free"] = $classaccounts;
                 $classaccounts = $db->where('user_id > 0')->where('classonline_id', $classonline->id)->get('classaccount')->num_rows();
                 $classonlines[$key]->classaccounts["used"] = $classaccounts;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
+                $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+
             }
             $data['classonlines'] = $classonlines;
 
