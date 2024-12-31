@@ -525,6 +525,58 @@ class M_post extends CI_Model
         return $categories;
     }
 
+    public function getCategoryArrayWithLimit($parent = 0, $post_type = 'book', $subcategories_limit = 1)
+    {
+        $this->db->select('c.id,c.parent,c.name,c.position,c.pic,c.icon');
+
+        if ($post_type == 'book') {
+            $this->db->select('c.description as discount');
+        } else {
+            $this->db->select('c.description');
+        }
+    
+        $this->db->select('(SELECT COUNT(id) FROM ci_category ch WHERE ch.parent=c.id) AS children_length');
+        $this->db->select("(SELECT COUNT(id) FROM ci_posts p WHERE p.published=1 AND p.category = c.id) as post_count");
+        $this->db->where('c.type', $post_type);
+        $this->db->where('c.parent', (int)$parent);
+        $this->db->order_by('position', 'asc');
+    
+        $categories = $this->db->get('category c')->result();
+    
+        if (!empty($categories)) {
+            foreach ($categories as $k => $category) {
+                $pic = $category->pic == '' ? $this->setting['default_category_pic'] : $category->pic;
+                $categories[$k]->pic = base_url() . $pic;
+    
+                if ($category->children_length > 0) {
+                    $this->db->select('id, parent, name, position, pic, icon, description');
+                    $this->db->where('type', $post_type);
+                    $this->db->where('parent', (int)$category->id);
+                    $this->db->order_by('position', 'asc');
+    
+                    if ($subcategories_limit !== null && is_int($subcategories_limit)) {
+                        $this->db->limit($subcategories_limit);
+                    }
+    
+                    $subcategories = $this->db->get('category')->result();
+    
+                    foreach ($subcategories as $sub_key => $subcategory) {
+                        $subcategories[$sub_key]->pic = $subcategory->pic == '' ? $this->setting['default_category_pic'] : base_url() . $subcategory->pic;
+    
+                        if ($subcategory->children_length > 0) {
+                            $subcategories[$sub_key]->children = $this->getCategoryArrayWithLimit($subcategory->id, $post_type, $subcategories_limit);
+                        }
+                    }
+    
+                    $categories[$k]->children = $subcategories;
+                }
+            }
+        }
+        
+        return $categories;
+    }
+
+
     public function setCategoryPostsCount($categories)
     {
         foreach ($categories as $k => $c) {

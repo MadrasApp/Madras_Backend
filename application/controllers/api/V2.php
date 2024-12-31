@@ -2133,6 +2133,13 @@ class V2 extends CI_Controller
         $this->tools->outS(0, NULL, ['data' => $categories]);
     }
 
+    public function getCategoryArrayWithLimit($parent = 0, $post_type = 'book', $limit = 1)
+    {
+        $categories = $this->post->getCategoryArrayWithLimit((int)$parent, $post_type, $limit = 1);
+        //$categories = $this->post->setCategoryPostsCount($categories);
+        $this->tools->outS(0, NULL, ['data' => $categories]);
+    }
+
     public function getCategoryBooks($category = NULL)
     {
         if ($category === NULL) {
@@ -3306,6 +3313,76 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "حذف شد");
     }
+
+    public function ema_deleteItem()
+    {
+        $user = $this->_loginNeed();
+
+        if ($user === FALSE)
+            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('id', 'شماره ID', 'trim|required');
+        $this->form_validation->set_rules('item', 'آیتم', 'trim|required|in_list[sound,image,highlight,tag,note]');
+
+        if ($this->form_validation->run() == FALSE)
+            throw new Exception(implode('|', $this->form_validation->error_array()), 1);
+
+        $id = $this->input->post('id');
+        $item = $this->input->post('item');
+        $table = '';
+
+        switch ($item) {
+            case 'sound':
+                $table = 'fav_sounds';
+                break;
+            case 'image':
+                $table = 'fav_images';
+                break;
+            case 'highlight':
+                $table = 'highlights';
+                $this->db->where('user_id', (int)$user->id);
+                $this->db->where('hid', (int)$id);
+                $this->db->delete('hightag');
+
+                break;
+            case 'tag':
+                $table = 'hightag';
+
+                // Handle multiple IDs for tags
+                $ids = json_decode($id, true);
+                if (!is_array($ids) || empty($ids)) {
+                    throw new Exception("فرمت شناسه ها نامعتبر است", 1);
+                }
+
+                $this->db->where('user_id', (int)$user->id);
+                $this->db->where_in('id', $ids);
+
+                if (!$this->db->delete($table)) {
+                    throw new Exception("خطا در حذف", 5);
+                }
+
+                $this->tools->outS(0, "حذف شد");
+                return;
+
+            case 'note':
+                $table = 'notes';
+                break;
+        }
+
+        // Handle single ID for other items
+        $id = (int)$id;
+        $this->db->where('user_id', (int)$user->id);
+        $this->db->where('id', $id);
+
+        if (!$this->db->delete($table)) {
+            throw new Exception("خطا در حذف", 5);
+        }
+
+        $this->tools->outS(0, "حذف شد");
+    }
+
 
     public function HNS()
     {
