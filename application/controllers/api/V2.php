@@ -1942,7 +1942,12 @@ class V2 extends CI_Controller
             $bookids[$v->book_id] = $v->book_id;
             $need_update[$v->book_id] = $v->need_update;
         }
-        $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->get('posts p')->result();
+        // $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->where('p.published', 1)->get('posts p')->result();
+        $books = $this->db
+        ->where_in('p.id', $bookids) // Use where_in for safer handling
+        ->where('p.published', 1)
+        ->get('posts p')
+        ->result();
         $post_meta = $this->db->where('p.post_id IN(' . implode(',', $bookids) . ')')->get('post_meta p')->result();
 
         $meta = array();
