@@ -1916,38 +1916,43 @@ class V2 extends CI_Controller
         $user = $this->_loginNeed(TRUE, 'u.id');
         $base = base_url();
 
+        $hasmembership = (int)$this->input->post('hasmembership');
         $limit = (int)$this->input->post('limit');
         $limitstart = (int)$this->input->post('limitstart');
 
-        if ($user === FALSE)
+        if ($user === FALSE) {
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
 
         $this->load->model('m_book', 'book');
 
         $this->db->select('ub.book_id,ub.need_update');
-        $this->db->join('ci_factors f', '(ub.factor_id=f.id AND f.status=0)', 'inner', FALSE);
         $this->db->where('ub.user_id', $user->id);
-        $results = $this->db->get('user_books ub')->result();
-        $count = count($results);
-        if ($limit || $limitstart) {
-            $this->db->select('ub.book_id,ub.need_update');
-            $this->db->join('ci_factors f', '(ub.factor_id=f.id AND f.status=0)', 'inner', FALSE);
-            $this->db->where('ub.user_id', $user->id);
-            $this->db->limit($limit, $limitstart);
-            $results = $this->db->get('user_books ub')->result();
+        if (!$hasmembership) {
+            $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
         }
-        $bookids = array(0);
-        $need_update = array();
+        $UB = $this->db->get('user_books ub');
+        $allbooks = $UB->result();
+        $total = count($allbooks);
+        $this->db->select('ub.book_id,ub.need_update');
+        $this->db->where('ub.user_id', $user->id);
+        if (!$hasmembership) {
+            $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
+        }
+        $this->db->join('ci_factors f', '(ub.factor_id=f.id AND f.status=0)', 'inner', FALSE);
+        if ($limit || $limitstart) {
+            $this->db->limit($limit, $limitstart);
+        }
+        $results = $this->db->get('user_books ub')->result();
+        $bookids = [0];
+        $accessUnixTimes = [0];
+        $need_update = [];
         foreach ($results as $k => $v) {
             $bookids[$v->book_id] = $v->book_id;
             $need_update[$v->book_id] = $v->need_update;
+            $accessUnixTimes[$v->book_id] = $v->accessUnixTime ? intval($v->accessUnixTime) : null;
         }
-        // $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->where('p.published', 1)->get('posts p')->result();
-        $books = $this->db
-        ->where_in('p.id', $bookids) // Use where_in for safer handling
-        ->where('p.published', 1)
-        ->get('posts p')
-        ->result();
+        $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->get('posts p')->result();
         $post_meta = $this->db->where('p.post_id IN(' . implode(',', $bookids) . ')')->get('post_meta p')->result();
 
         $meta = array();
