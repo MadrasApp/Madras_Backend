@@ -7407,4 +7407,91 @@ class V2 extends CI_Controller
         }
     }
     //=========================================
+    public function DayClassOnline($id = 0)
+    {
+        try {
+            $baseurl = base_url();
+
+            $user = $this->_loginNeed();
+
+            if ($user === FALSE) {
+                throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            }
+
+            $dayofweek = (int)$this->input->post('dayofweek');
+            $user_id = (int)$user->id;
+
+            $db = $this->db;
+            $data = array();
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            $db->select('id AS value,displayname AS text');
+            $db->where('level', 'teacher');
+            $teachers = $db->get('users')->result();
+
+            $tempteachers = [];
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->value] = $teacher;
+            }
+            $teachers = $tempteachers;
+
+            $db->select('c.classonline_id');
+            $db->where('c.user_id', $user_id);
+            $db->group_by('c.classonline_id');
+            $classonline_id = [-1];
+            $classaccounts = $db->get('classaccount c')->result();
+            foreach ($classaccounts as $classaccount) {
+                $classonline_id[] = $classaccount->classonline_id;
+            }
+            $classonlinedatas = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where('dayofweek', $dayofweek)
+                ->where_in('cid', $classonline_id)
+                ->order_by('cid,dayofweek,starttime')
+                ->get('classonline_data')
+                ->result();
+            $classonline_id = [-1];
+            foreach ($classonlinedatas as $classonlinedata) {
+                $classonline_id[] = $classonlinedata->cid;
+            }
+
+            $classonlinedatas = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_id)
+                ->order_by('cid,dayofweek,starttime')
+                ->get('classonline_data')
+                ->result();
+            $classonline_dayofweeks = [];
+            foreach ($classonlinedatas as $classonlinedata) {
+                $classonline_dayofweeks[$classonlinedata->cid][] = ["dayofweek" => $classonlinedata->dayofweek, "dayname" => $dayofweeks[$classonlinedata->dayofweek], "starttime" => $classonlinedata->starttime, "endtime" => $classonlinedata->endtime];
+            }
+
+            $db->select('c.*');
+            //$db->where('c.published', 1);
+            $db->where_in('id', $classonline_id);
+            $classonlines = $db->get('classonline c')->result();
+            foreach ($classonlines as $key => $classonline) {
+                $classaccounts = $db->where('user_id', 0)->where('classonline_id', $classonline->id)->get('classaccount')->num_rows();
+                $classonlines[$key]->classaccounts["free"] = $classaccounts;
+                $classaccounts = $db->where('user_id > 0')->where('classonline_id', $classonline->id)->get('classaccount')->num_rows();
+                $classonlines[$key]->classaccounts["used"] = $classaccounts;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
+                $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+
+            }
+            $data['classonlines'] = $classonlines;
+
+            $this->tools->outS(0, 'OK', ["data" => $data]);
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
 }
