@@ -66,6 +66,12 @@ $route['admin/([a-zA-Z]+)/primary'] = 'admin/posts/viewlist/$1/primary';
 $route['admin/([a-zA-Z]+)/recyclebin'] = 'admin/posts/viewlist/$1/recyclebin';
 $route['admin/([a-zA-Z]+)/test'] = 'admin/posts/viewlist/$1/test';//Alireza Balvardi
 
+// $route['admin/shortlinks'] = 'Shortlinks/index'; // Default page for managing links
+// $route['admin/shortlinks/add'] = 'Shortlinks/add'; // Page to add new links
+// $route['admin/shortlinks/create'] = 'Shortlinks/create'; // Form submission for adding links
+// $route['admin/shortlinks/delete/(:num)'] = 'Shortlinks/delete/$1'; // Delete a link by ID
+
+
 $route['admin/([a-zA-Z]+)/edit/(:num)'] = 'admin/posts/addedit/$1/edit/$2';
 $route['admin/([a-zA-Z]+)/add'] = 'admin/posts/addedit/$1';
 

@@ -106,6 +106,12 @@
                 )
             );
 
+            $pages['shortlinks'] = array(
+                'manage_shortlinks', // Permission required
+                'اخبار',       // Display name
+                'link',              // FontAwesome icon
+            );       
+
             $pages['advertise'] = array('manage_advertise', 'تبلیغات', 'bank');//Alireza Balvardi
             $pages['payamak'] = array('manage_payamak', 'پیامک', 'mobile');//Alireza Balvardi
             $pages['dictionary'] = array('manage_dictionary', 'لغتنامه', 'tags',

@@ -4622,4 +4622,59 @@ class Admin_ajax extends CI_Controller
             $paragraph++;
         }
     }
+
+    /******************************
+     * ShortLinks
+     ******************************/
+    public function SaveShortlink()
+    {
+        try {
+            if (!$this->user->can('manage_shortlinks'))
+                throw new Exception("You do not have permission to access this section.", 1);
+
+            $post = $this->input->post();
+            $id = intval($post['id']);
+
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('id', 'ID', 'trim');
+            $this->form_validation->set_rules('original_url', 'Original URL', 'trim|required|valid_url');
+
+            if ($this->form_validation->run() === FALSE) {
+                throw new Exception(implode(' | ', $this->form_validation->error_array()), 1);
+            }
+
+            $originalUrl = $post['original_url'];
+            $shortCode = substr(md5($originalUrl . time()), 0, 6);
+            $data = ['original_url' => $originalUrl];
+
+            if ($id) {
+                $data['short_code'] = $shortCode; // Optional if editing
+                if (!$this->db->where('id', $id)->update('short_links', $data))
+                    throw new Exception("Failed to update the short link.", 1);
+            } else {
+                $data['short_code'] = $shortCode;
+                $this->db->insert('short_links', $data);
+            }
+
+            $this->tools->outS(0, 'Short link saved successfully.');
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function DeleteShortlink()
+    {
+        try {
+            if (!$this->user->can('manage_shortlinks'))
+                throw new Exception("You do not have permission to access this section.", 1);
+
+            $id = intval($this->input->post('id'));
+            if (!$this->db->where('id', $id)->delete('short_links'))
+                throw new Exception("Failed to delete the short link.", 1);
+
+            $this->tools->outS(0, 'Short link deleted successfully.');
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
 }
