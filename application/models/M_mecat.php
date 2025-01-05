@@ -34,9 +34,9 @@ class M_mecat extends CI_Model
         if (!empty($mecat)) {
             $result .= $start;
             foreach ($mecat as $cat) {
-                $publishedval = $cat['published'];
+                $publishedval = isset($cat['published']) ? $cat['published'] : 0;
                 $published = $publishedval ? 'check green' : 'close red';
-                $specialval = $cat['special'];
+                $specialval = isset($cat['special']) ? $cat['special'] : 0;
                 $special = $specialval ? 'star gold' : 'star-o';
                 $id = $cat['id'];
                 $name = $cat['name'];
@@ -136,8 +136,6 @@ class M_mecat extends CI_Model
                     $return[] = array(
                         'id' => $cat->id,
                         'pos' => $cat->position,
-                        'published' => $cat->published,
-                        'special' => $cat->special,
                         'name' => $cat->name,
                         'pic' => $cat->pic,
                         'des' => $cat->description,

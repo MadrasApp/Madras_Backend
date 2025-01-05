@@ -417,7 +417,7 @@ class inc{
 					
 				foreach($cols as $k =>$v){
 					
-					$col = $field[$v['field_name']];
+					$col = isset($field[$v['field_name']]) ? $field[$v['field_name']] : '';
 					
 					if(isset($v['max']))
 					$col = $this -> truncate($col,$v['max']);

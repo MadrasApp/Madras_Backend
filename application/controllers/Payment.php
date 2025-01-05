@@ -347,7 +347,8 @@ class Payment extends CI_Controller
         $RefNum = $this->input->post('RefNum');
         $input = $this->input->post();
         $config = $this->settings->data;
-        if($config["online"]){
+        $online = isset($config["online"]) ? $config["online"] : false;
+        if($online){
             $state = $this->input->post('State');
             if ($state == '') {
                 throw new Exception("اطلاعات ورودی اشتباه است", 1);
