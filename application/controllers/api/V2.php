@@ -7120,7 +7120,7 @@ class V2 extends CI_Controller
             $discountCode = $this->input->post('code');
             $discount_id = 0;
             if ($discountCode) {
-                $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8$plan_id", $user->id);
+                $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
             }
             if (!isset($discount_ids["allowed"])) {
                 $discount_ids = [];
