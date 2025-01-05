@@ -7097,50 +7097,156 @@ class V2 extends CI_Controller
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
 
-        $category_id = (int)$this->input->post('category_id');
-        $plan_id = (int)$this->input->post('plan_id');
-        if (!$category_id || !$plan_id) {
+        $phone_number = (int)$this->input->post('mac');
+        $category_id = $this->input->post('category_id');
+        $category_id = explode(",", $category_id);
+        $plan_id = $this->input->post('plan_id');
+        $plan_id = explode(",", $plan_id);
+        if (!count($category_id) || !count($plan_id)) {
             throw new Exception("شماره دسته بندی یا شماره پلن عضویت الزامی است", 1);
         }
 
         $this->load->model('m_category', 'category');
 
         if ($this->category->isBought($user->id, $category_id, $plan_id)) {
-            throw new Exception("اشتراک قبلا خریداری شده است", 5);
+            $data = $this->db
+                ->where_in('cat_id', $category_id)
+                ->where('enddate > NOW()')
+                ->order_by('enddate DESC')
+                ->get("user_catmembership")->row();
+            $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
+            //throw new Exception("اشتراک قبلا خریداری شده است", 5);
+        } else {
+            $discountCode = $this->input->post('code');
+            $discount_id = 0;
+            if ($discountCode) {
+                $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8$plan_id", $user->id);
+            }
+            if (!isset($discount_ids["allowed"])) {
+                $discount_ids = [];
+            } else {
+                $discount_ids = $discount_ids["allowed"];
+            }
+            $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_id);
+    
+            if ($cf['done'] == FALSE) {
+                throw new Exception($cf['msg'], 5);
+            }
+    
+            $factor = $cf['factor'];
+            $data = ['factor' => $factor];
+    
+            if ($factor->price == 0) {
+                $this->category->updatetFactor($factor->id, [
+                    'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+                    'status' => 0,
+                    'pdate' => time()
+                ]);
+    
+                if ($discount_id != NULL) {
+                    $this->category->setDiscountUsed($discount_id, $factor->id);
+                }
+    
+                $data['free'] = TRUE;
+                $data['link'] = NULL;
+    
+            } else {
+                $data['link'] = site_url('payment/paycategory/' . $factor->id);
+            }
+            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+        }
+    }
+
+    public function buyCategoryBazar()
+    {
+        $user = $this->_loginNeed();
+
+        if ($user === FALSE) {
+            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
+        $action = $this->input->post('action');
+        if (!strlen($action)) {
+            throw new Exception("کد فعالیت الزامی می باشد", 1);
+        }
+        $ref_id = $this->input->post('ref_id');
+        if (!strlen($ref_id)) {
+            throw new Exception("کد رهگیری الزامی می باشد", 1);
         }
 
-        $discountCode = $this->input->post('code');
-        $discount_id = 0;
-        if ($discountCode) {
-            $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8$plan_id", $user->id);
-        }
-        $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_id);
-
-        if ($cf['done'] == FALSE) {
-            throw new Exception($cf['msg'], 5);
+        $category_id = $this->input->post('category_id');
+        $category_id = explode(",", $category_id);
+        $plan_id = $this->input->post('plan_id');
+        $plan_id = explode(",", $plan_id);
+        if (!count($category_id) || !count($plan_id)) {
+            throw new Exception("شماره دسته بندی یا شماره پلن عضویت الزامی است", 1);
         }
 
-        $factor = $cf['factor'];
-        $data = ['factor' => $factor];
+        $this->load->model('m_category', 'category');
 
-        if ($factor->price == 0) {
-            $this->category->updatetFactor($factor->id, [
-                'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
-                'status' => 0,
-                'pdate' => time()
-            ]);
+        if ($this->category->isBought($user->id, $category_id, $plan_id)) {
+            $data = $this->db
+                ->where_in('cat_id', $category_id)
+                ->where('enddate > NOW()')
+                ->order_by('enddate DESC')
+                ->get("user_catmembership")->row();
+            $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
+            //throw new Exception("اشتراک قبلا خریداری شده است", 5);
+        } else {
+            $discountCode = $this->input->post('code');
+            $discount_ids = [];
+            if ($discountCode) {
+                $discount_ids = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+            }
+            if (!isset($discount_ids["allowed"])) {
+                $discount_ids = [];
+            } else {
+                $discount_ids = $discount_ids["allowed"];
+            }
+            $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_ids);
 
-            if ($discount_id != NULL) {
-                $this->category->setDiscountUsed($discount_id, $factor->id);
+            if ($cf['done'] == FALSE) {
+                throw new Exception($cf['msg'], 5);
             }
 
-            $data['free'] = TRUE;
-            $data['link'] = NULL;
+            $factor = $cf['factor'];
+            $data = ['factor' => $factor];
 
-        } else {
-            $data['link'] = site_url('payment/paycategory/' . $factor->id);
+            if ($factor->price == 0) {
+                $this->category->updatetFactor($factor->id, [
+                    'state' => count($discount_ids) ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+                    'status' => 0,
+                    'pdate' => time()
+                ]);
+
+                if (count($discount_ids)) {
+                    $this->category->setDiscountUsed($discount_ids, $factor->id);
+                }
+
+                $data['free'] = TRUE;
+                $data['link'] = NULL;
+
+            } else {
+                $data['link'] = site_url('payment/paycategory/' . $factor->id);
+            }
+            if (in_array($action, ["bazar", "myket"]) && $ref_id) {
+                $factor->state = 'پرداخت موفق';
+                $factor->status = 0;
+                $factor->pdate = $factor->cdate;
+                $factor->paid = $factor->price;
+                $factor->ref_id = $action . ":" . $ref_id;
+                $this->category->updatetFactor($factor->id, [
+                    'state' => $factor->state,
+                    'status' => $factor->status,
+                    'pdate' => $factor->pdate,
+                    'paid' => $factor->paid,
+                    'ref_id' => $factor->ref_id
+                ]);
+                $data = [];
+                $data['factor'] = $factor;
+                $data['link'] = '';
+            }
+            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
         }
-        $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
 
     //=========================================
