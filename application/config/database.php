@@ -64,7 +64,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'linukhhr',
+	'hostname' => 'linukhhr.lexoyacloud.ir',
 	'username' => 'root',
 	'password' => 'lPmP8bjRIYkb4XGl3DzgczToVlZ4lph4',
 	'database' => 'MadrasDB',
@@ -81,5 +81,6 @@ $db['default'] = array(
 	'compress' => FALSE,
 	'stricton' => FALSE,
 	'failover' => array(),
-	'save_queries' => TRUE
+	'save_queries' => TRUE,
+	'port' => 30036,
 );
