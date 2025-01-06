@@ -64,10 +64,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
+	'hostname' => 'linukhhr',
 	'username' => 'root',
-	'password' => '',
-	'database' => 'madras',
+	'password' => 'lPmP8bjRIYkb4XGl3DzgczToVlZ4lph4',
+	'database' => 'MadrasDB',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'ci_',
 	'pconnect' => FALSE,
