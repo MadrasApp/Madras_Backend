@@ -617,7 +617,7 @@ class V2 extends CI_Controller
 	    $userModel = new M_user();
 	    $eitaa_token = EITAA_TOKEN;
 	   // $eitta_token2 is just for test, must be deleted later
-	    $eitaa_token2 = '61101070:zY(y@M-MlLbZq-24taNK-,6iClr-#n41K0-puno38-cIoKKj-PL1hVD-x7Hn)$-8XPDQs-v16Eq!-eD[2AC-UT3Osc-7Cz%Ms-RfQmgD-qfuRAi-nj{{j3-ChLbEp-wDf?XJ-IB9fle-AU4~93-SUjeaz-9}?U1t-2iYOz]-Gg3zJ~-WPGewW-wF5Rky-X8ZMAp-ow9';
+	    $eitaa_token2 = '61101070:ad]r(7#cP-xUVh4O9o3-vIfpRCdqv-whFaQH4pR-ul9NjebzU-3sESD}OD1-Aw4LkqYe7-TGL2lr61{-YKqmL(.3u-Br}sdOjyo-wPBVVW)ez-JB%M6JKIF-GOmXm,t]v-MFAMKHbuy-gsgz';
 	    $eitta_data = $this->input->post('eitaa_data');
 	    
 	    // Remove escaped backslashes
@@ -1926,7 +1926,7 @@ class V2 extends CI_Controller
 
         $this->load->model('m_book', 'book');
 
-        $this->db->select('ub.book_id,ub.need_update');
+        $this->db->select('ub.book_id,ub.need_update, UNIX_TIMESTAMP(ub.expiremembership) as expiremembership');
         $this->db->where('ub.user_id', $user->id);
         if (!$hasmembership) {
             $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
@@ -1934,7 +1934,7 @@ class V2 extends CI_Controller
         $UB = $this->db->get('user_books ub');
         $allbooks = $UB->result();
         $total = count($allbooks);
-        $this->db->select('ub.book_id,ub.need_update');
+        $this->db->select('ub.book_id,ub.need_update, UNIX_TIMESTAMP(ub.expiremembership) as expiremembership');
         $this->db->where('ub.user_id', $user->id);
         if (!$hasmembership) {
             $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
@@ -1947,12 +1947,15 @@ class V2 extends CI_Controller
         $bookids = [0];
         $accessUnixTimes = [0];
         $need_update = [];
+        $expiremembership = [];
         foreach ($results as $k => $v) {
             $bookids[$v->book_id] = $v->book_id;
             $need_update[$v->book_id] = $v->need_update;
+            $expiremembership[$v->book_id] = $v->expiremembership;
+            $is_expired[$v->book_id] = ($v->expiremembership && $v->expiremembership < time()) ? true : false;
             $accessUnixTimes[$v->book_id] = $v->accessUnixTime ? intval($v->accessUnixTime) : null;
         }
-        $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->get('posts p')->result();
+        $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->where('p.published', 1)->get('posts p')->result();
         $post_meta = $this->db->where('p.post_id IN(' . implode(',', $bookids) . ')')->get('post_meta p')->result();
 
         $meta = array();
@@ -2013,6 +2016,8 @@ class V2 extends CI_Controller
             $books[$k]->cover = $v->thumb ? $base . $v->thumb : null;
             $books[$k]->cover300 = $v->thumb ? $base . thumb($v->thumb, 300) : null;
             $books[$k]->need_update = $need_update[$v->id];
+            $books[$k]->expiremembership = $expiremembership[$v->id];
+            $books[$k]->is_expired = $is_expired[$v->id];
             $books[$k]->pagecount = $meta[$v->id]["pagecount"];
             $books[$k]->isvideo = $meta[$v->id]["isvideo"];
             $books[$k]->startpage = $meta[$v->id]["startpage"];
@@ -2032,6 +2037,7 @@ class V2 extends CI_Controller
             $books[$k]->has_test = $v->has_test ? true : false;
             $books[$k]->has_tashrihi = $v->has_tashrihi ? true : false;
             $books[$k]->has_description = $v->has_description ? true : false;
+            $books[$k]->accessUnixTime = $accessUnixTimes[$v->id];
             unset($v->thumb);
         }
         $this->LoadNashr($bookscontroller, $books, $bookids);
@@ -2039,7 +2045,7 @@ class V2 extends CI_Controller
         $pagination = array();
         $pagination["limitstart"] = $limitstart;
         $pagination["limit"] = $limit;
-        $pagination["total"] = $count;
+        $pagination["total"] = $total;
 
         $this->tools->outS(0, 'OK', ['books' => $books, 'pagination' => $pagination]);
     }
@@ -2142,7 +2148,7 @@ class V2 extends CI_Controller
         //$categories = $this->post->setCategoryPostsCount($categories);
         $this->tools->outS(0, NULL, ['data' => $categories]);
     }
-
+    
     public function getCategoryArrayWithLimit($parent = 0, $post_type = 'book', $limit = 1)
     {
         $categories = $this->post->getCategoryArrayWithLimit((int)$parent, $post_type, $limit = 1);
@@ -2804,7 +2810,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
-
+    
     public function getUserBooks($user_id = NULL)
     {
         $user_id = (int)$user_id;
@@ -3323,7 +3329,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "حذف شد");
     }
-
+    
     public function ema_deleteItem()
     {
         $user = $this->_loginNeed();
@@ -3392,7 +3398,6 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "حذف شد");
     }
-
 
     public function HNS()
     {
@@ -6169,6 +6174,8 @@ class V2 extends CI_Controller
                 }
             } while ($categorydata->parent);
             $membership = [
+                "category_id" => $categorydata->id,
+                "name" => $categorydata->name,
                 "membership1" => $categorydata->membership1, "discountmembership1" => $categorydata->discountmembership1,
                 "membership3" => $categorydata->membership3, "discountmembership3" => $categorydata->discountmembership3,
                 "membership6" => $categorydata->membership6, "discountmembership6" => $categorydata->discountmembership6,
@@ -6444,13 +6451,13 @@ class V2 extends CI_Controller
             ];
 
 
-            $userbook = $this->db->select('*,UNIX_TIMESTAMP(expiremembership) ExpTime')
+            $userbook = $this->db->select('*,UNIX_TIMESTAMP(expiremembership) AS ExpTime')
                 ->where('book_id', $id)
                 ->where('user_id', $uid)
                 ->where('(ISNULL(expiremembership) OR (NOT ISNULL(expiremembership) AND expiremembership > CURDATE()))')
                 ->get('user_books')
                 ->row();
-
+                
             $this->tools->outS(0, 'OK', 
                 [
                     "book" => $book,
@@ -6953,7 +6960,11 @@ class V2 extends CI_Controller
                     $text["membership"] = "اشتراک";
                     $text["link"] = "آدرس وب";
                     if (intval($v->link)) {
-                        switch ($v->section) {
+                        $section = $v->section;
+                        if ($section == "membership") {
+                            $section = "category";
+                        }
+                        switch ($section) {
                             case "tecat":
                             case "category":
                                 $select = "id AS value,name AS text,pic,icon";
@@ -6968,7 +6979,7 @@ class V2 extends CI_Controller
                         }
                         $this->db->select($select);
                         $this->db->where("id", $v->link);
-                        $out = (object)$this->db->get($v->section)->row();
+                        $out = (object)$this->db->get($section)->row();
                     } else {
                         $out->id = 0;
                         $out->text = $v->link;
@@ -7107,7 +7118,7 @@ class V2 extends CI_Controller
         }
 
         $this->load->model('m_category', 'category');
-
+        
         if ($this->category->isBought($user->id, $category_id, $plan_id)) {
             $data = $this->db
                 ->where_in('cat_id', $category_id)
@@ -7120,7 +7131,7 @@ class V2 extends CI_Controller
             $discountCode = $this->input->post('code');
             $discount_id = 0;
             if ($discountCode) {
-                $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+                $discount_id = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
             }
             if (!isset($discount_ids["allowed"])) {
                 $discount_ids = [];
@@ -7153,9 +7164,100 @@ class V2 extends CI_Controller
             } else {
                 $data['link'] = site_url('payment/paycategory/' . $factor->id);
             }
-            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $boughtItems]);
         }
     }
+    
+//   public function buyCategory()
+// {
+//     $user = $this->_loginNeed();
+
+//     if ($user === FALSE)
+//         throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+
+//     $phone_number = (int)$this->input->post('mac');
+//     $category_ids = $this->input->post('category_id');
+//     $category_ids = explode(",", $category_ids); // Convert to array
+//     $plan_ids = $this->input->post('plan_id');
+//     $plan_ids = explode(",", $plan_ids); // Convert to array
+
+//     if (count($category_ids) !== count($plan_ids)) {
+//         throw new Exception("تعداد دسته‌بندی‌ها و پلن‌ها مطابقت ندارد", 1);
+//     }
+
+//     $category_ids = array_map('intval', $category_ids); // Ensure integers
+//     $plan_ids = array_map('intval', $plan_ids);
+
+//     // Pair categories with their respective plans
+//     $categoriesWithPlans = [];
+//     foreach ($category_ids as $index => $cat_id) {
+//         $categoriesWithPlans[$cat_id] = $plan_ids[$index];
+//     }
+
+//     $this->load->model('m_category', 'category');
+
+//     // Check if any categories have been purchased already
+//     $boughtItems = $this->category->isBought($user->id, array_keys($categoriesWithPlans));
+
+//     $existingCategories = [];
+//     if (!empty($boughtItems)) {
+//         foreach ($boughtItems as $boughtItem) {
+//             $existingCategories[$boughtItem['cat_id']] = $boughtItem;
+//         }
+//     }
+
+//     // Create payment factor (this will handle new membership inserts)
+//     $discountCode = $this->input->post('code');
+//     $discount_id = 0;
+//     if ($discountCode) {
+//         $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8", $plan_ids, $category_ids, $user->id);
+//     }
+
+//     $cf = $this->category->createFactor($user->id, $category_ids, $plan_ids, $discount_id);
+
+//     if ($cf['done'] == FALSE) {
+//         throw new Exception($cf['msg'], 5);
+//     }
+
+//     $factor = $cf['factor'];
+//     $data = ['factor' => $factor];
+
+//     // Update existing memberships
+//     foreach ($existingCategories as $cat_id => $boughtItem) {
+//         if (isset($categoriesWithPlans[$cat_id])) {
+//             $additionalMonths = $categoriesWithPlans[$cat_id];
+//             $newEndDate = date('Y-m-d H:i:s', strtotime($boughtItem['enddate'] . " +{$additionalMonths} months"));
+
+//             $this->db->where('id', $boughtItem['id']);
+//             $this->db->update('user_catmembership', [
+//                 'enddate' => $newEndDate,
+//                 'factor_id' => $factor->id
+//             ]);
+//         }
+//     }
+
+//     // Generate payment link
+//     if ($factor->price == 0) {
+//         $this->category->updatetFactor($factor->id, [
+//             'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+//             'status' => 0,
+//             'pdate' => time()
+//         ]);
+
+//         if ($discount_id != NULL) {
+//             $this->category->setDiscountUsed($discount_id, $factor->id);
+//         }
+
+//         $data['free'] = TRUE;
+//         $data['link'] = NULL;
+//     } else {
+//         $data['link'] = site_url('payment/paycategory/' . $factor->id);
+//     }
+
+//     $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+// }
+
+
 
     public function buyCategoryBazar()
     {
@@ -7500,8 +7602,8 @@ class V2 extends CI_Controller
             $teachers = $db->get('users c')->result();
 
             $tempteachers = [];
-            foreach ($teachers as $teacher){
-                $tempteachers[$teacher->id] = $teacher->displayname;
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->id] = ["value" => $teacher->id, "text" => $teacher->displayname];
             }
             $teachers = $tempteachers;
 

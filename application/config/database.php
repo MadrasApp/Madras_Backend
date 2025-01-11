@@ -64,10 +64,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'linukhhr.lexoyacloud.ir',
-	'username' => 'root',
-	'password' => 'lPmP8bjRIYkb4XGl3DzgczToVlZ4lph4',
-	'database' => 'MadrasDB',
+	'hostname' => 'localhost',
+	'username' => 'modapp_book2',
+	'password' => 'Xkv3Szh2',
+	'database' => 'modapp_book2',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'ci_',
 	'pconnect' => FALSE,
@@ -81,6 +81,5 @@ $db['default'] = array(
 	'compress' => FALSE,
 	'stricton' => FALSE,
 	'failover' => array(),
-	'save_queries' => TRUE,
-	'port' => 30036,
+	'save_queries' => TRUE
 );

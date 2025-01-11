@@ -524,7 +524,7 @@ class M_post extends CI_Model
             }
         return $categories;
     }
-
+    
     public function getCategoryArrayWithLimit($parent = 0, $post_type = 'book', $subcategories_limit = 1)
     {
         $this->db->select('c.id,c.parent,c.name,c.position,c.pic,c.icon');

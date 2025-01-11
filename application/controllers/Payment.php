@@ -55,7 +55,7 @@ class Payment extends CI_Controller
             $this->load->view('client/v_footer', $data);
         }
     }
-
+    
     private function _paybook($id)
     {
         $this->load->model('m_book', 'book');
@@ -76,7 +76,7 @@ class Payment extends CI_Controller
         $this->load->view('client/v_payment_form', $data);
         $this->load->view('client/v_footer', $data);
     }
-
+    
     /*==================================
                 PAYMENT CLASS DOREH
     ===================================*/

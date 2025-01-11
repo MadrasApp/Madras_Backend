@@ -1,5 +1,11 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-
+<?php 
+if(isset($_GET['from']) && $_GET['from'] == 'miniapp'){
+    $url = 'https://madras.zipak.info';
+} else {
+    $url = base_url('payment/go_to_app');
+}
+?>
 <div class="container" style="max-width:500px">
 	<div class="row mt-30">
 		<div class="col-xs-12 mt-30 mb-30">
@@ -7,7 +13,7 @@
 				<h3><i class="fa fa-warning fa-lg ml-15"></i> <span><?php echo  $error ?></span> </h3> 
 			</div>
 			
-			<a href="<?php echo  base_url('payment/go_to_app') ?>" class="btn btn-lg btn-primary btn-block">
+			<a href="<?php echo $url ?>" class="btn btn-lg btn-primary btn-block">
 				<i class="fa fa-share"></i> <span> &nbsp; بازگشت به برنامه </span>
 			</a>
 		</div>
