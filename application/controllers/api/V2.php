@@ -7555,6 +7555,84 @@ class V2 extends CI_Controller
         $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
 
+    public function buyAccountClassOnlineBazar()
+    {
+        $user = $this->_loginNeed();
+
+        if ($user === FALSE) {
+            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
+
+        $classonline_id = (int)$this->input->post('classonline_id');
+        if (!$classonline_id) {
+            throw new Exception("شماره دسته بندی یا شماره پلن عضویت الزامی است", 1);
+        }
+        $action = $this->input->post('action');
+        if (!strlen($action)) {
+            throw new Exception("کد فعالیت الزامی می باشد", 1);
+        }
+        $ref_id = $this->input->post('ref_id');
+        if (!strlen($ref_id)) {
+            throw new Exception("کد رهگیری الزامی می باشد", 1);
+        }
+
+        $this->load->model('m_classonline', 'classonline');
+
+        if ($this->classonline->isBought($user->id, $classonline_id)) {
+            throw new Exception("اشتراک قبلا خریداری شده است", 5);
+        }
+
+        $discountCode = $this->input->post('code');
+        $discount_id = 0;
+        if ($discountCode) {
+            $discount_id = (int)$this->classonline->checkDiscountCode($discountCode, "-9", $user->id);
+        }
+        $cf = $this->classonline->createFactor($user->id, $classonline_id, $discount_id);
+
+        if ($cf['done'] == FALSE) {
+            throw new Exception($cf['msg'], 5);
+        }
+
+        $factor = $cf['factor'];
+        $data = ['factor' => $factor];
+
+        if ($factor->price == 0) {
+            $this->classonline->updatetFactor($factor->id, [
+                'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+                'status' => 0,
+                'pdate' => time()
+            ]);
+
+            if ($discount_id != NULL) {
+                $this->classonline->setDiscountUsed($discount_id, $factor->id);
+            }
+
+            $data['free'] = TRUE;
+            $data['link'] = NULL;
+
+        } else {
+            $data['link'] = site_url('payment/payclassonline/' . $factor->id);
+        }
+        if (in_array($action, ["bazar", "myket"]) && $ref_id) {
+            $factor->state = 'پرداخت موفق';
+            $factor->status = 0;
+            $factor->pdate = $factor->cdate;
+            $factor->paid = $factor->price;
+            $factor->ref_id = $action . ":" . $ref_id;
+            $this->classonline->updatetFactor($factor->id, [
+                'state' => $factor->state,
+                'status' => $factor->status,
+                'pdate' => $factor->pdate,
+                'paid' => $factor->paid,
+                'ref_id' => $factor->ref_id
+            ]);
+            $data = [];
+            $data['factor'] = $factor;
+            $data['link'] = '';
+        }
+        $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+    }
+
     //=========================================
     public function getClassOnlineAccounts($id = 0)
     {
