@@ -7119,15 +7119,15 @@ class V2 extends CI_Controller
 
         $this->load->model('m_category', 'category');
         
-        if ($this->category->isBought($user->id, $category_id, $plan_id)) {
-            $data = $this->db
-                ->where_in('cat_id', $category_id)
-                ->where('enddate > NOW()')
-                ->order_by('enddate DESC')
-                ->get("user_catmembership")->row();
-            $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
-            //throw new Exception("اشتراک قبلا خریداری شده است", 5);
-        } else {
+        // if ($this->category->isBought($user->id, $category_id, $plan_id)) {
+        //     $data = $this->db
+        //         ->where_in('cat_id', $category_id)
+        //         ->where('enddate > NOW()')
+        //         ->order_by('enddate DESC')
+        //         ->get("user_catmembership")->row();
+        //     $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
+        //     //throw new Exception("اشتراک قبلا خریداری شده است", 5);
+        // } else {
             $discountCode = $this->input->post('code');
             $discount_id = 0;
             if ($discountCode) {
@@ -7164,101 +7164,10 @@ class V2 extends CI_Controller
             } else {
                 $data['link'] = site_url('payment/paycategory/' . $factor->id);
             }
-            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $boughtItems]);
-        }
+            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+        // }
     }
     
-//   public function buyCategory()
-// {
-//     $user = $this->_loginNeed();
-
-//     if ($user === FALSE)
-//         throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-
-//     $phone_number = (int)$this->input->post('mac');
-//     $category_ids = $this->input->post('category_id');
-//     $category_ids = explode(",", $category_ids); // Convert to array
-//     $plan_ids = $this->input->post('plan_id');
-//     $plan_ids = explode(",", $plan_ids); // Convert to array
-
-//     if (count($category_ids) !== count($plan_ids)) {
-//         throw new Exception("تعداد دسته‌بندی‌ها و پلن‌ها مطابقت ندارد", 1);
-//     }
-
-//     $category_ids = array_map('intval', $category_ids); // Ensure integers
-//     $plan_ids = array_map('intval', $plan_ids);
-
-//     // Pair categories with their respective plans
-//     $categoriesWithPlans = [];
-//     foreach ($category_ids as $index => $cat_id) {
-//         $categoriesWithPlans[$cat_id] = $plan_ids[$index];
-//     }
-
-//     $this->load->model('m_category', 'category');
-
-//     // Check if any categories have been purchased already
-//     $boughtItems = $this->category->isBought($user->id, array_keys($categoriesWithPlans));
-
-//     $existingCategories = [];
-//     if (!empty($boughtItems)) {
-//         foreach ($boughtItems as $boughtItem) {
-//             $existingCategories[$boughtItem['cat_id']] = $boughtItem;
-//         }
-//     }
-
-//     // Create payment factor (this will handle new membership inserts)
-//     $discountCode = $this->input->post('code');
-//     $discount_id = 0;
-//     if ($discountCode) {
-//         $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8", $plan_ids, $category_ids, $user->id);
-//     }
-
-//     $cf = $this->category->createFactor($user->id, $category_ids, $plan_ids, $discount_id);
-
-//     if ($cf['done'] == FALSE) {
-//         throw new Exception($cf['msg'], 5);
-//     }
-
-//     $factor = $cf['factor'];
-//     $data = ['factor' => $factor];
-
-//     // Update existing memberships
-//     foreach ($existingCategories as $cat_id => $boughtItem) {
-//         if (isset($categoriesWithPlans[$cat_id])) {
-//             $additionalMonths = $categoriesWithPlans[$cat_id];
-//             $newEndDate = date('Y-m-d H:i:s', strtotime($boughtItem['enddate'] . " +{$additionalMonths} months"));
-
-//             $this->db->where('id', $boughtItem['id']);
-//             $this->db->update('user_catmembership', [
-//                 'enddate' => $newEndDate,
-//                 'factor_id' => $factor->id
-//             ]);
-//         }
-//     }
-
-//     // Generate payment link
-//     if ($factor->price == 0) {
-//         $this->category->updatetFactor($factor->id, [
-//             'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
-//             'status' => 0,
-//             'pdate' => time()
-//         ]);
-
-//         if ($discount_id != NULL) {
-//             $this->category->setDiscountUsed($discount_id, $factor->id);
-//         }
-
-//         $data['free'] = TRUE;
-//         $data['link'] = NULL;
-//     } else {
-//         $data['link'] = site_url('payment/paycategory/' . $factor->id);
-//     }
-
-//     $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
-// }
-
-
-
     public function buyCategoryBazar()
     {
         $user = $this->_loginNeed();
