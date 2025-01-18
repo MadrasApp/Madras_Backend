@@ -7694,4 +7694,30 @@ class V2 extends CI_Controller
             $this->tools->outE($e);
         }
     }
+
+    public function DeleteUser()
+    {
+        $user = $this->_loginNeed(TRUE, 'u.id');
+        if ($user === FALSE) {
+            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
+        $mobile = $this->input->post('mac');
+        $id = $user->id;
+        $status = 1;
+        $data = ["active" => 0];
+        $this->db
+            ->where("id='$id'")
+            ->where("active=1")
+            ->update('users', $data);
+        $user = $this->db->affected_rows();
+
+        $message = "در ورود اطلاعات دقت نمایید.شماره همراه %s وجود ندارد";
+        $message = sprintf($message, $mobile);
+        if ($user) {
+            $status = 0;
+            $message = "اطلاعات شماره همراه %s با موفقیت حذف شد";
+            $message = sprintf($message, $mobile);
+        }
+        $this->tools->outS($status, $message);
+    }
 }
