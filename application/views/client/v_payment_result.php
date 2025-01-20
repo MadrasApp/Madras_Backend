@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <?php 
 if(isset($_GET['from']) && $_GET['from'] == 'miniapp'){
-    $url = 'https://madras.zipak.info';
+    $url = 'https://client.madras.app';
 } else {
     $url = base_url('payment/go_to_app');
 }

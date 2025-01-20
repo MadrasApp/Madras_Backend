@@ -479,7 +479,7 @@ function media(options,button,callback){
 } 
 
 function updateMediaSidbar(file,thumb,insert){
-	
+
 	var sidebar = $('.media-select-sidebar-content');
 	
 	if(!file){ $(sidebar).html(''); return; }
@@ -551,8 +551,8 @@ function updateMediaSidbar(file,thumb,insert){
 	.on("click",function(){
 		delete_file(path,updateMediaSidbar);
 	}) : '';
-	
-	var downloadBtn = $('<a/>').attr({href:BURL+path,download:BURL+path}).html(
+	let sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
+	var downloadBtn = $('<a/>').attr({href:sftpUrl+path,download:sftpUrl+path}).html(
 		$('<button/>').addClass('small-btn')
 		.html('<i class="fa fa-cloud-download"></i> دریافت')
 	).css('vertical-align','top'); 
@@ -560,7 +560,7 @@ function updateMediaSidbar(file,thumb,insert){
 	var addressBtn = $('<button/>').addClass('small-btn')
 	.html('<i class="fa fa-link"></i> آدرس')
 	.on("click",function(){
-		var div = '<div class=ar style="max-width:500px;text-align:left" dir=ltr>'+BURL+path+'</div>'; $('<div/>').css('max-width',500);
+		var div = '<div class=ar style="max-width:500px;text-align:left" dir=ltr>'+sftpUrl+path+'</div>'; $('<div/>').css('max-width',500);
 		dialog_box(div);
 	});	
 	

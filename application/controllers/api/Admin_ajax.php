@@ -6,7 +6,7 @@
 		echo "</pre>";
 		die;
 */
-
+use phpseclib3\Net\SFTP;
 class Admin_ajax extends CI_Controller
 {
 
@@ -55,7 +55,7 @@ class Admin_ajax extends CI_Controller
         echo $this->MakeJSON($data);
     }
 
-    public function media($type = 'images', $begin = 0, $total = 10)
+    public function media($type = 'videos_and_audios', $begin = 0, $total = 10)
     {
         $this->load->model('admin/m_media', 'media');
 
@@ -69,8 +69,8 @@ class Admin_ajax extends CI_Controller
         $options = $this->input->post('options');
 
         if (!$include && !$exclude) {
-            $include = $type == 'images' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif') : '';
-            $exclude = $type == 'files' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif') : '';
+            $include = array('mpd', 'jpg', 'png', 'jpeg','webp','avif', 'pdf', 'doc','docx', 'txt', 'xlsx', 'xls', 'pptx', 'csv');
+            $exclude = [];
         }
 
         if ($selectable == 'true') $class .= " selectable ";
@@ -78,31 +78,86 @@ class Admin_ajax extends CI_Controller
 
         $options = $options == 'true' ? TRUE : FALSE;
 
+        // SFTP Configuration
+        $sftp_host = 'louhnyrh.lexoyacloud.ir';
+        $sftp_port = 30043;
+        $sftp_user = 'sftp';
+        $sftp_pass = 'WIkpdZGfm7ObOf9bncd1WIGMrJxJzlHd';
+        $remote_dir = '/uploads/';
 
-        $dir = "uploads/";
         if ($user_dir = $this->input->post('dir')) {
             if ($this->user->is_admin() or $user_dir == $this->user->data->username)
-                $dir .= $user_dir;
+                $remote_dir .= $user_dir;
             else
-                $dir .= $this->user->data->username;
+                $remote_dir .= $this->user->data->username;
         } else {
-            $dir .= $this->user->data->username;
+            $remote_dir .= $this->user->data->username;
         }
 
-        $this->media->scanDir($dir);
-        $this->media->filter($include, $exclude);
-        $this->media->Sort('time', 'desc');
-        $this->media->setLimit($begin, $total);
-        $this->media->addInfo();
-        $data = $this->media->data['files'];
+        $sftp = new SFTP($sftp_host, $sftp_port);
+        if (!$sftp->login($sftp_user, $sftp_pass)) {
+            die('SFTP Login Failed');
+        }
 
+        // Recursive function to fetch files from subdirectories
+        function fetchFilesRecursively($sftp, $directory, $include, $exclude)
+        {
+            $result = [];
+            $items = $sftp->nlist($directory);
+
+            if (!$items) {
+                return $result;
+            }
+
+            foreach ($items as $item) {
+                if ($item === '.' || $item === '..') {
+                    continue; // Skip current and parent directory entries
+                }
+
+                $fullPath = rtrim($directory, '/') . '/' . $item;
+
+                if ($sftp->is_dir($fullPath)) {
+                    // Recursively fetch files from subdirectories
+                    $result = array_merge($result, fetchFilesRecursively($sftp, $fullPath, $include, $exclude));
+                } else {
+                    // Check file extension for inclusion/exclusion
+                    $ext = pathinfo($item, PATHINFO_EXTENSION);
+                    if ((!empty($include) && in_array($ext, $include)) ||
+                        (!empty($exclude) && !in_array($ext, $exclude))) {
+                        $result[] = $fullPath;
+                    }
+                }
+            }
+
+            return $result;
+        }
+
+        // Fetch all matching files recursively
+        $filtered_files = fetchFilesRecursively($sftp, $remote_dir, $include, $exclude);
+
+        // Sort files by time (descending)
+        usort($filtered_files, function ($a, $b) use ($sftp) {
+            $a_time = $sftp->stat($a)['mtime'];
+            $b_time = $sftp->stat($b)['mtime'];
+            return $b_time <=> $a_time;
+        });
+
+        // Apply limit and display files
+        $data = array_slice($filtered_files, $begin, $total);
         if (empty($data)) return;
 
-        foreach ($data as $key => $file) {
-            echo $this->media->getTemplateFile($file, $type, $class, $attr, $options);
+        // chnage path to file 15-1-2025
+        foreach ($data as $file) {
+            $file_info = [
+                'name' => basename($file),
+                'file' => $file,
+                'url' => 'sftp://' . $sftp_host . $file,
+                // Add other metadata as needed
+            ];
+            
+            echo $this->media->getTemplateFile($file_info, $type, $class, $attr, $options);
         }
     }
-
     public function mediadirlist()
     {
         $this->load->model('admin/m_media', 'media');
@@ -118,6 +173,29 @@ class Admin_ajax extends CI_Controller
         echo $this->MakeJSON($data);
     }
 
+    // public function deletefile()
+    // {
+    //     $done = FALSE;
+    //     $msg = "";
+
+    //     if ($this->user->can('delete_file')) {
+    //         $this->load->model('admin/m_media', 'media');
+
+    //         $file = $this->input->post('file');
+
+    //         $dir = explode('/', $file);
+
+    //         if (!$this->user->is_admin() && $dir[1] != $this->user->data->username) {
+    //             $msg = "you are not allowed to delete this file !";
+    //         } elseif ($this->media->deleteFile($file)) {
+    //             $done = TRUE;
+    //             $msg = "file deleted successfully";
+    //         } else $msg = "can not delete file '$file' !";
+    //     } else $msg = "you are not allowed to delete this file !";
+    //     $data = array('done' => $done, 'file' => $file, 'msg' => $msg);
+    //     echo $this->MakeJSON($data);
+    // }
+
     public function deletefile()
     {
         $done = FALSE;
@@ -127,19 +205,43 @@ class Admin_ajax extends CI_Controller
             $this->load->model('admin/m_media', 'media');
 
             $file = $this->input->post('file');
-
             $dir = explode('/', $file);
 
+            // Check if the user has permission to delete the file
             if (!$this->user->is_admin() && $dir[1] != $this->user->data->username) {
-                $msg = "you are not allowed to delete this file !";
-            } elseif ($this->media->deleteFile($file)) {
-                $done = TRUE;
-                $msg = "file deleted successfully";
-            } else $msg = "can not delete file '$file' !";
-        } else $msg = "you are not allowed to delete this file !";
+                $msg = "You are not allowed to delete this file!";
+            } else {
+                // SFTP credentials
+                $sftp_host = 'sumrwlhr.lexoyacloud.ir'; // Replace with your SFTP server address
+                $sftp_port = 30036; // Default SFTP port
+                $sftp_username = 'admin'; // Replace with your SFTP username
+                $sftp_password = 'EBLLnepNY1Q0v7sje6YjnbojrHyMXykD'; // Replace with your SFTP password
+
+                // Use phpseclib for SFTP connection
+                $sftp = new SFTP($sftp_host, $sftp_port);
+
+                if (!$sftp->login($sftp_username, $sftp_password)) {
+                    $msg = "Failed to connect to SFTP server!";
+                } else {
+                    // Attempt to delete the file on the SFTP server
+                    $directory_url = dirname($file);
+                    
+                    if ($sftp->delete($directory_url)) {
+                        $done = TRUE;
+                        $msg = "File deleted successfully from SFTP server.";
+                    } else {
+                        $msg = "Cannot delete file '$file' from SFTP server!";
+                    }
+                }
+            }
+        } else {
+            $msg = "You are not allowed to delete this file!";
+        }
+
         $data = array('done' => $done, 'file' => $file, 'msg' => $msg);
         echo $this->MakeJSON($data);
     }
+
 
 
     /***********************************

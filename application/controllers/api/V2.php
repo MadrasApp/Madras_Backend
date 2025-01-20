@@ -6412,8 +6412,10 @@ class V2 extends CI_Controller
                 ->result();
 
             foreach ($classonlines as $key => $classonline) {
-                if ($classonline->teachername) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
                     $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines[$key]->teachername = null; // Set to null if teacher is not found
                 }
                 $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
                 $classonlines[$key]->capacity = $classaccount;
