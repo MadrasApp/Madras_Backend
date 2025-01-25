@@ -64,10 +64,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'modapp_book2',
-	'password' => 'Xkv3Szh2',
-	'database' => 'modapp_book2',
+	'hostname' => 'hkwgxbmv.lexoyacloud.ir',
+	'username' => 'root',
+	'password' => 'zSiGQVKzS3zfn0g5MWVx6LPYMA8MFICq',
+	'port' => '30044',
+	'database' => 'Madras',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'ci_',
 	'pconnect' => FALSE,
