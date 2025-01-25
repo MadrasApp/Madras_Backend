@@ -64,10 +64,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'hkwgxbmv.lexoyacloud.ir',
+	'hostname' => 'hkwgxbmv',
 	'username' => 'root',
 	'password' => 'zSiGQVKzS3zfn0g5MWVx6LPYMA8MFICq',
-	'port' => '30044',
 	'database' => 'Madras',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'ci_',
