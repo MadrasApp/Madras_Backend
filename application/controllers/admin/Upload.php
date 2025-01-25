@@ -88,10 +88,14 @@ class Upload extends CI_Controller
 
     private function uploadToSFTP($localDir, $fileBaseName)
     {
-        $sftp_host = 'louhnyrh.lexoyacloud.ir';
-        $sftp_port = 30043;
-        $sftp_user = 'sftp';
-        $sftp_pass = 'WIkpdZGfm7ObOf9bncd1WIGMrJxJzlHd';
+        // Load SFTP configuration
+        $this->load->config('sftp');
+        $sftpConfig = $this->config->item('sftp');
+
+        $sftp_host = $sftpConfig['host'];
+        $sftp_port = $sftpConfig['port'];
+        $sftp_user = $sftpConfig['username'];
+        $sftp_pass = $sftpConfig['password'];
 
         // Determine the remote directory
         $remoteDir = "/uploads/" . $this->user->data->username . '/' . date("Y/m/") . $fileBaseName;

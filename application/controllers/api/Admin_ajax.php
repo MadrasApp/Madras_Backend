@@ -78,11 +78,14 @@ class Admin_ajax extends CI_Controller
 
         $options = $options == 'true' ? TRUE : FALSE;
 
-        // SFTP Configuration
-        $sftp_host = 'louhnyrh.lexoyacloud.ir';
-        $sftp_port = 30043;
-        $sftp_user = 'sftp';
-        $sftp_pass = 'WIkpdZGfm7ObOf9bncd1WIGMrJxJzlHd';
+        // Load SFTP configuration
+        $this->load->config('sftp');
+        $sftpConfig = $this->config->item('sftp');
+
+        $sftp_host = $sftpConfig['host'];
+        $sftp_port = $sftpConfig['port'];
+        $sftp_user = $sftpConfig['username'];
+        $sftp_pass = $sftpConfig['password'];
         $remote_dir = '/uploads/';
 
         if ($user_dir = $this->input->post('dir')) {

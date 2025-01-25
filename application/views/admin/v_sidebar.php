@@ -1,7 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
-<script> URL = '<?php echo site_url('admin/api/') ?>';
-    BURL = '<?php echo base_url() ?>'; </script>
+<script> 
+    URL = '<?php echo site_url('admin/api/') ?>';
+    BURL = '<?php echo base_url() ?>';
+    sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
+</script>
 
 
 <div id="header" class="bg-dark border-light">

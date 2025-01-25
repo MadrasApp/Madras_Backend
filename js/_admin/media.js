@@ -551,7 +551,7 @@ function updateMediaSidbar(file,thumb,insert){
 	.on("click",function(){
 		delete_file(path,updateMediaSidbar);
 	}) : '';
-	let sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
+	// let sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
 	var downloadBtn = $('<a/>').attr({href:sftpUrl+path,download:sftpUrl+path}).html(
 		$('<button/>').addClass('small-btn')
 		.html('<i class="fa fa-cloud-download"></i> دریافت')
