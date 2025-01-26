@@ -1914,7 +1914,7 @@ class V2 extends CI_Controller
     public function bookList()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-        $base = base_url();
+        $base = CDN_URL;
 
         $hasmembership = (int)$this->input->post('hasmembership');
         $limit = (int)$this->input->post('limit');
@@ -4586,7 +4586,7 @@ class V2 extends CI_Controller
         if ($user === FALSE) throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
         //
         $user_id = (int)$user->id;
-        $base = base_url();
+        $base = CDN_URL;
         $action = $this->input->post('action');
         $section = $this->input->post('section');
         $sectionid = (int)$this->input->post('sectionid');
@@ -5473,7 +5473,7 @@ class V2 extends CI_Controller
     //=========================================
     public function getClassJalasatDetail0($id)
     {
-        $base = base_url();
+        $base = CDN_URL;
 
         $SO = $this->db
             ->select('j.*,dc.ostadid,dc.placeid,s.paragraphid,dc.dorehid,dc.classid,dc.image,s.id sid,d.pages,s.bookid,d.id dataid,d.image,d.pdf,d.audio,d.audio_duration,d.video,d.video_duration,s.id subjalasattid,s.paragraphid page,s.description sdescription,s.startPos,s.endPos')
@@ -5638,7 +5638,7 @@ class V2 extends CI_Controller
                 }
                 throw new Exception("دوره کلاس $id حذف شده است", 2);
             }
-            $base = base_url();
+            $base = CDN_URL;
             $books = array();
             $book_ids = array(0);
             $db = $this->db;
@@ -5911,7 +5911,7 @@ class V2 extends CI_Controller
 
             if (!$this->db->where('id', $id)->count_all_results('dorehclass'))
                 throw new Exception('این عرضه کننده حذف شده است', 2);
-            $base = base_url();
+            $base = CDN_URL;
             $books = array();
             $book_ids = array(0);
             $db = $this->db;
@@ -6811,7 +6811,7 @@ class V2 extends CI_Controller
     {
         try {
             $data = $this->input->post();
-            $base = base_url();
+            $base = CDN_URL;
             $offer = intval($data["offer"]);
             $db = $this->db;
             if ($offer) {
