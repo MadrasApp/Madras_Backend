@@ -94,7 +94,8 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 
 define('EITAA_TOKEN', '60930039:laKi6ig-Ml)Q8[?-EMpqNKn-UL(vPo}-dD7Xsx8-A%hpXLw-1WvuO4V-YxXSC9E-@v6g5mz-C5p*R7q-4KAfOhm-Oa~PsRi-oV9R^/T-eyunIYD-0%PfYWo-vHk{JF1-W1g7B,s-yYlYmIb-BZLs(V0-EUGJh');
 define('SECRET_KEY', '626f6f726f2062616261206d616e20696e6f20616e6a616d206e656d6964616d');
-define('CDN_URL', 'https://hls.zipak.info?path=');
+// define('CDN_URL', 'https://hls.zipak.info?path=');
+define('CDN_URL', 'https://hls.zipak.info/fetch_image/');
 
 /*
 |--------------------------------------------------------------------------
