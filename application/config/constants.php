@@ -94,7 +94,7 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 
 define('EITAA_TOKEN', '60930039:ETE~OTvqDq-vtgYq5EiuV-iAR]^7cJFU-FxSext?CbB-I)HQM4,3l7-rP@S8OnUAA-]2VnCV2t8m-8NqQBdrH).-d1[C1Z/krv-Gt0I1IxfkX-GgaDLiai@e-5%Ho0IYj[C-hYpylo.L3x-ZKflUj2M4S-hWTBfnR4aj-H2Vb');
 define('SECRET_KEY', '626f6f726f2062616261206d616e20696e6f20616e6a616d206e656d6964616d');
-define('CDN_URL', 'https://idrgwvlp.lexoyacloud.ir/');
+define('CDN_URL', 'https://idrgwvlp.lexoyacloud.ir/web/client/files?path=');
 
 /*
 |--------------------------------------------------------------------------
