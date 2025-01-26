@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable gd pdo_mysql mysqli zip
 
 # Enable Apache mod_rewrite for CodeIgniter
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
 # Configure Apache to allow .htaccess overrides
 RUN echo '<Directory /var/www/html>\n\
@@ -27,6 +27,19 @@ RUN echo '<Directory /var/www/html>\n\
     Require all granted\n\
 </Directory>' > /etc/apache2/conf-available/override.conf \
     && a2enconf override
+
+# Add new configuration to serve /lexoya/var/www/html/uploads
+RUN echo '<Directory /lexoya/var/www/html/uploads>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride None\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/lexoya.conf \
+    && a2enconf lexoya
+
+# Ensure the lexoya directory exists and set permissions
+RUN mkdir -p /lexoya/var/www/html/uploads \
+    && chown -R www-data:www-data /lexoya \
+    && chmod -R 775 /lexoya
 
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
