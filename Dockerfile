@@ -12,47 +12,44 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     git \
-    mariadb-client \
     curl \
+    mariadb-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql mysqli zip \
     && docker-php-ext-enable gd pdo_mysql mysqli zip
 
-# Enable Apache mod_rewrite for CodeIgniter
-RUN a2enmod rewrite
+# Enable Apache modules for CodeIgniter and static files
+RUN a2enmod rewrite headers
 
-# Configure Apache to allow .htaccess overrides
+# Configure Apache to allow .htaccess overrides for CodeIgniter and static files
 RUN echo '<Directory /var/www/html>\n\
+    Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
     Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/override.conf \
-    && a2enconf override
+</Directory>' > /etc/apache2/conf-available/codeigniter.conf \
+    && a2enconf codeigniter
 
-# Add configuration for the custom location
-RUN echo '<Directory /lexoya/var/www/html>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride None\n\
-    Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/lexoya.conf \
-    && a2enconf lexoya
+# Set up .htaccess for handling static files and CodeIgniter routing
+RUN echo '<IfModule mod_rewrite.c>\n\
+    RewriteEngine On\n\
+    # Allow direct access to existing files and directories\n\
+    RewriteCond %{REQUEST_FILENAME} -f [OR]\n\
+    RewriteCond %{REQUEST_FILENAME} -d\n\
+    RewriteRule ^(.*)$ - [L]\n\
+    # Pass all other requests to CodeIgniter index.php\n\
+    RewriteRule ^(.*)$ index.php [L]\n\
+</IfModule>' > /var/www/html/.htaccess
 
-# Install Composer globally
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Set permissions for the application and static files
+RUN mkdir -p /var/www/html/uploads \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/uploads
 
 # Set the working directory
 WORKDIR /var/www/html
 
 # Copy application files to the container
 COPY . /var/www/html
-
-# Set permissions for writable directories
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/uploads /var/www/html/temp
-
-# Ensure the custom location exists and set permissions
-RUN mkdir -p /lexoya/var/www/html \
-    && chown -R www-data:www-data /lexoya/var/www/html \
-    && chmod -R 775 /lexoya/var/www/html
 
 # Expose port 80 for Apache
 EXPOSE 80
