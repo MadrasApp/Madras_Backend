@@ -172,7 +172,7 @@ function media(options,button,callback){
 	$media.css({'z-index':(Hz())+1});
 	
 	var uC = function(){
-		createUploader('.media-select-content-tab[tab=upload]',BURL+'admin/upload',updateMedia);
+		createUploader('.media-select-content-tab[tab=upload]','https://hls.zipak.info/admin/upload',updateMedia);
 	};
 	userCan('upload_file',uC);
 	
