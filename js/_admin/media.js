@@ -782,7 +782,7 @@ $(document).ready(function () {
 
         // AJAX request to upload file directly to the target server
         $.ajax({
-            url: 'https://your-target-server.com/upload', // Replace with the target server's upload URL
+            url: 'https://hls.zipak.info/uploads', // Replace with the target server's upload URL
             type: 'POST',
             data: formData,
             contentType: false,
