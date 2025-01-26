@@ -2,8 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 $config['sftp'] = [
-    'host' => 'louhnyrh.lexoyacloud.ir',
-    'port' => 30043,
+    'host' => 'idrgwvlp.lexoyacloud.ir',
+    'port' => 30046,
     'username' => 'sftp',
-    'password' => 'WIkpdZGfm7ObOf9bncd1WIGMrJxJzlHd',
+    'password' => '6fbnDYuFVN1ElCRY7sBVQqZcieQV2wDr',
 ];

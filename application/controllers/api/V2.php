@@ -7722,4 +7722,30 @@ class V2 extends CI_Controller
         }
         $this->tools->outS($status, $message);
     }
+
+    public function getMediaSftp() {
+        $sftp_host = 'idrgwvlp.lexoyacloud.ir';
+        $sftp_port = 30046;
+        $sftp_user = 'sftp';
+        $sftp_pass = '6fbnDYuFVN1ElCRY7sBVQqZcieQV2wDr';
+        $remote_file = 'uploads/makahani/2022/11/2022-11-24-5B11.23-5D.jpg'; // File on the SFTP server
+
+        // Connect to the SFTP server
+        $sftp = new \phpseclib3\Net\SFTP($sftp_host, $sftp_port);
+        // $sftp = new SFTP($sftp_host, $sftp_port);
+
+        if (!$sftp->login($sftp_user, $sftp_pass)) {
+            die('SFTP login failed.');
+        }
+
+        // Retrieve the file contents
+        $file_contents = $sftp->get($remote_file);
+
+        if ($file_contents === false) {
+            die('Failed to retrieve the file from SFTP.');
+        }
+
+        $this->tools->outS(0, "shosh", ['data' => $file_contents]);
+
+    }
 }
