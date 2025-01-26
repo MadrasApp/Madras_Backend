@@ -28,6 +28,14 @@ RUN echo '<Directory /var/www/html>\n\
 </Directory>' > /etc/apache2/conf-available/override.conf \
     && a2enconf override
 
+# Add configuration for the custom location
+RUN echo '<Directory /lexoya/var/www/html>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride None\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/lexoya.conf \
+    && a2enconf lexoya
+
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -40,6 +48,11 @@ COPY . /var/www/html
 # Set permissions for writable directories
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/uploads /var/www/html/temp
+
+# Ensure the custom location exists and set permissions
+RUN mkdir -p /lexoya/var/www/html \
+    && chown -R www-data:www-data /lexoya/var/www/html \
+    && chmod -R 775 /lexoya/var/www/html
 
 # Expose port 80 for Apache
 EXPOSE 80
