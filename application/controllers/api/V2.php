@@ -4728,7 +4728,7 @@ class V2 extends CI_Controller
         $title = $this->input->post('title');
         $limit = $limit < 1000 ? $limit : 1000;
         $section = $this->input->post('section');
-        $baseurl = base_url();
+        $baseurl = CDN_URL;
         $allowsection = array(
             'doreh',
             'classroom',
@@ -6156,14 +6156,14 @@ class V2 extends CI_Controller
             if (!$this->db->where('id', $id)->where("type = 'book'")->count_all_results('posts')) {
                 throw new Exception('این عرضه کننده حذف شده است', 2);
             }
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $book = $this->db
                 ->select("p.*")
                 ->where('p.id', $id)
                 ->get('posts p')->row();
             if ($book->thumb) {
-                $book->thumb = base_url() . $book->thumb;
+                $book->thumb = CDN_URL . $book->thumb;
             }
 
             $category = $book->category;
@@ -6737,7 +6737,7 @@ class V2 extends CI_Controller
     {
         try {
             $data = $this->input->post();
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
             $id = intval($id) ? $id : $data["id"];
@@ -6839,7 +6839,7 @@ class V2 extends CI_Controller
         //offer
         try {
             $data = $this->input->post();
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
             $id = intval($data["id"]);
             $offer = intval($data["offer"]);
 
@@ -6938,7 +6938,7 @@ class V2 extends CI_Controller
     public function getAdvertise($priority = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
             $data = $this->input->post();
             $priority = intval($priority) ? $priority : $data["priority"];
 
@@ -7004,7 +7004,7 @@ class V2 extends CI_Controller
     public function getMembership($id = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -7084,7 +7084,7 @@ class V2 extends CI_Controller
     public function getCategories($id = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -7282,7 +7282,7 @@ class V2 extends CI_Controller
     // public function getClassOnline($id = 0)
     // {
     //     try {
-    //         $baseurl = base_url();
+    //         $baseurl = CDN_URL;
 
     //         $limit = (int)$this->input->post('limit');
     //         $limitstart = (int)$this->input->post('limitstart');
@@ -7326,7 +7326,7 @@ class V2 extends CI_Controller
     public function getClassOnline()
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -7612,7 +7612,7 @@ class V2 extends CI_Controller
     public function DayClassOnline($id = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $user = $this->_loginNeed();
 
