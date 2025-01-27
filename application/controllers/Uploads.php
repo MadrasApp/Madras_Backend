@@ -1,7 +1,7 @@
 <?php
 
     // Base path for your server
-    $base_path = 'https://modir.madras.app/'; // Replace with your actual base URL
+    $base_path = CDN_URL; // Replace with your actual base URL
     $requested_url = $_SERVER['REQUEST_URI']; // Full requested URL
     $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
     $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
