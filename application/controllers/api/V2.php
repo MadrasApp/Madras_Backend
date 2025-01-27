@@ -4740,7 +4740,7 @@ class V2 extends CI_Controller
             exit;
         } else {
             header("HTTP/1.0 404 Not Found");
-            echo "404 Not Found";
+            echo $file_path;
             exit;
         }
 
