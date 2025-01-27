@@ -4719,6 +4719,19 @@ class V2 extends CI_Controller
         return array($place, $placeTitle);
     }
 
+
+    //=========================================
+    public function fetchFiles(){
+        $base_path = base_url() ; // Base path for this script
+        $requested_url = $_SERVER['REQUEST_URI']; // Full request URI
+        $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
+        $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
+        echo $relative_path;
+        
+    }
+
+    //=========================================
+
     //=========================================
     public function getLastClasses()
     {
