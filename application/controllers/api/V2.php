@@ -4730,11 +4730,12 @@ class V2 extends CI_Controller
         $file_path = '/lexoya/var/www/html/'. $outputString;
         $file_path = str_replace("api/v2/fetchFile/", "", $file_path);
 
-        echo $file_path;
+
         if (file_exists($file_path)) {
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.basename($file_path).'"');
-            header('Content-Length: ' . filesize($file_path));
+            $mime_type = mime_content_type($file_path);
+            header("Content-Type: $mime_type");
+            header("Content-Length: " . filesize($file_path));
+            header("Content-Disposition: inline; filename=\"" . basename($file_path) . "\""); // Display file directly in browser
             readfile($file_path);
             exit;
         } else {
