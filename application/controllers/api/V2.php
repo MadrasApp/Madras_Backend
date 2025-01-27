@@ -4746,7 +4746,7 @@ class V2 extends CI_Controller
     }
 
     public function siteHealth() {
-        return $this->tools->outS(0, 'ok');
+        return $this->tools->outS(200, 'ok');
     }
 
 
