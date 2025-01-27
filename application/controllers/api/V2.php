@@ -4751,7 +4751,7 @@ class V2 extends CI_Controller
 
     public function collabrationMessageEitaa() {
         // توکن بات خود را اینجا وارد کنید
-        $token = 'bot355148:8b921ad0-7776-404b-bc78-43a9cd1a6164';
+        $token = EITAA_COLABRATION_TOKEN;
     
         // آیدی چت یا کاربری که می‌خواهید پیام ارسال شود
         $chat_id = 10406720;
