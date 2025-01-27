@@ -3641,6 +3641,29 @@
     </p>
 </form>
 
+<h1 id="collabrationMessageEitaa">collabrationMessageEitaa</h1>
+<form action="api/v2/collabrationMessageEitaa" method="post" target="_blank">
+    <table class="table table-bordered table-hover table-striped">
+        <tr>
+            <th></th>
+            <th></th>
+            <th>field name</th>
+            <th>filters</th>
+            <th>description</th>
+        </tr>
+        <tr>
+            <td>پیام</td>
+            <td><input name="text" type="text" value="" class="form-control"></td>
+            <td>text</td>
+            <td></td>
+            <td> OR <br> 01-23-45-67-89-ab OR <br> 0123456789ab OR <br> 0123.4567.89ab</td>
+        </tr>
+    </table>
+    <p>
+        <input type="submit" value="Try it !" class="btn btn-primary">
+    </p>
+</form>
+
 
 <hr>
 
