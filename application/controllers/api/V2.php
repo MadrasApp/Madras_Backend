@@ -4749,6 +4749,48 @@ class V2 extends CI_Controller
         return $this->tools->outS(200, 'ok');
     }
 
+    public function collabrationMessageEitaa() {
+        // توکن بات خود را اینجا وارد کنید
+        $token = 'bot355148:8b921ad0-7776-404b-bc78-43a9cd1a6164';
+    
+        // آیدی چت یا کاربری که می‌خواهید پیام ارسال شود
+        $chat_id = 10406720;
+    
+        // متن پیام که از طریق ورودی ارسال شده
+        $text = $this->input->post('text');
+    
+        // URL صحیح برای API ایتا یار
+        $apiUrl = 'https://eitaayar.ir/api/' . $token . '/sendMessage';
+    
+        // مقداردهی cURL
+        $request = curl_init();
+    
+        // تنظیمات cURL
+        curl_setopt($request, CURLOPT_URL, $apiUrl); // آدرس API
+        curl_setopt($request, CURLOPT_POST, true); // ارسال درخواست POST
+        curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0); // غیرفعال کردن تأیید SSL (در صورت نیاز)
+        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false); // غیرفعال کردن تأیید SSL (در صورت نیاز)
+        curl_setopt($request, CURLOPT_POSTFIELDS, http_build_query([
+            'chat_id' => $chat_id,
+            'text' => $text,
+        ])); // ارسال داده‌ها به API
+        curl_setopt($request, CURLOPT_RETURNTRANSFER, true); // دریافت پاسخ API
+    
+        // اجرای درخواست و دریافت پاسخ
+        $response = curl_exec($request);
+    
+        // بررسی خطاهای احتمالی cURL
+        if (curl_errno($request)) {
+            echo 'Curl error: ' . curl_error($request);
+        } else {
+            echo $response; // نمایش پاسخ API
+        }
+    
+        // بستن cURL
+        curl_close($request);
+    }
+   
+
 
 
     //=========================================
