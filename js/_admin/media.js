@@ -723,7 +723,6 @@
 	
 //  }
 
-
 $(document).ready(function () {
     // Append the hidden popup for the file uploader to the body
     $('body').append(`
@@ -741,9 +740,17 @@ $(document).ready(function () {
             z-index: 1000;
             text-align: center;
         ">
-            <h3>Upload Sound File</h3>
+            <h3>Upload Media File</h3>
             <input type="file" id="fileInput" style="margin-bottom: 10px;" />
             <p id="uploadStatus" style="font-size: 14px; color: gray;">Select a file to upload</p>
+            <div id="progressContainer" style="display: none; margin-top: 10px;">
+                <div id="progressBar" style="
+                    width: 0;
+                    height: 10px;
+                    background: blue;
+                    border-radius: 5px;
+                "></div>
+            </div>
             <button id="closePopup" style="
                 margin-top: 10px;
                 padding: 5px 10px;
@@ -774,30 +781,66 @@ $(document).ready(function () {
             return;
         }
 
+        // Define allowed file types and maximum size
+        const allowedTypes = [
+            'audio/mpeg', 'audio/wav', 'audio/ogg',  // Audio
+            'image/jpeg', 'image/png', 'image/gif', // Images
+            'video/mp4', 'video/avi', 'video/mpeg', 'video/webm', 'video/quicktime' // Videos
+        ];
+        const maxFileSize = 50 * 1024 * 1024; // 50 MB
+
+        // Validate file type
+        if (!allowedTypes.includes(file.type)) {
+            $('#uploadStatus').text('Invalid file type. Please upload audio, image, or video files only.').css('color', 'red');
+            return;
+        }
+
+        // Validate file size
+        if (file.size > maxFileSize) {
+            $('#uploadStatus').text('File size exceeds 50 MB limit.').css('color', 'red');
+            return;
+        }
+
         var formData = new FormData();
         formData.append("file", file);
 
         // Show upload progress
         $('#uploadStatus').text('Uploading...').css('color', 'blue');
+        $('#progressContainer').show();
 
         // AJAX request to upload file directly to the target server
         $.ajax({
-            url: 'https://hls.zipak.info', // Replace with the target server's upload URL
+            url: 'https://hls.zipak.info/uploads', // Replace with the target server's upload URL
             type: 'POST',
             data: formData,
             contentType: false,
             processData: false,
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                // Track upload progress
+                xhr.upload.addEventListener('progress', function (e) {
+                    if (e.lengthComputable) {
+                        var percentComplete = (e.loaded / e.total) * 100;
+                        $('#progressBar').css('width', percentComplete + '%');
+                    }
+                });
+                return xhr;
+            },
             success: function (response) {
                 $('#uploadStatus')
                     .text('Upload successful: ' + response.message)
                     .css('color', 'green');
                 console.log("Upload successful:", response);
+                $('#progressBar').css('width', '0%');
+                $('#progressContainer').hide();
             },
             error: function (error) {
                 $('#uploadStatus')
                     .text('Upload failed: ' + error.statusText)
                     .css('color', 'red');
                 console.error("Upload failed:", error);
+                $('#progressBar').css('width', '0%');
+                $('#progressContainer').hide();
             },
         });
     }
