@@ -10,10 +10,6 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
 
-    # Redirect /uploads/ URLs to /api/v2/fetchFile/uploads/
-    RewriteCond %{REQUEST_URI} ^/uploads/
-    RewriteRule ^uploads/(.*)$ /api/v2/fetchFile/uploads/$1 [L]
-
     # Default route to index.php
     RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
