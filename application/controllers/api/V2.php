@@ -4728,6 +4728,8 @@ class V2 extends CI_Controller
         $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
         $outputString = str_replace("api/v2/fetchFile/", "", $relative_path);
         $file_path = '/lexoya/var/www/html/'. $outputString;
+        $file_path = str_replace("api/v2/fetchFile/", "", $file_path);
+
         echo $file_path;
         if (file_exists($file_path)) {
             header('Content-Type: application/octet-stream');
