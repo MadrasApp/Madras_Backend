@@ -1,871 +1,871 @@
 
 
-// $(document).ready(function(e) {
-// 	$(document).on("click",".selectable",function(){
+$(document).ready(function(e) {
+	$(document).on("click",".selectable",function(){
 		
-// 		var un = $(this).attr('unique-group');
-// 		if(un)
-// 		$('.selectable[unique-group="'+un+'"]').not(this).removeClass('selected');
+		var un = $(this).attr('unique-group');
+		if(un)
+		$('.selectable[unique-group="'+un+'"]').not(this).removeClass('selected');
 		
-// 		$(this).toggleClass('selected');
+		$(this).toggleClass('selected');
 		
-// 	});
+	});
 
-// 	$(document).on("click",".media-item-option-btn",function(e){
-// 		$('.media-item-option-btn').not(this).next().removeClass('visible');
-// 		$(this).next().toggleClass('visible');
-// 	});	
+	$(document).on("click",".media-item-option-btn",function(e){
+		$('.media-item-option-btn').not(this).next().removeClass('visible');
+		$(this).next().toggleClass('visible');
+	});	
 	
-// 	$(document).on("click",".media-item-options i",function(e){
+	$(document).on("click",".media-item-options i",function(e){
 		
-// 		var op = $(this).attr('op');
+		var op = $(this).attr('op');
 		
-// 		console.log(op);
-// 		switch(op){
+		console.log(op);
+		switch(op){
 			
-// 			case 'view':
-// 			break;
-// 			case 'delete':
+			case 'view':
+			break;
+			case 'delete':
 			
-// 			delete_file($(this).closest('.media-item').data('file')); 
+			delete_file($(this).closest('.media-item').data('file')); 
 			
-// 			break;
-// 			case 'edit':
-// 			break;
-// 		}
+			break;
+			case 'edit':
+			break;
+		}
 		
-// 	});		
-// });
+	});		
+});
 
 
-// function delete_file(file,callback){
+function delete_file(file,callback){
 
 	
-// 	var $buttons = $('<div/>')
-// 				.append($('<button/>').attr("action","submit").html('حذف'))
-// 				.append($('<button/>').html('لغو'))
+	var $buttons = $('<div/>')
+				.append($('<button/>').attr("action","submit").html('حذف'))
+				.append($('<button/>').html('لغو'))
 	
-// 	var onSubmit = function(){
+	var onSubmit = function(){
 		
-// 		$.ajax({
-// 			url: URL+"/deletefile",
-// 			type:"POST",
-// 			dataType:"json",
-// 			data:{file:file},
-// 			success: function(data){
-// 				if(data.done){
-// 					$('.media-item[data-file="'+file+'"]').hide(300,function(){$(this).remove()});
-// 					if(typeof(callback)=='function') callback();
-// 				}
-// 				else dialog_box(data.msg);
-// 			},
-// 			error: function(){ajax_fail()}
-// 		});		
-// 	}
-// 	var $body = $('<p/>').attr("align","center")
-// 	.html('<img src="'+BURL+'style/images/warning.png" style="margin:0px" width="25"> فایل  حذف شود ؟');
+		$.ajax({
+			url: URL+"/deletefile",
+			type:"POST",
+			dataType:"json",
+			data:{file:file},
+			success: function(data){
+				if(data.done){
+					$('.media-item[data-file="'+file+'"]').hide(300,function(){$(this).remove()});
+					if(typeof(callback)=='function') callback();
+				}
+				else dialog_box(data.msg);
+			},
+			error: function(){ajax_fail()}
+		});		
+	}
+	var $body = $('<p/>').attr("align","center")
+	.html('<img src="'+BURL+'style/images/warning.png" style="margin:0px" width="25"> فایل  حذف شود ؟');
 	
-// 	var options = {
-// 		id        : 'delete-files-dialog',  
-// 		name      : 'حذف فایل',
-// 		body      : $body ,
-// 		buttons   : $buttons,
-// 		onSubmit  : onSubmit		
-// 	};
-// 	dialog_box(options);
-//  }
+	var options = {
+		id        : 'delete-files-dialog',  
+		name      : 'حذف فایل',
+		body      : $body ,
+		buttons   : $buttons,
+		onSubmit  : onSubmit		
+	};
+	dialog_box(options);
+ }
  
-// /**************************/
-// var mSettings;
-// function media(options,button,callback){
+/**************************/
+var mSettings;
+function media(options,button,callback){
 	
-// 	var mediaType = 'general';
-// 	$("html,body").css("overflow","hidden");
+	var mediaType = 'general';
+	$("html,body").css("overflow","hidden");
 		
-// 	if(typeof(options)=="string")
-// 	{
-// 		mediaType = options;
-// 		switch(options)
-// 		{
-// 			case 'img'    : options = {include:{images:true,files:false}};break;
-// 			case 'file'   : options = {include:{images:false,files:true},selected:'files'};break;
-// 			case 'img,1'  : options = {include:{images:true,files:false},multiple:false};break;
-//             case 'img,1,l': options = {include:{images:true,files:false},multiple:false};break;
-// 			case 'file,1' : options = {include:{images:false,files:true},multiple:false,selected:'files'};break;
-// 			case 'editor' : options = {thumbs:true,insert:true };break;
-// 		} 		
-// 	}
+	if(typeof(options)=="string")
+	{
+		mediaType = options;
+		switch(options)
+		{
+			case 'img'    : options = {include:{images:true,files:false}};break;
+			case 'file'   : options = {include:{images:false,files:true},selected:'files'};break;
+			case 'img,1'  : options = {include:{images:true,files:false},multiple:false};break;
+            case 'img,1,l': options = {include:{images:true,files:false},multiple:false};break;
+			case 'file,1' : options = {include:{images:false,files:true},multiple:false,selected:'files'};break;
+			case 'editor' : options = {thumbs:true,insert:true };break;
+		} 		
+	}
 	
-// 	mSettings = $.extend({},{
-// 			id        : 'select-media', // The id of media selector
-// 			multiple  : true,           // User can select multiple files ??
-// 			thumbs    : false,          // User can select thumbinail size of images?
-// 			insert    : false,          // The seleted file(s) can insert to text editor ?
-// 			tabs      : {
-// 				upload  : {name:'افزودن', html:''  ,icon:'cloud-upload' ,style:{padding:20}},
-// 				images  : {name:'تصاویر', html:''  ,icon:'photo' ,style:{}},
-// 				files   : {name:'فایل ها',html:'' ,icon:'file-o' ,style:{}},
-// 			},
-// 			selected  : 'images',
-// 			include   : {images:true,files:true},
-// 			btntext   : 'ادامه',
-// 			onClose   : null,
-// 			onSelect  : null,
-// 			onSubmit  : null,
-//             button    : button,
-//             callback  : callback
-// 		},options);
+	mSettings = $.extend({},{
+			id        : 'select-media', // The id of media selector
+			multiple  : true,           // User can select multiple files ??
+			thumbs    : false,          // User can select thumbinail size of images?
+			insert    : false,          // The seleted file(s) can insert to text editor ?
+			tabs      : {
+				upload  : {name:'افزودن', html:''  ,icon:'cloud-upload' ,style:{padding:20}},
+				images  : {name:'تصاویر', html:''  ,icon:'photo' ,style:{}},
+				files   : {name:'فایل ها',html:'' ,icon:'file-o' ,style:{}},
+			},
+			selected  : 'images',
+			include   : {images:true,files:true},
+			btntext   : 'ادامه',
+			onClose   : null,
+			onSelect  : null,
+			onSubmit  : null,
+            button    : button,
+            callback  : callback
+		},options);
 		
-// 	var existMedia = $('#'+(mSettings.id));
-// 	if(existMedia.length && $(existMedia).data('type') == mediaType)
-// 	{
-// 		$(existMedia).show();setSize();
-// 		return;
-// 	}
-// 	else
-// 	{
-// 		$(existMedia).remove();
-// 	}
+	var existMedia = $('#'+(mSettings.id));
+	if(existMedia.length && $(existMedia).data('type') == mediaType)
+	{
+		$(existMedia).show();setSize();
+		return;
+	}
+	else
+	{
+		$(existMedia).remove();
+	}
 	
-// 	var $media    = $('<div/>').addClass("media-select").data('type',mediaType);
-// 	var $body     = $('<div/>').addClass("media-select-body");
-// 	var $main     = $('<div/>').addClass("media-select-main").appendTo($body);
-// 	var $sidebar  = $('<div/>').addClass("media-select-sidebar").appendTo($body);
-// 	var $header   = $('<div/>').addClass("media-select-main-header").appendTo($main);
-// 	var $content  = $('<div/>').addClass("media-select-content").appendTo($main);
-// 	var $scontent = $('<div/>').addClass("media-select-sidebar-content").appendTo($sidebar);
-// 	var $sfooter  = $('<div/>').addClass("media-select-footer").appendTo($sidebar);
+	var $media    = $('<div/>').addClass("media-select").data('type',mediaType);
+	var $body     = $('<div/>').addClass("media-select-body");
+	var $main     = $('<div/>').addClass("media-select-main").appendTo($body);
+	var $sidebar  = $('<div/>').addClass("media-select-sidebar").appendTo($body);
+	var $header   = $('<div/>').addClass("media-select-main-header").appendTo($main);
+	var $content  = $('<div/>').addClass("media-select-content").appendTo($main);
+	var $scontent = $('<div/>').addClass("media-select-sidebar-content").appendTo($sidebar);
+	var $sfooter  = $('<div/>').addClass("media-select-footer").appendTo($sidebar);
 	
-// 	var $closeBtn = $('<div/>').addClass("media-select-close-btn").appendTo($header)
-// 	.append($('<i/>').addClass("fa fa-times-circle fa-2x"))
-// 	.on("click",function(){
-// 		$media.hide();
-// 		$("html,body").css("overflow","");
-// 	});
+	var $closeBtn = $('<div/>').addClass("media-select-close-btn").appendTo($header)
+	.append($('<i/>').addClass("fa fa-times-circle fa-2x"))
+	.on("click",function(){
+		$media.hide();
+		$("html,body").css("overflow","");
+	});
 	
-// 	$('<span/>').addClass("media-select-footer-info").appendTo($sfooter);
+	$('<span/>').addClass("media-select-footer-info").appendTo($sfooter);
 	
-// 	$('<i/>').addClass('fa fa-refresh cu media-reload').on("click",updateMedia).appendTo($header);
-// 	$('<i/>').addClass('media-loading loader blue2 h4').appendTo($header);
+	$('<i/>').addClass('fa fa-refresh cu media-reload').on("click",updateMedia).appendTo($header);
+	$('<i/>').addClass('media-loading loader blue2 h4').appendTo($header);
 	
 	
-// 	for(var tab in mSettings.tabs){
-// 		var data = mSettings.tabs[tab];
+	for(var tab in mSettings.tabs){
+		var data = mSettings.tabs[tab];
 		
-// 		if(tab=='upload' && ! userCan('upload_file') ) continue;
-// 		if(tab=='images' && ! mSettings.include.images) continue;
-// 		if(tab=='files'  && ! mSettings.include.files ) continue;
+		if(tab=='upload' && ! userCan('upload_file') ) continue;
+		if(tab=='images' && ! mSettings.include.images) continue;
+		if(tab=='files'  && ! mSettings.include.files ) continue;
 		
-// 		addTab(tab,data);
-// 	}
+		addTab(tab,data);
+	}
 	
-// 	if(mSettings.id) $media.attr('id',mSettings.id);
+	if(mSettings.id) $media.attr('id',mSettings.id);
 		
-// 	/***********************************/
-// 	$media.append($body);
+	/***********************************/
+	$media.append($body);
 	
-// 	$('body').append($media);
+	$('body').append($media);
 		
 	
-// 	/***********************************/
+	/***********************************/
 				
-// 	$media.css({'z-index':(Hz())+1});
+	$media.css({'z-index':(Hz())+1});
 	
-// 	var uC = function(){
-// 		createUploader('.media-select-content-tab[tab=upload]',BURL+'admin/upload',updateMedia);
-// 	};
-// 	userCan('upload_file',uC);
+	var uC = function(){
+		createUploader('.media-select-content-tab[tab=upload]',BURL+'admin/upload',updateMedia);
+	};
+	userCan('upload_file',uC);
 	
-// 	$media.on("click",".media-item.selectable",function(e){
+	$media.on("click",".media-item.selectable",function(e){
 		
-// 		var element = this;
+		var element = this;
 		
-// 		setTimeout(function(){
+		setTimeout(function(){
 			
-// 			var selctedfiles = $('.media-item.selectable.selected');
+			var selctedfiles = $('.media-item.selectable.selected');
 			
-// 			$('.media-select-footer-info').html(selctedfiles.length+' selectd');
+			$('.media-select-footer-info').html(selctedfiles.length+' selectd');
 						
-// 			$submit.css("opacity",selctedfiles.length?1:.7);
+			$submit.css("opacity",selctedfiles.length?1:.7);
 			
-// 			updateMediaSidbar(element,mSettings.thumbs,mSettings.insert);
+			updateMediaSidbar(element,mSettings.thumbs,mSettings.insert);
 			
-// 			if(typeof(mSettings.onSelect)=='function')
-//                 mSettings.onSelect(element,selctedfiles);
+			if(typeof(mSettings.onSelect)=='function')
+                mSettings.onSelect(element,selctedfiles);
 			
-// 		},100);
-// 	});	
+		},100);
+	});	
 	
-// 	var $submit = $('<button/>').addClass('media-select-submit-btn small-btn')
-// 	.css({'float':'left','opacity':.7}).html(mSettings.btntext).appendTo($sfooter)
-// 	.on("click",function(e){
+	var $submit = $('<button/>').addClass('media-select-submit-btn small-btn')
+	.css({'float':'left','opacity':.7}).html(mSettings.btntext).appendTo($sfooter)
+	.on("click",function(e){
 		
-// 			var data = getSelctedFiles(),
-// 			files = $('.media-item.selected');
+			var data = getSelctedFiles(),
+			files = $('.media-item.selected');
 			
-// 			if( ! files.length ) return false;
+			if( ! files.length ) return false;
 			
-// 			if(typeof(mSettings.onSubmit)=='function')
-//                 mSettings.onSubmit(data,files);
+			if(typeof(mSettings.onSubmit)=='function')
+                mSettings.onSubmit(data,files);
 			
-// 			if(typeof(mSettings.callback)=='function')
-//                 mSettings.callback(data,files,mSettings.button);
+			if(typeof(mSettings.callback)=='function')
+                mSettings.callback(data,files,mSettings.button);
 			
-// 			if( mediaType == 'editor' )
-// 			{
-// 				insertToEditor(files);
-// 			}
-// 			else if( mSettings.button && mSettings.button.nodeType == 1 )
-// 			{
-// 				var $ap = $(mSettings.button).closest('.media-ap'),
-// 				$input = $ap.find('.media-ap-input'),
-// 				$thumb = $ap.find('.media-ap-data');
+			if( mediaType == 'editor' )
+			{
+				insertToEditor(files);
+			}
+			else if( mSettings.button && mSettings.button.nodeType == 1 )
+			{
+				var $ap = $(mSettings.button).closest('.media-ap'),
+				$input = $ap.find('.media-ap-input'),
+				$thumb = $ap.find('.media-ap-data');
 				
-// 				$(files).each(function(i, file) {
+				$(files).each(function(i, file) {
                     
-// 					if( $input.length ) $($input[i]).val($(file).data('file'));
-// 					if( $thumb.length )
-// 					{
-// 						var size = $thumb.data('thumb');
-// 						console.error($thumb.attr("class"))
-// 						var img = $('<img/>',{src:$(file).data(size),file:$(file).data('file')})
-// 						.addClass('convert-this img-responsive');
+					if( $input.length ) $($input[i]).val($(file).data('file'));
+					if( $thumb.length )
+					{
+						var size = $thumb.data('thumb');
+						console.error($thumb.attr("class"))
+						var img = $('<img/>',{src:$(file).data(size),file:$(file).data('file')})
+						.addClass('convert-this img-responsive');
 
-// 						if( $thumb.hasClass('replace') ) $thumb.html(img);
-// 						else $thumb.append(img);
-// 					}
-//                 });
-// 			}
+						if( $thumb.hasClass('replace') ) $thumb.html(img);
+						else $thumb.append(img);
+					}
+                });
+			}
 			
-// 			$(files).removeClass('selected');
+			$(files).removeClass('selected');
 			
-// 			$("html,body").css("overflow","");
-// 			$media.hide();		
-// 	});
+			$("html,body").css("overflow","");
+			$media.hide();		
+	});
 	
-// 	var lastUpdate = false;
+	var lastUpdate = false;
 	
-// 	function addTab(name,data){
+	function addTab(name,data){
 		
-// 		var style = data.style;
-// 		if(!style) style = {};
-// 		var tabbtn = $('<div/>').addClass('media-select-tab-btn')
-// 			.attr({'tab':name}).append($('<i/>').addClass('fa fa-'+data.icon)).append(data.name)
-// 			.on("click",function(){
-// 				$('.media-select-content-tab').hide();
-// 				$('.media-select-content-tab[tab="'+$(this).attr('tab')+'"]').show();
-// 				$('.media-select-tab-btn').removeClass('selected');
-// 				$(this).addClass('selected');
-// 			});
+		var style = data.style;
+		if(!style) style = {};
+		var tabbtn = $('<div/>').addClass('media-select-tab-btn')
+			.attr({'tab':name}).append($('<i/>').addClass('fa fa-'+data.icon)).append(data.name)
+			.on("click",function(){
+				$('.media-select-content-tab').hide();
+				$('.media-select-content-tab[tab="'+$(this).attr('tab')+'"]').show();
+				$('.media-select-tab-btn').removeClass('selected');
+				$(this).addClass('selected');
+			});
 		
-// 		if(name == 'upload')
-// 		$(tabbtn).insertAfter($closeBtn);
-// 		else 
-// 		$(tabbtn).appendTo($header);
+		if(name == 'upload')
+		$(tabbtn).insertAfter($closeBtn);
+		else 
+		$(tabbtn).appendTo($header);
 
-// 		$('<div/>').addClass("media-select-content-tab")
-// 			.attr({'tab':name}).html(data.html).css(style).appendTo($content);		
-// 	}
+		$('<div/>').addClass("media-select-content-tab")
+			.attr({'tab':name}).html(data.html).css(style).appendTo($content);		
+	}
 	
-// 	function getSelctedFiles(){
+	function getSelctedFiles(){
 		
-// 		var selctedfiles = $('.media-item.selectable.selected');
-// 		if( ! selctedfiles.length ) return false;
+		var selctedfiles = $('.media-item.selectable.selected');
+		if( ! selctedfiles.length ) return false;
 		
-// 		var files = [];
+		var files = [];
 		 
-// 		$(selctedfiles).each(function(index, el) {
-// 			files.push($(el).data('file'));
-// 		});
-// 		return files;
-// 	}
+		$(selctedfiles).each(function(index, el) {
+			files.push($(el).data('file'));
+		});
+		return files;
+	}
 	
-// 	function updateImages(append){
+	function updateImages(append){
 		
-// 		mediaLoding(1);
+		mediaLoding(1);
 				
-// 		var begin,total = 20;
+		var begin,total = 20;
 		
-// 		if( ! append ) begin = 0; else begin = $('.media-item.media-images').length;
+		if( ! append ) begin = 0; else begin = $('.media-item.media-images').length;
 			
-// 		total = getTotal(begin);
+		total = getTotal(begin);
 		
-// 		var dir = readCookie('_ad0f');
+		var dir = readCookie('_ad0f');
 		
-// 		$.ajax({
-// 			url:URL+"/media/images/"+begin+"/"+total,
-// 			type:"POST",
-// 			data:{selectable:true,multiple:mSettings.multiple,options:false,dir:dir},
-// 			success: function(data){
+		$.ajax({
+			url:URL+"/media/images/"+begin+"/"+total,
+			type:"POST",
+			data:{selectable:true,multiple:mSettings.multiple,options:false,dir:dir},
+			success: function(data){
 				
-// 				var $tab = $('.media-select-content-tab[tab=images]');
+				var $tab = $('.media-select-content-tab[tab=images]');
 				
-// 				if( ! append ){
-// 					$tab.html(data);
-// 					MediaData('restore');
-// 				}else
-// 				$tab.append(data);
+				if( ! append ){
+					$tab.html(data);
+					MediaData('restore');
+				}else
+				$tab.append(data);
 				
-// 				$tab.find('.media-images img:hidden').each(function(index, element) {
-// 					$(this).load(function(){$(this).fadeIn(200)});
-// 				}); 
+				$tab.find('.media-images img:hidden').each(function(index, element) {
+					$(this).load(function(){$(this).fadeIn(200)});
+				}); 
 				
-// 				updateMediaSidbar();
+				updateMediaSidbar();
 				
-// 				mediaLoding(0);
-// 			},error: function(){mediaLoding(0)}
-// 		});
-// 	}
+				mediaLoding(0);
+			},error: function(){mediaLoding(0)}
+		});
+	}
 	
-// 	function updateFiles(append){
+	function updateFiles(append){
 		
-// 		mediaLoding(1);
+		mediaLoding(1);
 		
-// 		var sFiles = getSelctedFiles(),begin,total;
+		var sFiles = getSelctedFiles(),begin,total;
 		
-// 		if( ! append ) begin = 0; else begin = $('.media-item.media-files').length;
+		if( ! append ) begin = 0; else begin = $('.media-item.media-files').length;
 		
-// 		total = getTotal(begin);
+		total = getTotal(begin);
 		
-// 		var dir = readCookie('_ad0f');
+		var dir = readCookie('_ad0f');
 		
-// 		$.ajax({
-// 			url:URL+"/media/files/"+begin+"/"+total,
-// 			type:"POST",
-// 			data:{selectable:true,multiple:mSettings.multiple,options:false,dir:dir},
-// 			success: function(data){
+		$.ajax({
+			url:URL+"/media/files/"+begin+"/"+total,
+			type:"POST",
+			data:{selectable:true,multiple:mSettings.multiple,options:false,dir:dir},
+			success: function(data){
 				
-// 				var $tab = $('.media-select-content-tab[tab=files]');
+				var $tab = $('.media-select-content-tab[tab=files]');
 				
-// 				if( ! append ){
-// 					$tab.html(data);
-// 					MediaData('restore','files');
-// 				}
-// 				else $tab.append(data);
+				if( ! append ){
+					$tab.html(data);
+					MediaData('restore','files');
+				}
+				else $tab.append(data);
 
-// 				$tab.find(
-// 					'.media-item[data-type="mp4"], ' +
-// 					'.media-item[data-type="m4s"], ' +
-// 					'.media-item[data-type="mp3"], ' +
-// 					'.media-item[data-type="wav"], ' +
-// 					'.media-item[data-type="ogg"], ' +
-// 					'.media-item[data-type="aac"], ' +
-// 					'.media-item[data-type="wma"], ' +
-// 					'.media-item[data-type="m4a"], ' +
-// 					'.media-item[data-type="flac"]'
-// 				).hide();
+				$tab.find(
+					'.media-item[data-type="mp4"], ' +
+					'.media-item[data-type="m4s"], ' +
+					'.media-item[data-type="mp3"], ' +
+					'.media-item[data-type="wav"], ' +
+					'.media-item[data-type="ogg"], ' +
+					'.media-item[data-type="aac"], ' +
+					'.media-item[data-type="wma"], ' +
+					'.media-item[data-type="m4a"], ' +
+					'.media-item[data-type="flac"]'
+				).hide();
 				  
 				
-// 				updateMediaSidbar();
+				updateMediaSidbar();
 				
-// 				mediaLoding(0);
+				mediaLoding(0);
 				
-// 			},error: function(){mediaLoding(0)}
-// 		});		
+			},error: function(){mediaLoding(0)}
+		});		
 
-// 	}
+	}
 	
-// 	function updateMedia(){
+	function updateMedia(){
 		
-// 		/*if( lastUpdate && lastUpdate+5 > strTime() ) return;
-// 		lastUpdate = strTime(); 
-// 		$('.media-reload').addClass('disable');
-// 		setTimeout(function(){$('.media-reload').removeClass('disable')},5000);*/
-// 		MediaData('backup');
+		/*if( lastUpdate && lastUpdate+5 > strTime() ) return;
+		lastUpdate = strTime(); 
+		$('.media-reload').addClass('disable');
+		setTimeout(function(){$('.media-reload').removeClass('disable')},5000);*/
+		MediaData('backup');
 		
-// 		if(mSettings.include.images)
-// 		updateImages();
+		if(mSettings.include.images)
+		updateImages();
 		
-// 		if(mSettings.include.files)
-// 		updateFiles();
+		if(mSettings.include.files)
+		updateFiles();
 		
-// 		$.ajax({
-// 			type:"POST",
-// 			url:URL+"/mediadirlist",
-// 			dataType:"json",
-// 			success: function(data){
+		$.ajax({
+			type:"POST",
+			url:"https://hls.zipak.info/upload_handler.php",
+			dataType:"json",
+			success: function(data){
 				
-// 				$header.find('select,.media-header-select,.select-menu').remove();
-// 				if(data.permission && data.list.length )
-// 				{
-// 					var dir = readCookie('_ad0f') || data.user;
-// 					var $select = $('<select/>').addClass('media-header-select')
-// 					.on("change",function(){
-// 						createCookie('_ad0f',this.value,1);
-// 						updateMedia();
-// 					}).appendTo($header);
+				$header.find('select,.media-header-select,.select-menu').remove();
+				if(data.permission && data.list.length )
+				{
+					var dir = readCookie('_ad0f') || data.user;
+					var $select = $('<select/>').addClass('media-header-select')
+					.on("change",function(){
+						createCookie('_ad0f',this.value,1);
+						updateMedia();
+					}).appendTo($header);
 					
-// 					$.each(data.list,function(i,v){
-// 						$('<option/>').val(v).html(v).appendTo($select);
-// 					});
-// 					$select.val(dir)
-// 					selectMenu($select,'user');
-// 				}
-// 			}
-// 		});
+					$.each(data.list,function(i,v){
+						$('<option/>').val(v).html(v).appendTo($select);
+					});
+					$select.val(dir)
+					selectMenu($select,'user');
+				}
+			}
+		});
 		
 		
 				
-// 	}
+	}
 
-// 	function setSize(){
+	function setSize(){
 		
-// 		var ww = $(window).width(),wh = $(window).height(),
-// 		mh = $('.media-select-main').height(),
-// 		hh = $('.media-select-main-header').outerHeight(),
-// 		sh = $('.media-select-sidebar').height(),
-// 		fh = $('.media-select-footer').outerHeight();
+		var ww = $(window).width(),wh = $(window).height(),
+		mh = $('.media-select-main').height(),
+		hh = $('.media-select-main-header').outerHeight(),
+		sh = $('.media-select-sidebar').height(),
+		fh = $('.media-select-footer').outerHeight();
 		
-// 		$('.media-select-sidebar-content').innerHeight(sh-fh);
-// 		$('.media-select-content').innerHeight(mh-hh);
+		$('.media-select-sidebar-content').innerHeight(sh-fh);
+		$('.media-select-content').innerHeight(mh-hh);
 		
-// 		var sminW = 250,fileW = 130,scrollW = 0,
-// 		bW = $('.media-select-body').innerWidth(), remW = bW-sminW-scrollW , 
-// 		items = Math.floor(remW/fileW),mW = (items*fileW)+scrollW;
+		var sminW = 250,fileW = 130,scrollW = 0,
+		bW = $('.media-select-body').innerWidth(), remW = bW-sminW-scrollW , 
+		items = Math.floor(remW/fileW),mW = (items*fileW)+scrollW;
 		
-// 		$('.media-select-main').innerWidth(mW);
-// 		$('.media-select-sidebar').innerWidth(bW-mW-3);
+		$('.media-select-main').innerWidth(mW);
+		$('.media-select-sidebar').innerWidth(bW-mW-3);
 				
-// 	}	
+	}	
 	
-// 	function getTotal(begin){
+	function getTotal(begin){
 
-// 		var w = $('.media-select-content').width(),
-// 		h = $('.media-select-content').height(),
-// 		col = w /130 , row = Math.ceil(h/130);
+		var w = $('.media-select-content').width(),
+		h = $('.media-select-content').height(),
+		col = w /130 , row = Math.ceil(h/130);
 				
-// 		if( begin == 0 ) return  2*row*col;
+		if( begin == 0 ) return  2*row*col;
 		
-// 		else  return  3*col*row;
+		else  return  3*col*row;
 		
-// 	}	
+	}	
 	
-// 	$(window).resize(setSize);
+	$(window).resize(setSize);
 	
-// 	setSize();
+	setSize();
 	
-// 	updateMedia();
+	updateMedia();
 	
-// 	$('.media-select-tab-btn[tab="'+mSettings.selected+'"]').trigger("click");
+	$('.media-select-tab-btn[tab="'+mSettings.selected+'"]').trigger("click");
 	
-// 	$('.media-select-content').mCustomScrollbar({
-// 		theme: "3d-thick",
-// 		scrollButtons:{enable:true},
-// 		scrollInertia:100,
-// 		//autoHideScrollbar: true,
-// 		//autoExpandScrollbar :true ,
-// 		scrollbarPosition:"outside",
-// 		callbacks:{
-// 			onTotalScroll: function(){
+	$('.media-select-content').mCustomScrollbar({
+		theme: "3d-thick",
+		scrollButtons:{enable:true},
+		scrollInertia:100,
+		//autoHideScrollbar: true,
+		//autoExpandScrollbar :true ,
+		scrollbarPosition:"outside",
+		callbacks:{
+			onTotalScroll: function(){
 				
-// 				var tab = $('.media-select-tab-btn.selected').attr('tab');
+				var tab = $('.media-select-tab-btn.selected').attr('tab');
 				
-// 				if(tab=='images') updateImages(true);
+				if(tab=='images') updateImages(true);
 						
-// 				if(tab=='files') updateFiles(true);
+				if(tab=='files') updateFiles(true);
 						
-// 			}
-// 		}
-// 	});	
+			}
+		}
+	});	
 	
-// 	/*$('.media-select-sidebar-content').mCustomScrollbar({
-// 		theme: "3d-thick",
-// 		scrollButtons:{enable:true},
-// 		scrollInertia:100,
-// 		//autoHideScrollbar: true,
-// 		scrollbarPosition:"outside"
-// 	});*/
+	/*$('.media-select-sidebar-content').mCustomScrollbar({
+		theme: "3d-thick",
+		scrollButtons:{enable:true},
+		scrollInertia:100,
+		//autoHideScrollbar: true,
+		scrollbarPosition:"outside"
+	});*/
 
-// } 
+} 
 
-// function updateMediaSidbar(file,thumb,insert){
+function updateMediaSidbar(file,thumb,insert){
 
-// 	var sidebar = $('.media-select-sidebar-content');
+	var sidebar = $('.media-select-sidebar-content');
 	
-// 	if(!file){ $(sidebar).html(''); return; }
+	if(!file){ $(sidebar).html(''); return; }
 		
 
-// 	function addRow(c1,c2){
-// 		if(!c2)
-// 		return $('<tr/>').append($('<td/>').attr("colspan","2").html(c1));
-// 	    return $('<tr/>').append($('<td/>').html(c1)).append($('<td/>').html(c2));
-// 	}
+	function addRow(c1,c2){
+		if(!c2)
+		return $('<tr/>').append($('<td/>').attr("colspan","2").html(c1));
+	    return $('<tr/>').append($('<td/>').html(c1)).append($('<td/>').html(c2));
+	}
 		
-// 	var data = $(file).data(),
-// 		name = data.name,
-// 		size = data.size,
-// 		type = data.type.toUpperCase(),
-// 		ext  = data.type.toLowerCase(),
-// 		date = data.date,
-// 		path = data.file,
-// 		thumb150  = BURL+data.thumb150,
-// 		thumb300  = BURL+data.thumb300,
-// 		thumb600  = BURL+data.thumb600, 
-// 		eSizebase = data.selfsize,
-// 		eSize150  = data.thumb150size,
-// 		eSize300  = data.thumb300size,   
-// 		eSize600  = data.thumb600size,
-// 		privew  = $(file).find('.media-item-icon').clone(true),
-// 		cls     = 'media-select-sidebar-',
-// 		isImage = $(file).hasClass('media-images') ? true : false;
+	var data = $(file).data(),
+		name = data.name,
+		size = data.size,
+		type = data.type.toUpperCase(),
+		ext  = data.type.toLowerCase(),
+		date = data.date,
+		path = data.file,
+		thumb150  = BURL+data.thumb150,
+		thumb300  = BURL+data.thumb300,
+		thumb600  = BURL+data.thumb600, 
+		eSizebase = data.selfsize,
+		eSize150  = data.thumb150size,
+		eSize300  = data.thumb300size,   
+		eSize600  = data.thumb600size,
+		privew  = $(file).find('.media-item-icon').clone(true),
+		cls     = 'media-select-sidebar-',
+		isImage = $(file).hasClass('media-images') ? true : false;
 	
-// 	var $info = $('<div/>',{'dir':'rtl'});
+	var $info = $('<div/>',{'dir':'rtl'});
 	
-// 	if(ext == 'mp4' || ext == 'webm')
-// 	{
-// 		privew = '<div style="text-align:center"><video controls style="max-width:100%">\
-// 					 <source src="'+path+'" type="video/'+ext+'">\
-// 					  Your browser does not support the video.\
-// 				  </video></div>';	
-// 	}else if(ext == 'mp3')
-// 	{
-// 		privew = '<div style="text-align:center"><audio  controls style="max-width: 100%;">\
-// 				  <source src="'+path+'" type="audio/mpeg" title="'+name+'">\
-// 				  Your browser does not support the audio tag.\
-// 				 </audio></div>';	
-// 	}	
+	if(ext == 'mp4' || ext == 'webm')
+	{
+		privew = '<div style="text-align:center"><video controls style="max-width:100%">\
+					 <source src="'+path+'" type="video/'+ext+'">\
+					  Your browser does not support the video.\
+				  </video></div>';	
+	}else if(ext == 'mp3')
+	{
+		privew = '<div style="text-align:center"><audio  controls style="max-width: 100%;">\
+				  <source src="'+path+'" type="audio/mpeg" title="'+name+'">\
+				  Your browser does not support the audio tag.\
+				 </audio></div>';	
+	}	
 	
 	
-// 	var p = $('<div/>').addClass(cls+'preview').append(
-// 				isImage ? 
-// 				$('<img/>').attr('src',thumb300).css('max-width',$(sidebar).width()-17) : 
-// 				$('<div/>').css('padding',20).append(privew) 
-// 			);
+	var p = $('<div/>').addClass(cls+'preview').append(
+				isImage ? 
+				$('<img/>').attr('src',thumb300).css('max-width',$(sidebar).width()-17) : 
+				$('<div/>').css('padding',20).append(privew) 
+			);
 			
-// 	var $table = $('<table/>').addClass('table light2');
+	var $table = $('<table/>').addClass('table light2');
 	
-// 	$table.append($('<tr/>').append($('<th />').attr("colspan","2").html(name).addClass(cls+'name')));
-// 	$table.append($('<tr/>').append($('<td />').attr("colspan","2").html(p).css("padding",0)));
+	$table.append($('<tr/>').append($('<th />').attr("colspan","2").html(name).addClass(cls+'name')));
+	$table.append($('<tr/>').append($('<td />').attr("colspan","2").html(p).css("padding",0)));
 	
-// 	if(isImage)
-// 	$table.append(addRow('ابعاد',eSizebase));
-// 	$table.append(addRow('فرمت ',type));
-// 	$table.append(addRow('حجم',size));
+	if(isImage)
+	$table.append(addRow('ابعاد',eSizebase));
+	$table.append(addRow('فرمت ',type));
+	$table.append(addRow('حجم',size));
 	
-// 	var time = date.split('&');
-// 	var $date = $('<span/>',{class:'relative-date',datestr:time[0],date:time[1],'data-title':time[2]}).html(time[1]);
-// 	$table.append(addRow('آپلود شده در',$date));
+	var time = date.split('&');
+	var $date = $('<span/>',{class:'relative-date',datestr:time[0],date:time[1],'data-title':time[2]}).html(time[1]);
+	$table.append(addRow('آپلود شده در',$date));
 	
-// 	var deleteBtn = userCan('delete-file') ?  $('<button/>').addClass('small-btn')
-// 	.html('<i class="fa fa-trash-o"></i> حذف')
-// 	.on("click",function(){
-// 		delete_file(path,updateMediaSidbar);
-// 	}) : '';
-// 	// let sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
-// 	var downloadBtn = $('<a/>').attr({href:sftpUrl+path,download:sftpUrl+path}).html(
-// 		$('<button/>').addClass('small-btn')
-// 		.html('<i class="fa fa-cloud-download"></i> دریافت')
-// 	).css('vertical-align','top'); 
+	var deleteBtn = userCan('delete-file') ?  $('<button/>').addClass('small-btn')
+	.html('<i class="fa fa-trash-o"></i> حذف')
+	.on("click",function(){
+		delete_file(path,updateMediaSidbar);
+	}) : '';
+	// let sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
+	var downloadBtn = $('<a/>').attr({href:sftpUrl+path,download:sftpUrl+path}).html(
+		$('<button/>').addClass('small-btn')
+		.html('<i class="fa fa-cloud-download"></i> دریافت')
+	).css('vertical-align','top'); 
 	
-// 	var addressBtn = $('<button/>').addClass('small-btn')
-// 	.html('<i class="fa fa-link"></i> آدرس')
-// 	.on("click",function(){
-// 		var div = '<div class=ar style="max-width:500px;text-align:left" dir=ltr>'+sftpUrl+path+'</div>'; $('<div/>').css('max-width',500);
-// 		dialog_box(div);
-// 	});	
+	var addressBtn = $('<button/>').addClass('small-btn')
+	.html('<i class="fa fa-link"></i> آدرس')
+	.on("click",function(){
+		var div = '<div class=ar style="max-width:500px;text-align:left" dir=ltr>'+sftpUrl+path+'</div>'; $('<div/>').css('max-width',500);
+		dialog_box(div);
+	});	
 	
-// 	$table.append(addRow($('<div/>').append(addressBtn).append(downloadBtn).append(deleteBtn)));
+	$table.append(addRow($('<div/>').append(addressBtn).append(downloadBtn).append(deleteBtn)));
 
-// 	$table.appendTo($info);
+	$table.appendTo($info);
 	
 	
-// 	if( thumb || insert )
-// 	{
+	if( thumb || insert )
+	{
 		
-// 		var $table2 = $('<table/>').addClass('table light2');
+		var $table2 = $('<table/>').addClass('table light2');
 		
-// 		if( insert )
-// 		{
-// 			var $sel = $('<select/>',{class:cls+'insert input small'})
-// 						.css({'padding':"3px 5px",'margin':0,'width':"100%"})
-// 						.on("change",function(){
-// 							$(file).attr('data-insert',this.value)
-// 						});
-// 			$('<option/>',{value:'link',html:'لینک در متن'}).appendTo($sel);
-// 			$(file).hasClass('can-insert') && $('<option/>',{value:'insert',html:'نمایش در متن'}).appendTo($sel);
+		if( insert )
+		{
+			var $sel = $('<select/>',{class:cls+'insert input small'})
+						.css({'padding':"3px 5px",'margin':0,'width':"100%"})
+						.on("change",function(){
+							$(file).attr('data-insert',this.value)
+						});
+			$('<option/>',{value:'link',html:'لینک در متن'}).appendTo($sel);
+			$(file).hasClass('can-insert') && $('<option/>',{value:'insert',html:'نمایش در متن'}).appendTo($sel);
 			
-// 			var setInsert = $(file).data('insert') || 'link';
-// 			$sel.val(setInsert);
-// 			$(file).attr('data-insert',setInsert)
-// 			$table.append(addRow('استفاده بصورت',$sel));
-// 		}
-// 		if( thumb && eSize150)
-// 		{
-// 			var $sel2 = $('<select/>',{class:cls+'thumb input small'})
-// 						.css({'padding':"3px 5px",'margin':0,'width':"100%"})
-// 						.on("change",function(){
-// 							$(file).attr('data-thumb',this.value)
-// 						});			
-// 			$('<option/>',{value:thumb150  ,html:'کوچک  '  + eSize150}).appendTo($sel2);
-// 			$('<option/>',{value:thumb300  ,html:'متوسط  ' + eSize300}).appendTo($sel2);
-// 			$('<option/>',{value:thumb600  ,html:'بزرگ  '  + eSize600}).appendTo($sel2);
-// 			$('<option/>',{value:BURL+path ,html:'واقعی  ' + eSizebase}).appendTo($sel2);
+			var setInsert = $(file).data('insert') || 'link';
+			$sel.val(setInsert);
+			$(file).attr('data-insert',setInsert)
+			$table.append(addRow('استفاده بصورت',$sel));
+		}
+		if( thumb && eSize150)
+		{
+			var $sel2 = $('<select/>',{class:cls+'thumb input small'})
+						.css({'padding':"3px 5px",'margin':0,'width':"100%"})
+						.on("change",function(){
+							$(file).attr('data-thumb',this.value)
+						});			
+			$('<option/>',{value:thumb150  ,html:'کوچک  '  + eSize150}).appendTo($sel2);
+			$('<option/>',{value:thumb300  ,html:'متوسط  ' + eSize300}).appendTo($sel2);
+			$('<option/>',{value:thumb600  ,html:'بزرگ  '  + eSize600}).appendTo($sel2);
+			$('<option/>',{value:BURL+path ,html:'واقعی  ' + eSizebase}).appendTo($sel2);
 			
-// 			var setThumb = $(file).data('thumb') || thumb300;
-// 			$(file).attr('data-thumb',setThumb);
-// 			$sel2.val(setThumb);
-// 			$table.append(addRow('اندازه',$sel2));
-// 		}
-// 		if( insert )
-// 		{
-// 			var $infoName = $('<input/>',{class:cls+'thumb input small',type:'text'})
-// 			.css({'padding':"5px",'margin':0,'width':"100%"}).on("blur keyup keydown",function(){
-// 				$(file).attr('data-info-name',this.value)
-// 			});
+			var setThumb = $(file).data('thumb') || thumb300;
+			$(file).attr('data-thumb',setThumb);
+			$sel2.val(setThumb);
+			$table.append(addRow('اندازه',$sel2));
+		}
+		if( insert )
+		{
+			var $infoName = $('<input/>',{class:cls+'thumb input small',type:'text'})
+			.css({'padding':"5px",'margin':0,'width':"100%"}).on("blur keyup keydown",function(){
+				$(file).attr('data-info-name',this.value)
+			});
 			
-// 			var $infoDesc = $('<textarea/>',{class:cls+'thumb input small'})
-// 			.css({'padding':"3px 5px",'margin':0,'width':"100%"})
-// 			.on("blur keyup keydown",function(){
-// 				$(file).attr('data-info-desc',this.value)
-// 			});
+			var $infoDesc = $('<textarea/>',{class:cls+'thumb input small'})
+			.css({'padding':"3px 5px",'margin':0,'width':"100%"})
+			.on("blur keyup keydown",function(){
+				$(file).attr('data-info-desc',this.value)
+			});
 			
-// 			$infoName.val( $(file).data('info-name') || name );
-// 			$infoDesc.val( $(file).data('info-desc') || name );
-// 			$table.append(addRow('نام',$infoName));
-// 			$table.append(addRow('توضیحات',$infoDesc));
-// 		}		
+			$infoName.val( $(file).data('info-name') || name );
+			$infoDesc.val( $(file).data('info-desc') || name );
+			$table.append(addRow('نام',$infoName));
+			$table.append(addRow('توضیحات',$infoDesc));
+		}		
 		
-// 		//$table2.appendTo($info);		
-// 	}
-// 	$(sidebar).html($info);
-// 	updateTime();
-// } 
+		//$table2.appendTo($info);		
+	}
+	$(sidebar).html($info);
+	updateTime();
+} 
 
-// var mediaLoadingList = 0;
+var mediaLoadingList = 0;
 
-// function mediaLoding(key){
+function mediaLoding(key){
 	
-// 	var reload = $('.media-reload'), loading = $('.media-loading');
+	var reload = $('.media-reload'), loading = $('.media-loading');
 	
-// 	function off(){ $(reload).css('display','inline-block');$(loading).hide() }
-// 	function  on(){ $(reload).hide();$(loading).css('display','inline-block') }
+	function off(){ $(reload).css('display','inline-block');$(loading).hide() }
+	function  on(){ $(reload).hide();$(loading).css('display','inline-block') }
 	
-// 	if(key){
+	if(key){
 		
-// 		on();
-// 		mediaLoadingList++;
+		on();
+		mediaLoadingList++;
 		
-// 	}else{
-// 		mediaLoadingList--;
-// 		if( mediaLoadingList < 0 ) mediaLoadingList = 0;
+	}else{
+		mediaLoadingList--;
+		if( mediaLoadingList < 0 ) mediaLoadingList = 0;
 		
-// 		if( mediaLoadingList == 0 ) off();
-// 	}	
-//  }
+		if( mediaLoadingList == 0 ) off();
+	}	
+ }
  
-// var mediaFilesData = [];
+var mediaFilesData = [];
 
-// function MediaData(op,cls){
+function MediaData(op,cls){
 	
-// 	if(op)
-// 	switch(op)
-// 	{
-// 		case 'backup':
-// 		mediaFilesData = $('.media-item');
-// 		break;	
-// 		case 'restore':
-// 		$(mediaFilesData).each(function(index, el) {
-// 			var file = $('.media-item[data-file="' + $(el).data('file') + '"]');
-// 			var data = $(el).data();
-// 			$.each(data,function(i,v){
-// 				$(file).data(i,v);
-// 			});
-// 			$(file).attr('class',$(el).attr('class'));
-// 		});
-// 		break;		
-// 	}
+	if(op)
+	switch(op)
+	{
+		case 'backup':
+		mediaFilesData = $('.media-item');
+		break;	
+		case 'restore':
+		$(mediaFilesData).each(function(index, el) {
+			var file = $('.media-item[data-file="' + $(el).data('file') + '"]');
+			var data = $(el).data();
+			$.each(data,function(i,v){
+				$(file).data(i,v);
+			});
+			$(file).attr('class',$(el).attr('class'));
+		});
+		break;		
+	}
 	
-//  }
+ }
 
-// function insertToEditor(files){
+function insertToEditor(files){
 
-// 	$(files).each(function(index, file) {
+	$(files).each(function(index, file) {
 		
-// 		var name   = $.trim($(file).attr("data-info-name")) || $(file).attr("data-name"),	
-// 			title  = $.trim($(file).attr("data-info-desc")) || $(file).attr("data-name"),
-// 			path   = $(file).attr("data-thumb") || BURL + $(file).attr("data-file"),
-// 			insert = $(file).attr("data-insert"),
-// 			ext    = $(file).attr("data-type");
+		var name   = $.trim($(file).attr("data-info-name")) || $(file).attr("data-name"),	
+			title  = $.trim($(file).attr("data-info-desc")) || $(file).attr("data-name"),
+			path   = $(file).attr("data-thumb") || BURL + $(file).attr("data-file"),
+			insert = $(file).attr("data-insert"),
+			ext    = $(file).attr("data-type");
 			
-// 		switch (insert){
-// 			case 'link':		
-// 			var a = ' <a title="'+title+'" href="'+path+'">'+name+'</a> ';
-// 			EDITOR.insertHtml(a);
-// 			break;		
-// 			case 'insert':
+		switch (insert){
+			case 'link':		
+			var a = ' <a title="'+title+'" href="'+path+'">'+name+'</a> ';
+			EDITOR.insertHtml(a);
+			break;		
+			case 'insert':
 			
-// 			var html ;
-// 			switch(ext){
-// 				case 'jpeg':case 'jpe':case 'jpg':case 'png':case 'gif':				
-// 				html = '<img src="'+path+'" class="inline-image" file="'+ $(file).data('file') +'" style="max-width:100%" alt="'+title+'" title="'+title+'" />';							
-// 				break;
+			var html ;
+			switch(ext){
+				case 'jpeg':case 'jpe':case 'jpg':case 'png':case 'gif':				
+				html = '<img src="'+path+'" class="inline-image" file="'+ $(file).data('file') +'" style="max-width:100%" alt="'+title+'" title="'+title+'" />';							
+				break;
 				
-// 				case 'mp3':case 'ogg':
-// 				html = '<p></p><div style="text-align:center"><audio  controls>\
-// 				  <source src="'+path+'" type="audio/mpeg" title="'+title+'">\
-// 				  Your browser does not support the audio tag.\
-// 				 </audio></div><p></p>';				 
-// 				break;
+				case 'mp3':case 'ogg':
+				html = '<p></p><div style="text-align:center"><audio  controls>\
+				  <source src="'+path+'" type="audio/mpeg" title="'+title+'">\
+				  Your browser does not support the audio tag.\
+				 </audio></div><p></p>';				 
+				break;
 								
-// 				case 'mp4':case 'webm':case 'mov':
-// 				html = 
-// 				'<p></p><div style="text-align:center"><video controls style="max-width:100%">\
-// 					 <source src="'+path+'" type="video/'+ext+'">\
-// 					  Your browser does not support the video.\
-// 				  </video></div><p></p>';				  
-// 				break;				
-// 			}
+				case 'mp4':case 'webm':case 'mov':
+				html = 
+				'<p></p><div style="text-align:center"><video controls style="max-width:100%">\
+					 <source src="'+path+'" type="video/'+ext+'">\
+					  Your browser does not support the video.\
+				  </video></div><p></p>';				  
+				break;				
+			}
 			
-// 			EDITOR.insertHtml(html);
-// 			break;
-// 		}
-//     });
+			EDITOR.insertHtml(html);
+			break;
+		}
+    });
 	
-//  }
+ }
 
-$(document).ready(function () {
-    // Append the hidden popup for the file uploader to the body
-    $('body').append(`
-        <div id="fileUploaderPopup" style="
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            z-index: 1000;
-            text-align: center;
-        ">
-            <h3>Upload Media File</h3>
-            <input type="file" id="fileInput" style="margin-bottom: 10px;" />
-            <p id="uploadStatus" style="font-size: 14px; color: gray;">Select a file to upload</p>
-            <div id="progressContainer" style="display: none; margin-top: 10px;">
-                <div id="progressBar" style="
-                    width: 0;
-                    height: 10px;
-                    background: blue;
-                    border-radius: 5px;
-                "></div>
-            </div>
-            <button id="closePopup" style="
-                margin-top: 10px;
-                padding: 5px 10px;
-                font-size: 14px;
-                background: red;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            ">Close</button>
-        </div>
-        <div id="popupOverlay" style="
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        "></div>
-    `);
+// $(document).ready(function () {
+//     // Append the hidden popup for the file uploader to the body
+//     $('body').append(`
+//         <div id="fileUploaderPopup" style="
+//             display: none;
+//             position: fixed;
+//             top: 50%;
+//             left: 50%;
+//             transform: translate(-50%, -50%);
+//             width: 400px;
+//             padding: 20px;
+//             background: white;
+//             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+//             border-radius: 10px;
+//             z-index: 1000;
+//             text-align: center;
+//         ">
+//             <h3>Upload Media File</h3>
+//             <input type="file" id="fileInput" style="margin-bottom: 10px;" />
+//             <p id="uploadStatus" style="font-size: 14px; color: gray;">Select a file to upload</p>
+//             <div id="progressContainer" style="display: none; margin-top: 10px;">
+//                 <div id="progressBar" style="
+//                     width: 0;
+//                     height: 10px;
+//                     background: blue;
+//                     border-radius: 5px;
+//                 "></div>
+//             </div>
+//             <button id="closePopup" style="
+//                 margin-top: 10px;
+//                 padding: 5px 10px;
+//                 font-size: 14px;
+//                 background: red;
+//                 color: white;
+//                 border: none;
+//                 border-radius: 5px;
+//                 cursor: pointer;
+//             ">Close</button>
+//         </div>
+//         <div id="popupOverlay" style="
+//             display: none;
+//             position: fixed;
+//             top: 0;
+//             left: 0;
+//             width: 100%;
+//             height: 100%;
+//             background: rgba(0, 0, 0, 0.5);
+//             z-index: 999;
+//         "></div>
+//     `);
 
-    // Function to handle file uploads directly to another server
-    function uploadFileDirectly(file) {
-        if (!file) {
-            $('#uploadStatus').text('No file selected for upload').css('color', 'red');
-            return;
-        }
+//     // Function to handle file uploads directly to another server
+//     function uploadFileDirectly(file) {
+//         if (!file) {
+//             $('#uploadStatus').text('No file selected for upload').css('color', 'red');
+//             return;
+//         }
 
-        // Define allowed file types and maximum size
-        const allowedTypes = [
-            'audio/mpeg', 'audio/wav', 'audio/ogg',  // Audio
-            'image/jpeg', 'image/png', 'image/gif', // Images
-            'video/mp4', 'video/avi', 'video/mpeg', 'video/webm', 'video/quicktime' // Videos
-        ];
-        const maxFileSize = 50 * 1024 * 1024; // 50 MB
+//         // Define allowed file types and maximum size
+//         const allowedTypes = [
+//             'audio/mpeg', 'audio/wav', 'audio/ogg',  // Audio
+//             'image/jpeg', 'image/png', 'image/gif', // Images
+//             'video/mp4', 'video/avi', 'video/mpeg', 'video/webm', 'video/quicktime' // Videos
+//         ];
+//         const maxFileSize = 50 * 1024 * 1024; // 50 MB
 
-        // Validate file type
-        if (!allowedTypes.includes(file.type)) {
-            $('#uploadStatus').text('Invalid file type. Please upload audio, image, or video files only.').css('color', 'red');
-            return;
-        }
+//         // Validate file type
+//         if (!allowedTypes.includes(file.type)) {
+//             $('#uploadStatus').text('Invalid file type. Please upload audio, image, or video files only.').css('color', 'red');
+//             return;
+//         }
 
-        // Validate file size
-        if (file.size > maxFileSize) {
-            $('#uploadStatus').text('File size exceeds 50 MB limit.').css('color', 'red');
-            return;
-        }
+//         // Validate file size
+//         if (file.size > maxFileSize) {
+//             $('#uploadStatus').text('File size exceeds 50 MB limit.').css('color', 'red');
+//             return;
+//         }
 
-        var formData = new FormData();
-        formData.append("file", file);
+//         var formData = new FormData();
+//         formData.append("file", file);
 
-        // Show upload progress
-        $('#uploadStatus').text('Uploading...').css('color', 'blue');
-        $('#progressContainer').show();
+//         // Show upload progress
+//         $('#uploadStatus').text('Uploading...').css('color', 'blue');
+//         $('#progressContainer').show();
 
-        // AJAX request to upload file directly to the target server
-        $.ajax({
-            url: 'https://hls.zipak.info/upload_handler.php', // Replace with the target server's upload URL
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            xhr: function () {
-                var xhr = new window.XMLHttpRequest();
-                // Track upload progress
-                xhr.upload.addEventListener('progress', function (e) {
-                    if (e.lengthComputable) {
-                        var percentComplete = (e.loaded / e.total) * 100;
-                        $('#progressBar').css('width', percentComplete + '%');
-                    }
-                });
-                return xhr;
-            },
-            success: function (response) {
-                $('#uploadStatus')
-                    .text('Upload successful: ' + response.message)
-                    .css('color', 'green');
-                console.log("Upload successful:", response);
-                $('#progressBar').css('width', '0%');
-                $('#progressContainer').hide();
-            },
-            error: function (error) {
-                $('#uploadStatus')
-                    .text('Upload failed: ' + error.statusText)
-                    .css('color', 'red');
-                console.error("Upload failed:", error);
-                $('#progressBar').css('width', '0%');
-                $('#progressContainer').hide();
-            },
-        });
-    }
+//         // AJAX request to upload file directly to the target server
+//         $.ajax({
+//             url: 'https://hls.zipak.info/upload_handler.php', // Replace with the target server's upload URL
+//             type: 'POST',
+//             data: formData,
+//             contentType: false,
+//             processData: false,
+//             xhr: function () {
+//                 var xhr = new window.XMLHttpRequest();
+//                 // Track upload progress
+//                 xhr.upload.addEventListener('progress', function (e) {
+//                     if (e.lengthComputable) {
+//                         var percentComplete = (e.loaded / e.total) * 100;
+//                         $('#progressBar').css('width', percentComplete + '%');
+//                     }
+//                 });
+//                 return xhr;
+//             },
+//             success: function (response) {
+//                 $('#uploadStatus')
+//                     .text('Upload successful: ' + response.message)
+//                     .css('color', 'green');
+//                 console.log("Upload successful:", response);
+//                 $('#progressBar').css('width', '0%');
+//                 $('#progressContainer').hide();
+//             },
+//             error: function (error) {
+//                 $('#uploadStatus')
+//                     .text('Upload failed: ' + error.statusText)
+//                     .css('color', 'red');
+//                 console.error("Upload failed:", error);
+//                 $('#progressBar').css('width', '0%');
+//                 $('#progressContainer').hide();
+//             },
+//         });
+//     }
 
-    // Open the popup when the button with class "add-sound" is clicked
-    $(document).on('click', '.add-sound', function () {
-        $('#fileUploaderPopup').fadeIn();
-        $('#popupOverlay').fadeIn();
-    });
+//     // Open the popup when the button with class "add-sound" is clicked
+//     $(document).on('click', '.add-sound', function () {
+//         $('#fileUploaderPopup').fadeIn();
+//         $('#popupOverlay').fadeIn();
+//     });
 
-    // Close the popup when the "Close" button is clicked
-    $(document).on('click', '#closePopup', function () {
-        $('#fileUploaderPopup').fadeOut();
-        $('#popupOverlay').fadeOut();
-    });
+//     // Close the popup when the "Close" button is clicked
+//     $(document).on('click', '#closePopup', function () {
+//         $('#fileUploaderPopup').fadeOut();
+//         $('#popupOverlay').fadeOut();
+//     });
 
-    // Close the popup when the overlay is clicked
-    $(document).on('click', '#popupOverlay', function () {
-        $('#fileUploaderPopup').fadeOut();
-        $('#popupOverlay').fadeOut();
-    });
+//     // Close the popup when the overlay is clicked
+//     $(document).on('click', '#popupOverlay', function () {
+//         $('#fileUploaderPopup').fadeOut();
+//         $('#popupOverlay').fadeOut();
+//     });
 
-    // Listen for file input changes
-    $(document).on('change', '#fileInput', function (e) {
-        var file = e.target.files[0]; // Get the selected file
-        uploadFileDirectly(file); // Trigger the upload function
-    });
-});
+//     // Listen for file input changes
+//     $(document).on('change', '#fileInput', function (e) {
+//         var file = e.target.files[0]; // Get the selected file
+//         uploadFileDirectly(file); // Trigger the upload function
+//     });
+// });
