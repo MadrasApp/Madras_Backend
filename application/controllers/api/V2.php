@@ -4726,7 +4726,7 @@ class V2 extends CI_Controller
         $requested_url = $_SERVER['REQUEST_URI']; // Full request URI
         $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
         $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
-        $relative_path = str_replace($receivedHash,'','api/v2/fetchFiles/');
+        $outputString = str_replace("api/v2/fetchFiles/", "", $relative_path);
         $file_path = '/lexoya/var/www/html/'.$relative_path;
         echo $file_path;
         if (file_exists($file_path)) {
