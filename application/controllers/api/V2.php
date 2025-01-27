@@ -4721,13 +4721,26 @@ class V2 extends CI_Controller
 
 
     //=========================================
-    public function fetchFiles(){
+    public function fetchFile(){
         $base_path = base_url() ; // Base path for this script
         $requested_url = $_SERVER['REQUEST_URI']; // Full request URI
         $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
         $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
-        echo $relative_path;
-        
+        $relative_path = str_replace($receivedHash,'','api/v2/fetchFiles/');
+        $file_path = '/lexoya/var/www/html/'.$relative_path;
+        echo $file_path;
+        if (file_exists($file_path)) {
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.basename($file_path).'"');
+            header('Content-Length: ' . filesize($file_path));
+            readfile($file_path);
+            exit;
+        } else {
+            header("HTTP/1.0 404 Not Found");
+            echo "404 Not Found";
+            exit;
+        }
+
     }
 
     //=========================================
