@@ -4743,8 +4743,13 @@ class V2 extends CI_Controller
             echo $file_path;
             exit;
         }
-
     }
+
+    public function siteHealth() {
+        return $this->tools->outS(0, 'ok');
+    }
+
+
 
     //=========================================
 
