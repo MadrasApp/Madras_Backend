@@ -14,9 +14,10 @@ RUN apt-get update && apt-get install -y \
     git \
     mariadb-client \
     curl \
+    libxml2-dev \  # Required for SOAP
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql mysqli zip \
-    && docker-php-ext-enable gd pdo_mysql mysqli zip
+    && docker-php-ext-install gd pdo pdo_mysql mysqli zip soap \
+    && docker-php-ext-enable gd pdo_mysql mysqli zip soap
 
 # Enable Apache mod_rewrite for CodeIgniter
 RUN a2enmod rewrite headers
