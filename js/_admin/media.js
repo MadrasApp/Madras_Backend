@@ -1,6 +1,7 @@
 
 
 $(document).ready(function(e) {
+	
 	$(document).on("click",".selectable",function(){
 		
 		var un = $(this).attr('unique-group');
@@ -342,19 +343,6 @@ function media(options,button,callback){
 					MediaData('restore','files');
 				}
 				else $tab.append(data);
-
-				$tab.find(
-					'.media-item[data-type="mp4"], ' +
-					'.media-item[data-type="m4s"], ' +
-					'.media-item[data-type="mp3"], ' +
-					'.media-item[data-type="wav"], ' +
-					'.media-item[data-type="ogg"], ' +
-					'.media-item[data-type="aac"], ' +
-					'.media-item[data-type="wma"], ' +
-					'.media-item[data-type="m4a"], ' +
-					'.media-item[data-type="flac"]'
-				).hide();
-				  
 				
 				updateMediaSidbar();
 				
@@ -381,7 +369,7 @@ function media(options,button,callback){
 		
 		$.ajax({
 			type:"POST",
-			url:"https://hls.zipak.info/upload_handler.php",
+			url:URL+"/mediadirlist",
 			dataType:"json",
 			success: function(data){
 				
@@ -479,7 +467,7 @@ function media(options,button,callback){
 } 
 
 function updateMediaSidbar(file,thumb,insert){
-
+	
 	var sidebar = $('.media-select-sidebar-content');
 	
 	if(!file){ $(sidebar).html(''); return; }
@@ -551,8 +539,8 @@ function updateMediaSidbar(file,thumb,insert){
 	.on("click",function(){
 		delete_file(path,updateMediaSidbar);
 	}) : '';
-	// let sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
-	var downloadBtn = $('<a/>').attr({href:sftpUrl+path,download:sftpUrl+path}).html(
+	
+	var downloadBtn = $('<a/>').attr({href:BURL+path,download:BURL+path}).html(
 		$('<button/>').addClass('small-btn')
 		.html('<i class="fa fa-cloud-download"></i> دریافت')
 	).css('vertical-align','top'); 
@@ -560,7 +548,7 @@ function updateMediaSidbar(file,thumb,insert){
 	var addressBtn = $('<button/>').addClass('small-btn')
 	.html('<i class="fa fa-link"></i> آدرس')
 	.on("click",function(){
-		var div = '<div class=ar style="max-width:500px;text-align:left" dir=ltr>'+sftpUrl+path+'</div>'; $('<div/>').css('max-width',500);
+		var div = '<div class=ar style="max-width:500px;text-align:left" dir=ltr>'+BURL+path+'</div>'; $('<div/>').css('max-width',500);
 		dialog_box(div);
 	});	
 	
@@ -722,150 +710,3 @@ function insertToEditor(files){
     });
 	
  }
-
-// $(document).ready(function () {
-//     // Append the hidden popup for the file uploader to the body
-//     $('body').append(`
-//         <div id="fileUploaderPopup" style="
-//             display: none;
-//             position: fixed;
-//             top: 50%;
-//             left: 50%;
-//             transform: translate(-50%, -50%);
-//             width: 400px;
-//             padding: 20px;
-//             background: white;
-//             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-//             border-radius: 10px;
-//             z-index: 1000;
-//             text-align: center;
-//         ">
-//             <h3>Upload Media File</h3>
-//             <input type="file" id="fileInput" style="margin-bottom: 10px;" />
-//             <p id="uploadStatus" style="font-size: 14px; color: gray;">Select a file to upload</p>
-//             <div id="progressContainer" style="display: none; margin-top: 10px;">
-//                 <div id="progressBar" style="
-//                     width: 0;
-//                     height: 10px;
-//                     background: blue;
-//                     border-radius: 5px;
-//                 "></div>
-//             </div>
-//             <button id="closePopup" style="
-//                 margin-top: 10px;
-//                 padding: 5px 10px;
-//                 font-size: 14px;
-//                 background: red;
-//                 color: white;
-//                 border: none;
-//                 border-radius: 5px;
-//                 cursor: pointer;
-//             ">Close</button>
-//         </div>
-//         <div id="popupOverlay" style="
-//             display: none;
-//             position: fixed;
-//             top: 0;
-//             left: 0;
-//             width: 100%;
-//             height: 100%;
-//             background: rgba(0, 0, 0, 0.5);
-//             z-index: 999;
-//         "></div>
-//     `);
-
-//     // Function to handle file uploads directly to another server
-//     function uploadFileDirectly(file) {
-//         if (!file) {
-//             $('#uploadStatus').text('No file selected for upload').css('color', 'red');
-//             return;
-//         }
-
-//         // Define allowed file types and maximum size
-//         const allowedTypes = [
-//             'audio/mpeg', 'audio/wav', 'audio/ogg',  // Audio
-//             'image/jpeg', 'image/png', 'image/gif', // Images
-//             'video/mp4', 'video/avi', 'video/mpeg', 'video/webm', 'video/quicktime' // Videos
-//         ];
-//         const maxFileSize = 50 * 1024 * 1024; // 50 MB
-
-//         // Validate file type
-//         if (!allowedTypes.includes(file.type)) {
-//             $('#uploadStatus').text('Invalid file type. Please upload audio, image, or video files only.').css('color', 'red');
-//             return;
-//         }
-
-//         // Validate file size
-//         if (file.size > maxFileSize) {
-//             $('#uploadStatus').text('File size exceeds 50 MB limit.').css('color', 'red');
-//             return;
-//         }
-
-//         var formData = new FormData();
-//         formData.append("file", file);
-
-//         // Show upload progress
-//         $('#uploadStatus').text('Uploading...').css('color', 'blue');
-//         $('#progressContainer').show();
-
-//         // AJAX request to upload file directly to the target server
-//         $.ajax({
-//             url: 'https://hls.zipak.info/upload_handler.php', // Replace with the target server's upload URL
-//             type: 'POST',
-//             data: formData,
-//             contentType: false,
-//             processData: false,
-//             xhr: function () {
-//                 var xhr = new window.XMLHttpRequest();
-//                 // Track upload progress
-//                 xhr.upload.addEventListener('progress', function (e) {
-//                     if (e.lengthComputable) {
-//                         var percentComplete = (e.loaded / e.total) * 100;
-//                         $('#progressBar').css('width', percentComplete + '%');
-//                     }
-//                 });
-//                 return xhr;
-//             },
-//             success: function (response) {
-//                 $('#uploadStatus')
-//                     .text('Upload successful: ' + response.message)
-//                     .css('color', 'green');
-//                 console.log("Upload successful:", response);
-//                 $('#progressBar').css('width', '0%');
-//                 $('#progressContainer').hide();
-//             },
-//             error: function (error) {
-//                 $('#uploadStatus')
-//                     .text('Upload failed: ' + error.statusText)
-//                     .css('color', 'red');
-//                 console.error("Upload failed:", error);
-//                 $('#progressBar').css('width', '0%');
-//                 $('#progressContainer').hide();
-//             },
-//         });
-//     }
-
-//     // Open the popup when the button with class "add-sound" is clicked
-//     $(document).on('click', '.add-sound', function () {
-//         $('#fileUploaderPopup').fadeIn();
-//         $('#popupOverlay').fadeIn();
-//     });
-
-//     // Close the popup when the "Close" button is clicked
-//     $(document).on('click', '#closePopup', function () {
-//         $('#fileUploaderPopup').fadeOut();
-//         $('#popupOverlay').fadeOut();
-//     });
-
-//     // Close the popup when the overlay is clicked
-//     $(document).on('click', '#popupOverlay', function () {
-//         $('#fileUploaderPopup').fadeOut();
-//         $('#popupOverlay').fadeOut();
-//     });
-
-//     // Listen for file input changes
-//     $(document).on('change', '#fileInput', function (e) {
-//         var file = e.target.files[0]; // Get the selected file
-//         uploadFileDirectly(file); // Trigger the upload function
-//     });
-// });
