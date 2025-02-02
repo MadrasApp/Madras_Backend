@@ -21,16 +21,15 @@ $postType = @$POST_TYPES[$type];
 }
 </style>
 <script src="<?php echo  base_url() ?>/js/_admin/book.js"></script>
+<script>
+    const emaUserName = "<?php echo $this->user->data->username ?>";
+</script>
+
 
 <div id="result"></div>
 
 
 <div style="width:90%;padding-left:10px;margin:auto;">
-	<?php 
-	var_dump('shosh' . $this->user->data->displayname);
-	var_dump($this->user);
-
-	?>
 	<h2><?php echo  $post['title'] ?></h2>
 
 	<p></p>
