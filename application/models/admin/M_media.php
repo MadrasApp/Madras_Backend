@@ -553,6 +553,7 @@ class M_media extends CI_Model
 
             $footer_info = $this->imageSize($file);
         } else {
+            $result.= '<p>shosh</p>';
             $result .= $this->getFileIcon($file);
             $footer_info = strtoupper($info['type']);
         }
