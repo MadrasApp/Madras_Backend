@@ -28,7 +28,7 @@ $postType = @$POST_TYPES[$type];
 <div style="width:90%;padding-left:10px;margin:auto;">
 	<?php 
 	var_dump('shosh' . $this->user->data->displayname);
-	var_dump('fff' . $this->user);
+	var_dump($this->user);
 
 	?>
 	<h2><?php echo  $post['title'] ?></h2>
