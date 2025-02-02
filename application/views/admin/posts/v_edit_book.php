@@ -8,7 +8,11 @@
 global $POST_TYPES;
 
 $postType = @$POST_TYPES[$type];
-
+$this->load->model('m_user', 'user');
+// Check if user is logged in
+if (! $this->user->check_login()) {
+	echo $this->user;
+}
 ?>
 
 <style>
