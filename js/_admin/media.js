@@ -485,7 +485,7 @@ function updateMediaSidbar(file,thumb,insert){
 		type = data.type.toUpperCase(),
 		ext  = data.type.toLowerCase(),
 		date = data.date,
-		path = data.file,
+		path = data.file.replace('/lexoya/var/www/html/', '/'),
 		thumb150  = BURL+data.thumb150,
 		thumb300  = BURL+data.thumb300,
 		thumb600  = BURL+data.thumb600, 
