@@ -111,7 +111,7 @@ class Admin_ajax extends CI_Controller
         $dir = array();
 
         if ($this->user->is_admin()) {
-            $dir = $this->media->scanPrimaryDir('/uploads');
+            $dir = $this->media->scanPrimaryDir('/lexoya/var/www/html/uploads/');
             $permission = TRUE;
         }
         $data = array('permission' => $permission, 'user' => $this->user->data->username, 'list' => $dir);
