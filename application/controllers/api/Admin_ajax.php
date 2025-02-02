@@ -79,7 +79,7 @@ class Admin_ajax extends CI_Controller
         $options = $options == 'true' ? TRUE : FALSE;
 
 
-        $dir = "/lexoya/var/www/html/uploads/";
+        $dir = "/uploads/";
         if ($user_dir = $this->input->post('dir')) {
             if ($this->user->is_admin() or $user_dir == $this->user->data->username)
                 $dir .= $user_dir;
