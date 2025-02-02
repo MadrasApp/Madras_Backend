@@ -27,11 +27,9 @@ $postType = @$POST_TYPES[$type];
 
 <div style="width:90%;padding-left:10px;margin:auto;">
 	<?php 
-	$this->load->model('m_user', 'user');
-	// Check if user is logged in
-	if (! $this->user->check_login()) {
-		var_dump('shosh' . $this->user);
-	}
+	var_dump('shosh' . $this->user->data->displayname);
+	var_dump('fff' . $this->user);
+
 	?>
 	<h2><?php echo  $post['title'] ?></h2>
 
