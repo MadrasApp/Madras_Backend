@@ -8,11 +8,6 @@
 global $POST_TYPES;
 
 $postType = @$POST_TYPES[$type];
-$this->load->model('m_user', 'user');
-// Check if user is logged in
-if (! $this->user->check_login()) {
-	echo $this->user;
-}
 ?>
 
 <style>
@@ -31,7 +26,13 @@ if (! $this->user->check_login()) {
 
 
 <div style="width:90%;padding-left:10px;margin:auto;">
-	
+	<?php 
+	$this->load->model('m_user', 'user');
+	// Check if user is logged in
+	if (! $this->user->check_login()) {
+		var_dump('shosh' . $this->user);
+	}
+	?>
 	<h2><?php echo  $post['title'] ?></h2>
 
 	<p></p>
