@@ -227,8 +227,8 @@ function media(options,button,callback){
 					if( $input.length ) $($input[i]).val($(file).data('file'));
 					if( $thumb.length )
 					{
-						let imageUrl = $(file).data(size).replace('/lexoya/var/www/html', '');
 						var size = $thumb.data('thumb');
+						let imageUrl = $(file).data(size).replace('/lexoya/var/www/html', '');
 						console.error($thumb.attr("class"))
 						var img = $('<img/>',{src:imageUrl,file:$(file).data('file')})
 						.addClass('convert-this img-responsive');
