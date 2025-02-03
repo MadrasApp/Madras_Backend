@@ -7027,9 +7027,9 @@ class V2 extends CI_Controller
                 throw new Exception('موردی یافت نشد', 2);
             }
             foreach ($advertise as $k => $v) {
-                $advertise[$k]->image = $v->image ? $baseurl . $v->image : null;
-            $this->tools->outS(0, 'OK', ["data" => $v->image]);
-
+                $original_url = $baseurl . $v->image;
+                $new_url = preg_replace('/\/lexoya\/.*?\/uploads/', '/uploads', $original_url);
+                $advertise[$k]->image = $v->image ? $new_url : null;
                 if ($v->section) {
                     $out = new stdClass();
                     $text["category"] = "دسته بندی";
