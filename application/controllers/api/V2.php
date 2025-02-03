@@ -7028,7 +7028,7 @@ class V2 extends CI_Controller
             }
             foreach ($advertise as $k => $v) {
                 $original_url = $baseurl . $v->image;
-                $new_url = preg_replace('/\/lexoya\/.*?\/uploads/', '/uploads', $original_url);
+                $new_url = preg_replace('/\/lexoya\/.*?\/uploads/', 'uploads', $original_url);
                 $advertise[$k]->image = $v->image ? $new_url : null;
                 if ($v->section) {
                     $out = new stdClass();
