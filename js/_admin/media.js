@@ -223,6 +223,7 @@ function media(options,button,callback){
 				$thumb = $ap.find('.media-ap-data');
 				
 				$(files).each(function(i, file) {
+					let file = file.replace('/lexoya/var/www/html', '/');
                     
 					if( $input.length ) $($input[i]).val($(file).data('file'));
 					if( $thumb.length )
