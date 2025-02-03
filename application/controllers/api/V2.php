@@ -7028,6 +7028,8 @@ class V2 extends CI_Controller
             }
             foreach ($advertise as $k => $v) {
                 $advertise[$k]->image = $v->image ? $baseurl . $v->image : null;
+            $this->tools->outS(0, 'OK', ["data" => $v->image]);
+
                 if ($v->section) {
                     $out = new stdClass();
                     $text["category"] = "دسته بندی";
