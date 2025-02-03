@@ -228,9 +228,8 @@ function media(options,button,callback){
 					if( $thumb.length )
 					{
 						var size = $thumb.data('thumb');
-						let imageUrl = $(file).data(size).replace('/lexoya/var/www/html', '');
 						console.error($thumb.attr("class"))
-						var img = $('<img/>',{src:'shosh',file:$(file).data('file')})
+						var img = $('<img/>',{src:$(file).data(size),file:$(file).data('file')})
 						.addClass('convert-this img-responsive');
 
 						if( $thumb.hasClass('replace') ) $thumb.html(img);
