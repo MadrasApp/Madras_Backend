@@ -223,14 +223,14 @@ function media(options,button,callback){
 				$thumb = $ap.find('.media-ap-data');
 				
 				$(files).each(function(i, file) {
-					let fileUrl = file.replace('/lexoya/var/www/html', '');
                     
 					if( $input.length ) $($input[i]).val($(file).data('file'));
 					if( $thumb.length )
 					{
+						let imageUrl = $(file).data(size).replace('/lexoya/var/www/html', '');
 						var size = $thumb.data('thumb');
 						console.error($thumb.attr("class"))
-						var img = $('<img/>',{src:$(fileUrl).data(size),file:$(file).data('file')})
+						var img = $('<img/>',{src:imageUrl,file:$(file).data('file')})
 						.addClass('convert-this img-responsive');
 
 						if( $thumb.hasClass('replace') ) $thumb.html(img);
