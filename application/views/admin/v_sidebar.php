@@ -4,6 +4,7 @@
     URL = '<?php echo site_url('admin/api/') ?>';
     BURL = '<?php echo base_url() ?>';
     sftpUrl = 'https://louhnyrh.lexoyacloud.ir';
+    const emaUserName = "<?php echo $this->user->data->username ?>";
 </script>
 
 

@@ -21,9 +21,6 @@ $postType = @$POST_TYPES[$type];
 }
 </style>
 <script src="<?php echo  base_url() ?>/js/_admin/book.js"></script>
-<script>
-    const emaUserName = "<?php echo $this->user->data->username ?>";
-</script>
 
 
 <div id="result"></div>
