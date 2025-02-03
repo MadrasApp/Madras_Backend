@@ -516,7 +516,7 @@ function updateMediaSidbar(file,thumb,insert){
 	
 	var p = $('<div/>').addClass(cls+'preview').append(
 				isImage ? 
-				$('<img/>').attr('src',thumb300).css('max-width',$(sidebar).width()-17) : 
+				$('<img/>').attr('src',path).css('max-width',$(sidebar).width()-17) : 
 				$('<div/>').css('padding',20).append(privew) 
 			);
 			
