@@ -19,6 +19,9 @@ class V2 extends CI_Controller
 
         parent::__construct();
 
+        // Load the Redis cache driver
+        $this->load->driver('cache', array('adapter' => 'redis', 'backup' => 'file'));
+
         //if( ! $this->input->is_ajax_request() ) exit('No direct script access allowed');
 
         $this->load->model('m_user', 'user');
@@ -4805,6 +4808,10 @@ class V2 extends CI_Controller
         $limit = $limit < 1000 ? $limit : 1000;
         $section = $this->input->post('section');
         $baseurl = CDN_URL;
+
+        // Limit the number of results to 1000 to avoid large cache keys
+        $limit = $limit < 1000 ? $limit : 1000;
+
         $allowsection = array(
             'doreh',
             'classroom',
@@ -4828,6 +4835,17 @@ class V2 extends CI_Controller
 
         if (!in_array($section, $allowsection)) {
             throw new Exception("لطفا در ارسال اطلاعات دقت نمایید", 1);
+        }
+
+        // Generate a unique cache key based on the request parameters
+        $cache_key = "last_classes_{$section}_{$limit}_{$start}_{$did}_{$title}";
+
+        // Check if data is cached in Redis
+        $cached_data = $this->cache->redis->get($cache_key);
+        
+        if ($cached_data !== FALSE) {
+            // Cache hit, return the cached data
+            return $this->tools->outS(0, "اطلاعات کلی", ["data" => $cached_data["data"], "pagination" => $cached_data["pagination"]]);
         }
 
         switch ($section) {
@@ -5350,6 +5368,14 @@ class V2 extends CI_Controller
         $pagination["start"] = $start;
         $pagination["limit"] = $limit;
         $pagination["total"] = $count;
+
+        // Cache the result for 1 hour (3600 seconds)
+        $cache_data = [
+            "data" => $data[$section],
+            "pagination" => $pagination
+        ];
+        $this->cache->redis->save($cache_key, $cache_data, 3600);  // Cache the result for 1 hour
+
         return $this->tools->outS(0, "اطلاعات کلی", ["data" => $data[$section], "pagination" => $pagination]);
     }
 
