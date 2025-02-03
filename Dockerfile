@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     mariadb-client \
     curl \
     libxml2-dev \
+    redis-server \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql mysqli zip soap \
     && docker-php-ext-enable gd pdo_mysql mysqli zip soap
@@ -45,6 +46,10 @@ RUN mkdir -p /lexoya/var/www/html/uploads \
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Install PHP Redis extension
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
 # Set the working directory
 WORKDIR /var/www/html
 
@@ -55,8 +60,8 @@ COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/uploads /var/www/html/temp
 
-# Expose port 80 for Apache
-EXPOSE 80
+# Expose ports 80 for Apache and 6379 for Redis
+EXPOSE 80 6379
 
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
+# Start Apache in the foreground and Redis server
+CMD service redis-server start && apache2-foreground
