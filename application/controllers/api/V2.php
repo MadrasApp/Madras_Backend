@@ -6158,7 +6158,8 @@ class V2 extends CI_Controller
                 ->where('p.id', $id)
                 ->get('posts p')->row();
             if ($book->thumb) {
-                $book->thumb = base_url() . $book->thumb;
+                $book->thumb = str_replace('/lexoya/var/www/html/', '', $book->thumb);
+		$book->thumb = base_url() . $book->thumb;
             }
 
             $category = $book->category;
