@@ -115,7 +115,8 @@
 				checkPartChanged(part);
 			}else{
 				media('file,1',btn,function(data,files,button){
-					var src = data[0];
+					var originalSrc = data[0];
+					var src = originalSrc.replace('/lexoya/var/www/html/', '');
 					var sound = 
 						'<input name="file" type="hidden" value="'+src+'">'
 						+ '<i class="fa fa-volume-up toggle-sound" title="مشاهده یا پنهان کردن فایل صوتی"></i>'
@@ -137,7 +138,8 @@
 				checkPartChanged(part);
 			}else{
 				media('image,1',btn,function(data,files,button){
-					var src = data[0];
+					var originalSrc = data[0];
+					var src = originalSrc.replace('/lexoya/var/www/html/', '');
 					var image = 
 						'<input name="image" type="hidden" value="'+src+'">'
 						+ '<i class="fa fa-picture-o toggle-image" title="مشاهده یا پنهان کردن تصویر"></i>'
