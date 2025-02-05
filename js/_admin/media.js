@@ -223,23 +223,29 @@ function media(options,button,callback){
 				$thumb = $ap.find('.media-ap-data');
 				
 				$(files).each(function(i, file) {
-                    
-					if( $input.length ) {
-						let filePath = $(file).data('file');
-						let cleanPath = filePath.replace('/lexoya/var/www/html/', ''); // Remove the unwanted part
-						$($input[i]).val(cleanPath);
+					var originalFilePath = $(file).data('file');
+					var cleanFilePath = originalFilePath.replace('/lexoya/var/www/html/', '');
+				
+					if ($input.length) {
+						$($input[i]).val(cleanFilePath);
 					}
-					if( $thumb.length )
-					{
+				
+					if ($thumb.length) {
 						var size = $thumb.data('thumb');
-						console.error($thumb.attr("class"))
-						var img = $('<img/>',{src:$(file).data(size),file:$(file).data('file')})
-						.addClass('convert-this img-responsive');
-
-						if( $thumb.hasClass('replace') ) $thumb.html(img);
-						else $thumb.append(img);
+						var originalThumbPath = $(file).data(size);
+						var cleanThumbPath = originalThumbPath.replace('/lexoya/var/www/html/', '');
+				
+						var img = $('<img/>', { src: cleanThumbPath, file: cleanFilePath })
+							.addClass('convert-this img-responsive');
+				
+						if ($thumb.hasClass('replace')) {
+							$thumb.html(img);
+						} else {
+							$thumb.append(img);
+						}
 					}
-                });
+				});
+				
 			}
 			
 			$(files).removeClass('selected');
