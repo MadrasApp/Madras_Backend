@@ -224,7 +224,11 @@ function media(options,button,callback){
 				
 				$(files).each(function(i, file) {
                     
-					if( $input.length ) $($input[i]).val($(file).data('file'));
+					if( $input.length ) {
+						let filePath = $(file).data('file');
+						let cleanPath = filePath.replace('/lexoya/var/www/html/', ''); // Remove the unwanted part
+						$($input[i]).val(cleanPath);
+					}
 					if( $thumb.length )
 					{
 						var size = $thumb.data('thumb');
