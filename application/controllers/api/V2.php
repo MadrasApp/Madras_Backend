@@ -1932,7 +1932,7 @@ class V2 extends CI_Controller
         $this->db->select('ub.book_id,ub.need_update, UNIX_TIMESTAMP(ub.expiremembership) as expiremembership');
         $this->db->where('ub.user_id', $user->id);
         if (!$hasmembership) {
-            $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
+            $this->db->where("(ISNULL(ub.expiremembership) OR STR_TO_DATE(ub.expiremembership, '%Y-%m-%d') = '0000-00-00')");
         }
         $UB = $this->db->get('user_books ub');
         $allbooks = $UB->result();
@@ -1940,7 +1940,7 @@ class V2 extends CI_Controller
         $this->db->select('ub.book_id,ub.need_update, UNIX_TIMESTAMP(ub.expiremembership) as expiremembership');
         $this->db->where('ub.user_id', $user->id);
         if (!$hasmembership) {
-            $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
+            $this->db->where("(ISNULL(ub.expiremembership) OR STR_TO_DATE(ub.expiremembership, '%Y-%m-%d') = '0000-00-00')");
         }
         $this->db->join('ci_factors f', '(ub.factor_id=f.id AND f.status=0)', 'inner', FALSE);
         if ($limit || $limitstart) {
