@@ -504,11 +504,11 @@ class Admin_ajax extends CI_Controller
             if (!$id) {
                 throw new Exception('اطلاعاتی ارسال نشده', 1);
             }
-            $this->db->select('b.id,u.tel,ub.expiremembership,IF(ub.expiremembership="0000-00-00","",pdate(ub.expiremembership)) AS expdate,IF(ub.expiremembership < CURDATE(),0,1) AS state,u.displayname');
+            $this->db->select('b.id,u.tel,ub.expiremembership,IF(ub.expiremembership IS NULL","",pdate(ub.expiremembership)) AS expdate,IF(ub.expiremembership IS NULL OR ub.expiremembership < CURDATE(), 0, 1) AS state,u.displayname');
             $this->db->join('ci_posts b', 'ub.book_id=b.id', 'inner', FALSE);
             $this->db->join('ci_users u', 'ub.user_id=u.id', 'inner', FALSE);
             $this->db->where('b.id', $id);
-            $this->db->where('ub.expiremembership <> "0000-00-00"');
+            $this->db->where('ub.expiremembership IS NOT NULL');
             $books = $this->db->get('user_books ub')->result();
             $this->tools->outS(0, 'OK', array('result' => $books));
         } catch (Exception $e) {
@@ -4242,7 +4242,12 @@ class Admin_ajax extends CI_Controller
             if ($action) {
                 $classaccounts->where('user_id > 0');
             }
-            $classaccounts->select("a.*,IF(a.upddate,pdate(a.upddate),'') AS upddate,IF(DATE(a.regdate)='0000-00-00','',pdate(DATE(a.regdate))) AS regdate,CONCAT(u.username,'[',u.displayname,']') udata");
+            $classaccounts->select("
+                a.*, 
+                IF(a.upddate IS NOT NULL, pdate(a.upddate), '') AS upddate, 
+                IF(a.regdate IS NOT NULL, pdate(a.regdate), '') AS regdate, 
+                CONCAT(u.username, '[', u.displayname, ']') AS udata
+            ");
             $classaccounts->join('ci_users u', 'a.user_id=u.id', 'left', FALSE);
             $result = $classaccounts->get('classaccount a')->result();
             foreach ($result as $key => $item) {
