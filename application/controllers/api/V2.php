@@ -2368,34 +2368,45 @@ class V2 extends CI_Controller
     public function ema_getBook($id = NULL, $type = 'zip')
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-
         $userid = $user->id;
+
+        // Prevent browser caching
         $this->output->set_header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
         $this->output->set_header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
         $this->output->set_header('Pragma: no-cache');
         $this->output->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
-        $id = (int)$id;
-        $id = $id ? $id : (int)$this->input->post('id');
+        // Get book ID and type from POST request
+        $id = (int) ($id ? $id : $this->input->post('id'));
         $type = $this->input->post('type') ? $this->input->post('type') : $type;
         $filename = md5($id);
 
-        if ($this->db->where('id', $id)->where('type', 'book')->count_all_results('posts') == 0)
+        // Generate a unique Redis cache key
+        $cache_key = "book_data_{$id}_{$type}_{$userid}";
+
+        // Check if the data is cached in Redis
+        $cached_data = $this->cache->redis->get($cache_key);
+        if ($cached_data !== FALSE) {
+            return $this->tools->outS(0, "Book Data (Cached)", ['data' => json_decode($cached_data, true)]);
+        }
+
+        // Validate book existence and published status
+        if ($this->db->where('id', $id)->where('type', 'book')->count_all_results('posts') == 0) {
             throw new Exception("Invalid book id", 2);
-
-
-        if ($this->db->where('id', $id)->where('type', 'book')->where('published', 1)->count_all_results('posts') == 0)
+        }
+        if ($this->db->where('id', $id)->where('type', 'book')->where('published', 1)->count_all_results('posts') == 0) {
             throw new Exception("This book is not active", 1);
+        }
 
+        // Load book model
         $this->load->model('m_book', 'book');
 
-        // Check if the user has this book in their books list
+        // Check if user has full access to the book
         $userBooks = $this->book->getUserBooks($userid);
-        $userBookIds = array_column($userBooks, 'id'); // Assuming each book object has an 'id' field
-
+        $userBookIds = array_column($userBooks, 'id');
         $fullAccess = in_array($id, $userBookIds);
 
-        //get the book info
+        // Get book information
         $book = $this->post->getPosts([
             'type' => 'book',
             'order' => 'p.date_modified desc',
@@ -2403,78 +2414,46 @@ class V2 extends CI_Controller
             'limit' => 1
         ])[0];
 
-        $classonlines = $this->db->select('cid')
-            ->where_in('data_type',['book','hamniaz'])
-            ->where('data_id',$id)
-            ->get('classonline_data')
-            ->result();
-
-        $classonline_ids = [0];
-        foreach ($classonlines as $classonline){
-            $classonline_ids[$classonline->cid] = $classonline->cid;
-        }
-
+        // Get associated class online data
         $classonlines = $this->db->select('*')
-            ->where_in('id',$classonline_ids)
+            ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classonline_data'))
             ->get('classonline')
             ->result();
-
-
         $book->classonline = $classonlines;
 
-        $classrooms = $this->db->select('cid')
-            ->where_in('data_type',['book','hamniaz'])
-            ->where('data_id',$id)
-            ->get('classroom_data')
-            ->result();
-
-        $classroom_ids = [0];
-        foreach ($classrooms as $classroom){
-            $classroom_ids[$classroom->cid] = $classroom->cid;
-        }
-
+        // Get associated classrooms
         $classrooms = $this->db->select('*')
-            ->where_in('id',$classroom_ids)
+            ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classroom_data'))
             ->get('classroom')
             ->result();
-
-
         $book->classroom = $classrooms;
 
+        // Retrieve additional book data
         $data['book'] = $book;
-
-        //get the book indexes
         $data['indexes'] = $this->book->getBookIndexesById($id);
-
-        //get the book parts
         $data['parts'] = $this->book->getBookPartsById($id);
-
         $data['tests'] = $this->book->getBookTests($id);
 
+        // Restrict book content for unauthorized users
         if (!$fullAccess) {
-            // Step 1: Limit pages in the book object to the first 3 entries in 'array'
-            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true); // First 3 entries in 'array'
+            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
             $data['book']->pages['array'] = $limitedPages;
-        
-            // Step 2: Recalculate the 'offset' based on the rule
+            
             $offset = [];
             $currentPage = 0;
             foreach ($limitedPages as $key => $value) {
-                $currentPage += count($value); // Add the number of pages represented by this entry
-                $offset[] = $currentPage - 1; // Use the last page of the current group
+                $currentPage += count($value);
+                $offset[] = $currentPage - 1;
             }
-            $data['book']->pages['offset'] = implode(',', $offset); // Update the offset
-        
-            // Step 3: Calculate the total number of parts within the limited pages
+            $data['book']->pages['offset'] = implode(',', $offset);
+            
             $totalPartsInLimitedPages = 0;
             foreach ($limitedPages as $value) {
                 $totalPartsInLimitedPages += count($value);
             }
-        
-            // Step 4: Adjust parts to match the limited pages
+            
             $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
         }
-                          
 
         foreach ($data['parts'] as $pk => $part) {
             $data['parts'][$pk]->description = base64_encode($part->description);
@@ -2482,37 +2461,16 @@ class V2 extends CI_Controller
 
         $data['tests'] = base64_encode($this->MakeJSON($data['tests']));
 
+        // Cache the book data in Redis for 1 hour
+        $this->cache->redis->save($cache_key, json_encode($data), 3600);
 
-        if ($type == 'json')
+        // Return JSON response if requested
+        if ($type == 'json') {
             return $this->tools->outS(0, NULL, ['data' => $data]);
+        }
 
+        // Prepare ZIP download
         $this->load->library('zip');
-
-        /*
-		 *
-		 *
-		if(isset($book->sample_questions) && ! empty($book->sample_questions))
-		{
-			foreach ($book->sample_questions as $ak=>$attachment)
-			{
-				$baseName = 'sample_questions/' . basename($attachment['path']);
-				$this->zip->read_file($attachment['path'],$baseName);
-				$book->sample_questions[$ak]['path'] = $baseName;
-			}
-		}
-
-		if(isset($book->attachments) && ! empty($book->attachments))
-		{
-			foreach ($book->attachments as $ak=>$attachment)
-			{
-				$baseName = 'attachments/' . basename($attachment['path']);
-				$this->zip->read_file($attachment['path'],$baseName);
-				$book->attachments[$ak]['path'] = $baseName;
-			}
-		}
-		 *
-		 */
-
         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
                 $baseName = 'images/' . basename($v->image);
@@ -2527,13 +2485,10 @@ class V2 extends CI_Controller
 
         $temp = 'temp/book/' . $filename . '.zip';
         $dir = 'temp/book';
-        if (!is_dir($dir))
-            mkdir($dir);
+        if (!is_dir($dir)) mkdir($dir);
         $this->zip->archive($temp);
 
-        $ubData = array(
-            'need_update' => 0,
-        );
+        $ubData = ['need_update' => 0];
         $this->db->where('book_id', $id)->where('user_id', $userid)->update('user_books', $ubData);
 
         $filesize = filesize($temp);
@@ -2546,12 +2501,10 @@ class V2 extends CI_Controller
         header('Pragma: no-cache');
 
         readfile($temp);
-
         @unlink($temp);
         exit;
-
-        //$this->zip->download($filename);
     }
+
 
 
     public function getBook($id = NULL, $type = 'zip')
