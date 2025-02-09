@@ -1,5 +1,5 @@
 # Use an official PHP image with Apache
-FROM php:7.4-fpm-buster
+FROM php:7.4-apache
 
 # Set environment variables for Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html
