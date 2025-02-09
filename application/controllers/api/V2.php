@@ -7714,86 +7714,86 @@ class V2 extends CI_Controller
         }
     }
 
-    // public function ema_getClassOnlineAccounts()
-    // {
-    //     try {
-    //         $user = $this->_loginNeed();
+    public function ema_getClassOnlineAccounts()
+    {
+        try {
+            $user = $this->_loginNeed();
 
-    //         if ($user === FALSE) {
-    //             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-    //         }
+            if ($user === FALSE) {
+                throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            }
 
-    //         $limit = (int)$this->input->post('limit');
-    //         $limitstart = (int)$this->input->post('limitstart');
-    //         $id         = (int) $this->input->post('id');
+            $limit = (int)$this->input->post('limit');
+            $limitstart = (int)$this->input->post('limitstart');
+            $id         = (int) $this->input->post('id');
 
-    //         $db = $this->db;
-    //         $data = array();
+            $db = $this->db;
+            $data = array();
 
-    //         // Select the classaccounts for the logged in user
-    //         $db->select('c.*');
-    //         $db->where('c.user_id', $user->id);
+            // Select the classaccounts for the logged in user
+            $db->select('c.*');
+            $db->where('c.user_id', $user->id);
             
-    //         // If an id is provided (not 0) then filter by that classonline id
-    //         if ($id != 0) {
-    //             $db->where('c.classonline_id', $id);
-    //         }
+            // If an id is provided (not 0) then filter by that classonline id
+            if ($id != 0) {
+                $db->where('c.classonline_id', $id);
+            }
             
-    //         if ($limit || $limitstart) {
-    //             $db->limit($limit, $limitstart);
-    //         }
-    //         $classaccounts = $db->get('classaccount c')->result();
+            if ($limit || $limitstart) {
+                $db->limit($limit, $limitstart);
+            }
+            $classaccounts = $db->get('classaccount c')->result();
 
-    //         // Gather the classonline ids from the user's accounts
-    //         $classonline_ids = [0];
-    //         foreach ($classaccounts as $classaccount) {
-    //             $classonline_ids[] = $classaccount->classonline_id;
-    //         }
+            // Gather the classonline ids from the user's accounts
+            $classonline_ids = [0];
+            foreach ($classaccounts as $classaccount) {
+                $classonline_ids[] = $classaccount->classonline_id;
+            }
 
-    //         // Get classonline records based on the collected ids
-    //         $db->select('c.*');
-    //         $db->where_in('c.id', $classonline_ids);
-    //         $classonlines = $db->get('classonline c')->result();
+            // Get classonline records based on the collected ids
+            $db->select('c.*');
+            $db->where_in('c.id', $classonline_ids);
+            $classonlines = $db->get('classonline c')->result();
 
-    //         // Prepare teacher ids and an associative array for classonlines
-    //         $teacher_ids = [0];
-    //         $tempclassonlines = [];
-    //         foreach ($classonlines as $classonline) {
-    //             if ($classonline->teachername) {
-    //                 $teacher_ids[] = $classonline->teachername;
-    //             }
-    //             $tempclassonlines[$classonline->id] = $classonline;
-    //         }
-    //         $classonlines = $tempclassonlines;
+            // Prepare teacher ids and an associative array for classonlines
+            $teacher_ids = [0];
+            $tempclassonlines = [];
+            foreach ($classonlines as $classonline) {
+                if ($classonline->teachername) {
+                    $teacher_ids[] = $classonline->teachername;
+                }
+                $tempclassonlines[$classonline->id] = $classonline;
+            }
+            $classonlines = $tempclassonlines;
 
-    //         // Get teacher data
-    //         $db->select('c.*');
-    //         $db->where_in('c.id', $teacher_ids);
-    //         $teachers = $db->get('users c')->result();
+            // Get teacher data
+            $db->select('c.*');
+            $db->where_in('c.id', $teacher_ids);
+            $teachers = $db->get('users c')->result();
 
-    //         $tempteachers = [];
-    //         foreach ($teachers as $teacher) {
-    //             $tempteachers[$teacher->id] = [
-    //                 "value" => $teacher->id, 
-    //                 "text"  => $teacher->displayname
-    //             ];
-    //         }
-    //         $teachers = $tempteachers;
+            $tempteachers = [];
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->id] = [
+                    "value" => $teacher->id, 
+                    "text"  => $teacher->displayname
+                ];
+            }
+            $teachers = $tempteachers;
 
-    //         // Append teacher and classonline details to each classaccount
-    //         foreach ($classaccounts as $key => $classaccount) {
-    //             $teacherId = @$classonlines[$classaccount->classonline_id]->teachername;
-    //             $classaccounts[$key]->teacher = @$teachers[$teacherId];
-    //             $classaccounts[$key]->classonline = @$classonlines[$classaccount->classonline_id];
-    //         }
+            // Append teacher and classonline details to each classaccount
+            foreach ($classaccounts as $key => $classaccount) {
+                $teacherId = @$classonlines[$classaccount->classonline_id]->teachername;
+                $classaccounts[$key]->teacher = @$teachers[$teacherId];
+                $classaccounts[$key]->classonline = @$classonlines[$classaccount->classonline_id];
+            }
 
-    //         $data['classaccounts'] = $classaccounts;
+            $data['classaccounts'] = $classaccounts;
 
-    //         $this->tools->outS(0, 'OK', ["data" => $data]);
-    //     } catch (Exception $e) {
-    //         $this->tools->outE($e);
-    //     }
-    // }
+            $this->tools->outS(0, 'OK', ["data" => $data]);
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
 
     //=========================================
     public function DayClassOnline($id = 0)
