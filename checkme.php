@@ -297,6 +297,56 @@
     </p>
 </form>
 
+<h1 id="extlogin">Eitaa Get Class Online Accounts</h1>
+<form action="api/v2/ema_getClassOnlineAccounts" method="post" target="_blank">
+    <table class="table table-bordered table-hover table-striped">
+        <tr>
+            <th></th>
+            <th></th>
+            <th>field name</th>
+            <th>filters</th>
+            <th>description</th>
+        </tr>
+        <tr>
+            <td>شماره همراه / Mac</td>
+            <td><input name="mac" type="text" value="" class="form-control"></td>
+            <td>mac</td>
+            <td>required|valid_mac</td>
+            <td>required for login</td>
+        </tr>
+        <tr>
+            <td>آی دی کلاس / Class ID</td>
+            <td><input name="id" type="text" value="" class="form-control"></td>
+            <td>class_id</td>
+            <td>required|valid_id</td>
+        </tr>
+        <tr>
+            <td>Token</td>
+            <td><input name="token" type="text" value="C36ZKdE02Nf89MIylUpbgL5VDnjArHmX" class="form-control"></td>
+            <td>token</td>
+            <td>required|exact_length[32]</td>
+            <td>required for login</td>
+        </tr>
+        <tr>
+            <td>limit</td>
+            <td><input name="limit" type="text" value="10" class="form-control"></td>
+            <td>limit</td>
+            <td>required</td>
+            <td>Limit show</td>
+        </tr>
+        <tr>
+            <td>start</td>
+            <td><input name="start" type="text" value="0" class="form-control"></td>
+            <td>start</td>
+            <td>required</td>
+            <td>start show from record</td>
+        </tr>
+    </table>
+    <p>
+        <input type="submit" value="Try it !" class="btn btn-primary">
+    </p>
+</form>
+
 <h1 id="extlogin">Get Categories</h1>
 <form action="api/v2/getCategories" method="post" target="_blank">
     <table class="table table-bordered table-hover table-striped">
