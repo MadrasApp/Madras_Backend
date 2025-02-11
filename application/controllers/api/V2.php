@@ -2382,7 +2382,7 @@ class V2 extends CI_Controller
         $filename = md5($id);
 
         // Generate a unique Redis cache key
-        $cache_key = "book_data_{$id}_{$type}_{$userid}";
+        $cache_key = "book_data_{$id}_{$type}";
 
         // Check if the data is cached in Redis
         $cached_data = $this->cache->redis->get($cache_key);
