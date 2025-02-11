@@ -572,17 +572,46 @@ class V2 extends CI_Controller
         $data = $this->input->post();
 
         $avatar = $user->avatar;
-        if (isset($data['avatar']) && $data['avatar'] != '') {
-            $this->load->model('admin/m_media', 'media');
-            $this->media->deleteFile($user->avatar);
 
-            $image = "profile-{$user->id}";
-            $dir = "lexoya/var/www/html/uploads/_ac/";
-            $resImg = $this->media->base64ToImg($data['avatar'], $image, $dir);
-            $avatar = 'uploads/_ac/' . $resImg;
-
-            $this->media->creatThumb($avatar);
+        if (isset($data['avatar']) && !empty($data['avatar'])) {
+            // API endpoint for the upload server
+            $uploadServerUrl = "https://hls.zipak.info/upload_files.php"; // Replace with actual URL
+        
+            // Convert Base64 to a Temporary File
+            $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['avatar']));
+            $tempFilePath = tempnam(sys_get_temp_dir(), 'avatar_') . ".jpg";
+            file_put_contents($tempFilePath, $imageData);
+        
+            // Prepare File Upload Request
+            $curlFile = new CURLFile($tempFilePath, 'image/jpeg', "profile-{$user->id}.jpg");
+            $postData = [
+                'file' => $curlFile,
+                'username' => $user->username // Send username to the upload server
+            ];
+        
+            // Send File to Upload Server via cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $uploadServerUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        
+            // Delete the temporary file after upload
+            @unlink($tempFilePath);
+        
+            // Handle response from the upload server
+            $uploadResponse = json_decode($response, true);
+            if ($httpCode !== 200 || empty($uploadResponse['file_name'])) {
+                throw new Exception("خطا در بارگذاری تصویر پروفایل", 5);
+            }
+        
+            // Store the final avatar URL received from the upload server
+            $avatar = "uploads/_ac/" . $uploadResponse['file_name'];
         }
+        
 
         $udata = array(
             'username' => $data['username'],
