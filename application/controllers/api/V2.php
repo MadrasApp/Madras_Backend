@@ -588,7 +588,7 @@ class V2 extends CI_Controller
             $curlFile = new CURLFile($tempFilePath, 'image/jpeg', "profile-{$user->id}.jpg");
             $postData = [
                 'file' => $curlFile,
-                'username' => $uploadUsername // Send username to the upload server
+                'username' => $uploadUsername
             ];
         
             // Send File to Upload Server via cURL
