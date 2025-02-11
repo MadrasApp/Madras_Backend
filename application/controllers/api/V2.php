@@ -575,20 +575,17 @@ class V2 extends CI_Controller
 
         if (isset($data['avatar']) && !empty($data['avatar'])) {
             // API endpoint for the upload server
-            $uploadServerUrl = "https://hls.zipak.info/upload_files.php"; // Replace with actual URL
+            $uploadServerUrl = "https://hls.zipak.info/upload_files.php?username=_ac"; // Replace with actual URL
         
             // Convert Base64 to a Temporary File
             $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['avatar']));
             $tempFilePath = tempnam(sys_get_temp_dir(), 'avatar_') . ".jpg";
             file_put_contents($tempFilePath, $imageData);
-
-            $uploadUsername = "_ac";
-        
+     
             // Prepare File Upload Request
             $curlFile = new CURLFile($tempFilePath, 'image/jpeg', "profile-{$user->id}.jpg");
             $postData = [
                 'file' => $curlFile,
-                'username' => $uploadUsername
             ];
         
             // Send File to Upload Server via cURL
@@ -610,8 +607,11 @@ class V2 extends CI_Controller
                 throw new Exception("خطا در بارگذاری تصویر پروفایل", 5);
             }
         
-            // Store the final avatar URL received from the upload server
-            $avatar = "uploads/_ac/" . $uploadResponse['file_name'];
+            $year = date("Y");  // Current year
+            $month = date("m"); // Current month
+
+            $avatar = "uploads/_ac/{$year}/{$month}/" . $uploadResponse['file_name'];
+
         }
         
 
