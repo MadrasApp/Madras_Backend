@@ -1,5 +1,5 @@
-# Use an official PHP image with Apache
-FROM php:7.4-apache
+# Use PHP image from the specified registry with Apache
+FROM registry.docker.ir/library/php:7.4-apache
 
 # Set environment variables for Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html
