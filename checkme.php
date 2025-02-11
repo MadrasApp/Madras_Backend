@@ -1070,6 +1070,46 @@
         <input type="submit" value="Try it !" class="btn btn-primary">
     </p>
 </form>
+
+<hr>
+<h1>getBookClassOnlines</h1>
+<form action="api/v2/ema_getBookClassOnlines" method="post" target="_blank">
+    <table class="table table-bordered table-hover table-striped">
+        <tr>
+            <th></th>
+            <th></th>
+            <th>field name</th>
+            <th>filters</th>
+            <th>description</th>
+        </tr>
+        <tr>
+            <td>شماره همراه / Mac</td>
+            <td><input name="mac" type="text" value="" class="form-control"></td>
+            <td>mac</td>
+            <td>optional</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Token</td>
+            <td><input name="token" type="text" value="C36ZKdE02Nf89MIylUpbgL5VDnjArHmX" class="form-control"></td>
+            <td>token</td>
+            <td>optional|exact_length[32]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>ID کتاب</td>
+            <td><input name="id" type="text" value="0" class="form-control"></td>
+            <td>id</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <p>
+        <input type="submit" value="Try it !" class="btn btn-primary">
+    </p>
+</form>
+
+<hr>
 <h1>getClassDetail</h1>
 <form action="api/v2/getClassDetail" method="post" target="_blank">
     <table class="table table-bordered table-hover table-striped">

@@ -6533,6 +6533,103 @@ class V2 extends CI_Controller
         }
     }
 
+    public function ema_getBookClassOnlines()
+    {
+        try {
+            // Check if the user is logged in
+            $user = $this->_loginNeed(TRUE, 'u.id');
+            if (!$user) {
+                throw new Exception('User authentication required', 401);
+            }
+
+            $id = (int)$this->input->post('id');
+            if (!$id) {
+                throw new Exception('Book ID is required', 1);
+            }
+
+            // Retrieve related classonlines IDs
+            $classonlines = $this->db->select('cid')
+                ->where_in('data_type', ['book', 'hamniaz'])
+                ->where('data_id', $id)
+                ->get('classonline_data')
+                ->result();
+
+            $classonline_ids = [];
+            foreach ($classonlines as $classonline) {
+                $classonline_ids[] = $classonline->cid;
+            }
+
+            if (empty($classonline_ids)) {
+                return $this->tools->outS(0, 'No classonlines found', ['classonlines' => []]);
+            }
+
+            // Fetch classonlines based on retrieved IDs
+            $classonlines = $this->db->select('*')
+                ->where_in('id', $classonline_ids)
+                ->get('classonline')
+                ->result();
+
+            // Prepare day-of-week mapping
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            // Fetch and organize schedule data
+            $classonline_schedule = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_ids)
+                ->order_by('cid, dayofweek, starttime')
+                ->get('classonline_data')
+                ->result();
+
+            $classonline_dayofweeks = [];
+            foreach ($classonline_schedule as $schedule) {
+                $classonline_dayofweeks[$schedule->cid][] = [
+                    "dayofweek" => $schedule->dayofweek,
+                    "dayname" => $dayofweeks[$schedule->dayofweek],
+                    "starttime" => $schedule->starttime,
+                    "endtime" => $schedule->endtime
+                ];
+            }
+
+            // Fetch teacher names
+            $teacher_ids = array_unique(array_column($classonlines, 'teachername'));
+            if (!empty($teacher_ids)) {
+                $teachers = $this->db->select('c.id AS value, c.displayname AS text')
+                    ->where_in('c.id', $teacher_ids)
+                    ->get('users c')
+                    ->result();
+
+                $tempteachers = [];
+                foreach ($teachers as $teacher) {
+                    $tempteachers[$teacher->value] = $teacher->text;
+                }
+                $teachers = $tempteachers;
+            } else {
+                $teachers = [];
+            }
+
+            // Attach teacher names and schedules to classonlines
+            foreach ($classonlines as $key => $classonline) {
+                $classonlines[$key]->teachername = $teachers[$classonline->teachername] ?? null;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id] ?? [];
+            }
+
+            // Return the filtered classonlines
+            return $this->tools->outS(0, 'OK', ['classonlines' => $classonlines]);
+
+        } catch (Exception $e) {
+            return $this->tools->outE($e);
+        }
+    }
+
+
     //=========================================
     public function extlogin()
     {
