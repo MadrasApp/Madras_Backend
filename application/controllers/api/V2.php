@@ -581,12 +581,14 @@ class V2 extends CI_Controller
             $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['avatar']));
             $tempFilePath = tempnam(sys_get_temp_dir(), 'avatar_') . ".jpg";
             file_put_contents($tempFilePath, $imageData);
+
+            $uploadUsername = "_ac";
         
             // Prepare File Upload Request
             $curlFile = new CURLFile($tempFilePath, 'image/jpeg', "profile-{$user->id}.jpg");
             $postData = [
                 'file' => $curlFile,
-                'username' => $user->username // Send username to the upload server
+                'username' => $uploadUsername // Send username to the upload server
             ];
         
             // Send File to Upload Server via cURL
