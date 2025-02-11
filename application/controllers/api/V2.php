@@ -547,7 +547,7 @@ class V2 extends CI_Controller
 		$this->form_validation->set_rules('email'         , 'ایمیل'        , 'trim|xss_clean|valid_email|required');
 		else
 		$this->form_validation->set_rules('email'         , 'ایمیل'        , 'trim|xss_clean|valid_email|required|is_unique[users.email]');
-*/
+        */
         if ($user->tel == str_replace('+98', '0', $data['mobile']))
             $this->myformvalidator->set_rules('mobile', 'موبایل', 'trim|xss_clean|required|valid_mobile');
         else
@@ -577,9 +577,9 @@ class V2 extends CI_Controller
             $this->media->deleteFile($user->avatar);
 
             $image = "profile-{$user->id}";
-            $dir = "uploads/_ac/";
+            $dir = "lexoya/var/www/html/uploads/_ac/";
             $resImg = $this->media->base64ToImg($data['avatar'], $image, $dir);
-            $avatar = $dir . $resImg;
+            $avatar = 'uploads/_ac/' . $resImg;
 
             $this->media->creatThumb($avatar);
         }
