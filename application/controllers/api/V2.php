@@ -2657,8 +2657,9 @@ class V2 extends CI_Controller
 
         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
-                $baseName = 'images/' . basename('/lexoya/var/www/html/' . $v->image);
-                $this->zip->read_file($v->image, $baseName);
+                $fullPath = '/lexoya/var/www/html/' . $v->image;
+                $baseName = 'images/' . basename($fullPath);
+                $this->zip->read_file($fullPath, $baseName);
             }
         }
 
