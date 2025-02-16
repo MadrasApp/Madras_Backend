@@ -2989,58 +2989,7 @@
     </p>
 </form>
 <hr>
-<hr>
-<hr>
-<h1>Ema Get Book Test</h1>
-<form action="api/v2/ema_getBookTest" method="post" target="_blank">
-    <table class="table table-bordered table-hover table-striped">
-        <tr>
-            <th></th>
-            <th></th>
-            <th>field name</th>
-            <th>filters</th>
-            <th>description</th>
-        </tr>
-        <tr>
-            <td>شماره همراه / Mac</td>
-            <td><input name="mac" type="text" value="" class="form-control"></td>
-            <td>mac</td>
-            <td>required|valid_mac</td>
-            <td>required for login</td>
-        </tr>
-        <tr>
-            <td>شماره ID کتاب</td>
-            <td><input name="id" type="text" value="" class="form-control"></td>
-            <td>id</td>
-            <td>required</td>
-            <td>required</td>
-        </tr>
-        <tr>
-            <td>Output</td>
-            <td>
-                <select name="type">
-                    <option value="json">json</option>
-                    <option value="zip">zip</option>
-                </select>
-            </td>
-            <td>type</td>
-            <td></td>
-            <td>json / zip</td>
-        </tr>
-        <tr>
-            <td>Token</td>
-            <td><input name="token" type="text" value="C36ZKdE02Nf89MIylUpbgL5VDnjArHmX" class="form-control"></td>
-            <td>token</td>
-            <td>required|exact_length[32]</td>
-            <td>required for login</td>
-        </tr>
-    </table>
-    <p>
-        <input type="submit" value="Try it !" class="btn btn-primary">
-    </p>
-</form>
-<hr>
-<hr>
+
 <h1>PWA Get Book</h1>
 <form action="api/v2/ema_getBook" method="post" target="_blank">
     <table class="table table-bordered table-hover table-striped">
