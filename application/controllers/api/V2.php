@@ -2538,6 +2538,163 @@ class V2 extends CI_Controller
 
 
 
+    public function ema_getBookTest($id = NULL, $type = 'zip')
+    {
+        $user = $this->_loginNeed(TRUE, 'u.id');
+
+        $userid = $user->id;
+        $this->output->set_header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
+        $this->output->set_header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+        $this->output->set_header('Pragma: no-cache');
+        $this->output->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+
+        $id = (int)$id;
+        $id = $id ? $id : (int)$this->input->post('id');
+        $type = $this->input->post('type') ? $this->input->post('type') : $type;
+        $filename = md5($id);
+
+        if ($this->db->where('id', $id)->where('type', 'book')->count_all_results('posts') == 0)
+            throw new Exception("Invalid book id", 2);
+
+
+        if ($this->db->where('id', $id)->where('type', 'book')->where('published', 1)->count_all_results('posts') == 0)
+            throw new Exception("This book is not active", 1);
+
+        $this->load->model('m_book', 'book');
+
+        //get the book info
+        $book = $this->post->getPosts([
+            'type' => 'book',
+            'order' => 'p.date_modified desc',
+            'where' => ['p.id' => $id],
+            'limit' => 1
+        ])[0];
+
+        $classonlines = $this->db->select('cid')
+            ->where_in('data_type',['book','hamniaz'])
+            ->where('data_id',$id)
+            ->get('classonline_data')
+            ->result();
+
+        $classonline_ids = [0];
+        foreach ($classonlines as $classonline){
+            $classonline_ids[$classonline->cid] = $classonline->cid;
+        }
+
+        $classonlines = $this->db->select('*')
+            ->where_in('id',$classonline_ids)
+            ->get('classonline')
+            ->result();
+
+
+        $book->classonline = $classonlines;
+
+        $classrooms = $this->db->select('cid')
+            ->where_in('data_type',['book','hamniaz'])
+            ->where('data_id',$id)
+            ->get('classroom_data')
+            ->result();
+
+        $classroom_ids = [0];
+        foreach ($classrooms as $classroom){
+            $classroom_ids[$classroom->cid] = $classroom->cid;
+        }
+
+        $classrooms = $this->db->select('*')
+            ->where_in('id',$classroom_ids)
+            ->get('classroom')
+            ->result();
+
+
+        $book->classroom = $classrooms;
+
+        $data['book'] = $book;
+
+        //get the book indexes
+        $data['indexes'] = $this->book->getBookIndexesById($id);
+
+        //get the book parts
+        $data['parts'] = $this->book->getBookPartsById($id);
+
+        $data['tests'] = $this->book->getBookTests($id);
+
+        foreach ($data['parts'] as $pk => $part) {
+            $data['parts'][$pk]->description = base64_encode($part->description);
+        }
+
+        $data['tests'] = base64_encode($this->MakeJSON($data['tests']));
+
+
+        if ($type == 'json')
+            return $this->tools->outS(0, NULL, ['data' => $data]);
+
+        $this->load->library('zip');
+
+        /*
+		 *
+		 *
+		if(isset($book->sample_questions) && ! empty($book->sample_questions))
+		{
+			foreach ($book->sample_questions as $ak=>$attachment)
+			{
+				$baseName = 'sample_questions/' . basename($attachment['path']);
+				$this->zip->read_file($attachment['path'],$baseName);
+				$book->sample_questions[$ak]['path'] = $baseName;
+			}
+		}
+
+		if(isset($book->attachments) && ! empty($book->attachments))
+		{
+			foreach ($book->attachments as $ak=>$attachment)
+			{
+				$baseName = 'attachments/' . basename($attachment['path']);
+				$this->zip->read_file($attachment['path'],$baseName);
+				$book->attachments[$ak]['path'] = $baseName;
+			}
+		}
+		 *
+		 */
+
+        if (!empty($data['parts'])) {
+            foreach ($data['parts'] as $k => $v) {
+                $baseName = 'images/' . basename('/lexoya/var/www/html/' . $v->image);
+                $this->zip->read_file($v->image, $baseName);
+            }
+        }
+
+        $this->zip->add_data('info.json', $this->MakeJSON($data['book']));
+        $this->zip->add_data('content.json', $this->MakeJSON($data['parts']));
+        $this->zip->add_data('tests.json', $data['tests']);
+        $this->zip->add_data('index.json', $this->MakeJSON($data['indexes']));
+
+        $temp = 'temp/book/' . $filename . '.zip';
+        $dir = 'temp/book';
+        if (!is_dir($dir))
+            mkdir($dir);
+        $this->zip->archive($temp);
+
+        $ubData = array(
+            'need_update' => 0,
+        );
+        $this->db->where('book_id', $id)->where('user_id', $userid)->update('user_books', $ubData);
+
+        $filesize = filesize($temp);
+        header('Content-Type: application/x-zip');
+        header('Content-Disposition: attachment; filename="' . $filename . '.zip"');
+        header('Expires: 0');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . $filesize);
+        header("Content-Range: 0-" . ($filesize - 1) . "/" . $filesize);
+        header('Pragma: no-cache');
+
+        readfile($temp);
+
+        @unlink($temp);
+        exit;
+
+        //$this->zip->download($filename);
+    }
+
     public function getBook($id = NULL, $type = 'zip')
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
