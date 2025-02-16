@@ -2655,13 +2655,21 @@ class V2 extends CI_Controller
 		 *
 		 */
 
-        if (!empty($data['parts'])) {
+         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
-                $fullPath = '/lexoya/var/www/html/' . $v->image;
-                $baseName = 'images/' . basename($fullPath);
-                $this->zip->read_file($fullPath, $baseName);
+                // Only proceed if $v->image is set and not empty
+                if (!empty($v->image)) {
+                    $fullPath = '/lexoya/var/www/html/' . $v->image;
+                    // Check if the file exists and is a file
+                    if (is_file($fullPath)) {
+                        // Set the file name inside the ZIP (keeping the images folder structure)
+                        $baseName = 'images/' . basename($fullPath);
+                        $this->zip->read_file($fullPath, $baseName);
+                    }
+                }
             }
         }
+        
 
         $this->zip->add_data('info.json', $this->MakeJSON($data['book']));
         $this->zip->add_data('content.json', $this->MakeJSON($data['parts']));
