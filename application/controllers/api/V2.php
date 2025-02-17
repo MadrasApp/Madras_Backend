@@ -199,9 +199,9 @@ class V2 extends CI_Controller
 
             // Selecting book title and thumbnail correctly
             $this->db->select('a.id, a.kalameh, a.translate, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
-            $this->db->from('ci_userdictionary a');
-            $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
-            $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
+            $this->db->from('userdictionary a');
+            $this->db->join('userdicbook u', 'u.dicid = a.id', 'LEFT');
+            $this->db->join('posts p', 'p.ID = u.bookid', 'LEFT');
 
             if ($fromlang)
                 $this->db->where('a.fromlang', $fromlang);
@@ -213,9 +213,10 @@ class V2 extends CI_Controller
         } else {
             // Fetching records including book title and thumbnail correctly
             $this->db->select('a.*, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
-            $this->db->from('ci_userdictionary a');
-            $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
-            $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
+            $this->db->from('userdictionary a');         // no 'ci_' here
+            $this->db->join('userdicbook u', 'u.dicid = a.id', 'LEFT');
+            $this->db->join('posts p', 'p.ID = u.bookid', 'LEFT');
+
 
             if ($kalameh) {
                 $this->db->where('a.kalameh', $kalameh);
