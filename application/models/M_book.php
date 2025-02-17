@@ -370,7 +370,12 @@ class M_book extends CI_Model
         $this->db->select("h.sharh");
 
 
-        $this->db->select("(SELECT book_id FROM ci_book_meta WHERE id=h.part_id) AS bookid");
+        $this->db->select("
+            (SELECT book_id FROM ci_book_meta WHERE id = h.part_id) AS bookid,
+            (SELECT post_title FROM ci_posts WHERE ID = (SELECT book_id FROM ci_book_meta WHERE id = h.part_id)) AS book_title,
+            (SELECT thumb FROM ci_posts WHERE ID = (SELECT book_id FROM ci_book_meta WHERE id = h.part_id)) AS book_thumbnail
+        ");
+
 
         $this->db->where('h.user_id', $user_id);
         $result = $this->db->get('highlights h')->result();
