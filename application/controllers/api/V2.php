@@ -4346,38 +4346,50 @@ class V2 extends CI_Controller
         $data = $this->input->post();
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+
         $this->load->library('form_validation');
         $this->form_validation->set_rules('lid', 'شماره جعبه لایتنر', 'trim|required');
+
         if ($this->form_validation->run() == FALSE) {
             throw new Exception(implode(' | ', $this->form_validation->error_array()), 1);
         }
+
         $uid = $user->id;
-        if ($data['lid']) {
-            $results = $this->db->select('*')->where('user_id', $uid)->where('lid', $data['lid'])->get('leitner')->result();
-        } else {
-            $results = $this->db->select('*')->where('user_id', $uid)->get('leitner')->result();
+
+        // Fetch Leitner records with associated book title and thumbnail
+        $this->db->select('l.*, p.title AS book_title, p.thumb AS book_thumbnail');
+        $this->db->from('leitner l');
+        $this->db->join('posts p', 'p.ID = l.book_id', 'LEFT');  // Ensure leitner has a book_id column
+
+        $this->db->where('l.user_id', $uid);
+
+        if (!empty($data['lid'])) {
+            $this->db->where('l.lid', $data['lid']);
         }
+
+        $results = $this->db->get()->result();
+
         $data = array();
         foreach ($results as $k => $v) {
             $dest = is_numeric($v->description) ? $v->description : 0;
             $v->data = new stdClass;
             if ($dest) {
                 switch ($v->catid) {
-                    case 1://یادداشت
+                    case 1: // یادداشت
                         break;
-                    case 2://لغت
+                    case 2: // لغت
                         break;
-                    case 3://سوال تستی
-                        $v->data = array();
+                    case 3: // سوال تستی
                         $v->data = $this->db->where('id', (int)$dest)->order_by('id', 'ASC')->get('tests')->row();
                         break;
-                    case 4://سوال تشریحی
+                    case 4: // سوال تشریحی
                         $v->data = $this->db->where('id', (int)$dest)->order_by('id', 'ASC')->get('tashrihi')->row();
                         break;
                 }
                 $data[] = $v;
             }
         }
+
         $this->tools->outS(0, $results);
     }
 
