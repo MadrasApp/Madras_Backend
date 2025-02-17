@@ -4396,7 +4396,7 @@ class V2 extends CI_Controller
                         // Example: `tests` table has a `bookid` referencing `posts.ID`
                         $v->data = $this->db
                             ->select('tests.*, p.title as book_title, p.thumb as book_thumb')
-                            ->join('posts p', 'p.ID = tests.bookid', 'left')
+                            ->join('posts p', 'p.ID = tests.book_id', 'left')
                             ->where('tests.id', (int)$dest)
                             ->get('tests')
                             ->row();
@@ -4406,7 +4406,7 @@ class V2 extends CI_Controller
                         // Example: `tashrihi` also has a `bookid` referencing `posts.ID`
                         $v->data = $this->db
                             ->select('tashrihi.*, p.title as book_title, p.thumb as book_thumb')
-                            ->join('posts p', 'p.ID = tashrihi.bookid', 'left')
+                            ->join('posts p', 'p.ID = tashrihi.book_id', 'left')
                             ->where('tashrihi.id', (int)$dest)
                             ->get('tashrihi')
                             ->row();
