@@ -211,7 +211,7 @@ class V2 extends CI_Controller
             $results = $this->db->get('userdictionary a')->result();
         } else {
             // Fetching records including book title and thumbnail
-            $this->db->select('a.*, u.bookid, p.post_title AS book_title, p.thumbnail AS book_thumbnail');
+            $this->db->select('a.*, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
             $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
             $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
 
