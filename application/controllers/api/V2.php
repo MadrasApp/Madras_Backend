@@ -182,7 +182,7 @@ class V2 extends CI_Controller
         $bookid = intval(@$data["bookid"]);
         $dicid = intval(@$data["dicid"]);
 
-        // Fetch language dictionary
+        // Fetch dictionary languages
         $O = $this->db->select('id,title')->get('diclang')->result();
         $diclang = array();
         foreach ($O as $k => $v) {
@@ -197,8 +197,9 @@ class V2 extends CI_Controller
                 $this->db->limit($Limit, $Limitstart);
             }
 
-            // Selecting book title and thumbnail by joining with ci_posts
-            $this->db->select('a.id, a.kalameh, a.translate, p.title AS book_title, p.thumb AS book_thumbnail');
+            // Selecting book title and thumbnail correctly
+            $this->db->select('a.id, a.kalameh, a.translate, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
+            $this->db->from('ci_userdictionary a');
             $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
             $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
 
@@ -208,10 +209,11 @@ class V2 extends CI_Controller
                 $this->db->where('a.tolang', $tolang);
 
             $this->db->where('a.uid', $uid);
-            $results = $this->db->get('userdictionary a')->result();
+            $results = $this->db->get()->result();
         } else {
-            // Fetching records including book title and thumbnail
+            // Fetching records including book title and thumbnail correctly
             $this->db->select('a.*, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
+            $this->db->from('ci_userdictionary a');
             $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
             $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
 
@@ -224,7 +226,7 @@ class V2 extends CI_Controller
                 $this->db->where('a.tolang', $tolang);
 
             $this->db->where('a.uid', $uid);
-            $results = $this->db->get('userdictionary as a')->result();
+            $results = $this->db->get()->result();
         }
 
         // If translation exists, handle update or insert operation
@@ -287,6 +289,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, $results, array("dicid" => $dicid));
     }
+
 
 
     public function DeleteUserKalameh()
