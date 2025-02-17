@@ -4344,54 +4344,82 @@ class V2 extends CI_Controller
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
         $data = $this->input->post();
-        if ($user === FALSE)
+        if ($user === FALSE) {
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
 
         $this->load->library('form_validation');
         $this->form_validation->set_rules('lid', 'شماره جعبه لایتنر', 'trim|required');
-
         if ($this->form_validation->run() == FALSE) {
             throw new Exception(implode(' | ', $this->form_validation->error_array()), 1);
         }
 
         $uid = $user->id;
 
-        // Fetch Leitner records with associated book title and thumbnail
-        $this->db->select('l.*, p.title AS book_title, p.thumb AS book_thumbnail');
-        $this->db->from('leitner l');
-        $this->db->join('posts p', 'p.ID = l.book_id', 'LEFT');  // Ensure leitner has a book_id column
-
-        $this->db->where('l.user_id', $uid);
-
+        // 1) Fetch all leitner rows for the user
         if (!empty($data['lid'])) {
-            $this->db->where('l.lid', $data['lid']);
+            $results = $this->db
+                ->select('*')
+                ->where('user_id', $uid)
+                ->where('lid', $data['lid'])
+                ->get('leitner')
+                ->result();
+        } else {
+            $results = $this->db
+                ->select('*')
+                ->where('user_id', $uid)
+                ->get('leitner')
+                ->result();
         }
 
-        $results = $this->db->get()->result();
+        // We'll build a new array that includes extra post fields
+        $finalData = array();
 
-        $data = array();
+        // 2) For each leitner record, figure out which table we need to query
+        //    and LEFT JOIN with `posts` to get title, thumb, etc.
         foreach ($results as $k => $v) {
             $dest = is_numeric($v->description) ? $v->description : 0;
-            $v->data = new stdClass;
+            $v->data = new stdClass();
+
+            // Only run if there's a numeric reference
             if ($dest) {
                 switch ($v->catid) {
                     case 1: // یادداشت
+                        // If you need to fetch a related notes entry or its book info, do it here
                         break;
+
                     case 2: // لغت
+                        // If you need to fetch a related word/dictionary entry or its book info, do it here
                         break;
+
                     case 3: // سوال تستی
-                        $v->data = $this->db->where('id', (int)$dest)->order_by('id', 'ASC')->get('tests')->row();
+                        // Example: `tests` table has a `bookid` referencing `posts.ID`
+                        $v->data = $this->db
+                            ->select('tests.*, p.title as book_title, p.thumb as book_thumb')
+                            ->join('posts p', 'p.ID = tests.bookid', 'left')
+                            ->where('tests.id', (int)$dest)
+                            ->get('tests')
+                            ->row();
                         break;
+
                     case 4: // سوال تشریحی
-                        $v->data = $this->db->where('id', (int)$dest)->order_by('id', 'ASC')->get('tashrihi')->row();
+                        // Example: `tashrihi` also has a `bookid` referencing `posts.ID`
+                        $v->data = $this->db
+                            ->select('tashrihi.*, p.title as book_title, p.thumb as book_thumb')
+                            ->join('posts p', 'p.ID = tashrihi.bookid', 'left')
+                            ->where('tashrihi.id', (int)$dest)
+                            ->get('tashrihi')
+                            ->row();
                         break;
                 }
-                $data[] = $v;
+                $finalData[] = $v;
             }
         }
 
-        $this->tools->outS(0, $results);
+        // 3) Return the enriched data array (not the original $results, unless you also updated it)
+        $this->tools->outS(0, $finalData);
     }
+
 
     public function addLeitner()
     {
