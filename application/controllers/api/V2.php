@@ -166,10 +166,12 @@ class V2 extends CI_Controller
         $user = $this->_loginNeed(TRUE, 'u.id');
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+
         $data = $this->input->post();
         $uid = $user->id;
         if (!$uid || empty($data))
             throw new Exception("اطلاعات ارسالی صحیح نیست", 1);
+
         $kalameh = trim(@$data["kalameh"]);
         $translate = trim(@$data["translate"]);
         $Limit = is_numeric(@$data["Limit"]) ? $data["Limit"] : 100;
@@ -180,6 +182,7 @@ class V2 extends CI_Controller
         $bookid = intval(@$data["bookid"]);
         $dicid = intval(@$data["dicid"]);
 
+        // Fetch language dictionary
         $O = $this->db->select('id,title')->get('diclang')->result();
         $diclang = array();
         foreach ($O as $k => $v) {
@@ -193,18 +196,25 @@ class V2 extends CI_Controller
                 $this->db->order_by('a.fromlang,a.kalameh', 'ASC');
                 $this->db->limit($Limit, $Limitstart);
             }
-            $this->db->select('a.id,a.kalameh,a.translate');
+
+            // Selecting book title and thumbnail by joining with ci_posts
+            $this->db->select('a.id, a.kalameh, a.translate, p.title AS book_title, p.thumb AS book_thumbnail');
+            $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
+            $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
+
             if ($fromlang)
                 $this->db->where('a.fromlang', $fromlang);
             if ($tolang)
                 $this->db->where('a.tolang', $tolang);
+
             $this->db->where('a.uid', $uid);
-            //$this->db->where('u.uid=a.uid');
-            //$this->db->where('u.bookid='.$bookid);
-            //$this->db->join('ci_userdicbook u','(u.dicid=a.id)','LEFT');
             $results = $this->db->get('userdictionary a')->result();
         } else {
-            $this->db->select('a.*,u.bookid');
+            // Fetching records including book title and thumbnail
+            $this->db->select('a.*, u.bookid, p.post_title AS book_title, p.thumbnail AS book_thumbnail');
+            $this->db->join('ci_userdicbook u', 'u.dicid = a.id', 'LEFT');
+            $this->db->join('ci_posts p', 'p.ID = u.bookid', 'LEFT');
+
             if ($kalameh) {
                 $this->db->where('a.kalameh', $kalameh);
             }
@@ -212,11 +222,12 @@ class V2 extends CI_Controller
                 $this->db->where('a.fromlang', $fromlang);
             if ($tolang)
                 $this->db->where('a.tolang', $tolang);
+
             $this->db->where('a.uid', $uid);
-            $this->db->join('ci_userdicbook u', '(u.dicid=a.id)', 'LEFT');
             $results = $this->db->get('userdictionary as a')->result();
         }
 
+        // If translation exists, handle update or insert operation
         if ($translate) {
             if (count($results)) {
                 $dicid = $results[0]->id;
@@ -226,19 +237,27 @@ class V2 extends CI_Controller
             try {
                 $this->load->library('form_validation');
                 $this->form_validation->set_rules('id', 'ID', 'trim');
-                if ($dicid)
-                    $this->form_validation->set_rules('kalameh', 'کلمه', 'trim|required');
-                else
-                    $this->form_validation->set_rules('kalameh', 'کلمه', 'trim|required');
+                $this->form_validation->set_rules('kalameh', 'کلمه', 'trim|required');
                 $this->form_validation->set_rules('translate', 'ترجمه', 'trim|required');
+
                 if ($this->form_validation->run() == FALSE) {
                     throw new Exception(implode(' | ', $this->form_validation->error_array()), 1);
                 }
+
                 $translate = trim(strip_tags($data["translate"]));
                 $regdate = date("Y-m-d H:i:s");
-                $data = array("kalameh" => $kalameh, "translate" => $translate, "regdate" => $regdate, "fromlang" => $fromlang, "tolang" => $tolang);
+
+                $data = array(
+                    "kalameh" => $kalameh,
+                    "translate" => $translate,
+                    "regdate" => $regdate,
+                    "fromlang" => $fromlang,
+                    "tolang" => $tolang
+                );
+
                 $status = 0;
                 $results = 'کلمه ' . $kalameh . ' ثبت شد';
+
                 if ($dicid) {
                     if (!$this->db->where('id', $dicid)->update('userdictionary', $data)) {
                         $status = 1;
@@ -246,15 +265,17 @@ class V2 extends CI_Controller
                     }
                 } else {
                     $data["uid"] = $uid;
-
                     $this->db->insert('userdictionary', $data);
                     $dicid = $this->db->insert_id();
                 }
+
                 if ($bookid) {
-                    $data = array();
-                    $data["uid"] = $uid;
-                    $data["bookid"] = $bookid;
-                    $data["dicid"] = $dicid;
+                    $data = array(
+                        "uid" => $uid,
+                        "bookid" => $bookid,
+                        "dicid" => $dicid
+                    );
+
                     $insert_query = $this->db->insert_string('userdicbook', $data);
                     $insert_query = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $insert_query);
                     $this->db->query($insert_query);
@@ -263,8 +284,10 @@ class V2 extends CI_Controller
                 $this->tools->outE($e);
             }
         }
+
         $this->tools->outS(0, $results, array("dicid" => $dicid));
     }
+
 
     public function DeleteUserKalameh()
     {
