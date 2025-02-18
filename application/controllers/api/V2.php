@@ -8005,6 +8005,9 @@ class V2 extends CI_Controller
                 $teacherId = @$classonlines[$classaccount->classonline_id]->teachername;
                 $classaccounts[$key]->teacher = @$teachers[$teacherId];
                 $classaccounts[$key]->classonline = @$classonlines[$classaccount->classonline_id];
+                // mrm change
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classaccount->classonline_id)->count_all_results('classaccount');
+                $classaccounts[$key]->capacity = $classaccount;
             }
 
             $data['classaccounts'] = $classaccounts;
