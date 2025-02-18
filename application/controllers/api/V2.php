@@ -7952,7 +7952,9 @@ class V2 extends CI_Controller
 
             // Select the classaccounts for the logged in user
             $db->select('c.*');
-            $db->where('c.user_id', $user->id);
+            // if ($user->id) {
+                $db->where('c.user_id', $user->id);
+            // }
             
             // If an id is provided (not 0) then filter by that classonline id
             if ($id != 0) {
@@ -7972,7 +7974,7 @@ class V2 extends CI_Controller
 
             // Get classonline records based on the collected ids
             $db->select('c.*');
-            $db->where_in('c.id', $classonline_ids);
+            $db->where_in('c.id', $id);
             $classonlines = $db->get('classonline c')->result();
 
             // Prepare teacher ids and an associative array for classonlines
