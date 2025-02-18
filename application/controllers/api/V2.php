@@ -6695,10 +6695,10 @@ class V2 extends CI_Controller
     {
         try {
             // Check if the user is logged in
-            $user = $this->_loginNeed(TRUE, 'u.id');
-            if (!$user) {
-                throw new Exception('User authentication required', 401);
-            }
+            // $user = $this->_loginNeed(TRUE, 'u.id');
+            // if (!$user) {
+            //     throw new Exception('User authentication required', 401);
+            // }
 
             $id = (int)$this->input->post('id');
             if (!$id) {
@@ -6773,7 +6773,7 @@ class V2 extends CI_Controller
                 $teachers = [];
             }
 
-            // Attach teacher names and schedules to classonlines
+            // mrm change
             foreach ($classonlines as $key => $classonline) {
                 if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
                     $classonlines[$key]->teachername = $teachers[$classonline->teachername];
@@ -7939,9 +7939,9 @@ class V2 extends CI_Controller
         try {
             $user = $this->_loginNeed();
 
-            if ($user === FALSE) {
-                throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-            }
+            // if ($user === FALSE) {
+            //     throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            // }
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
