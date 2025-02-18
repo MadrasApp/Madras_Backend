@@ -6782,7 +6782,6 @@ class V2 extends CI_Controller
                 }
                 $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
                 $classonlines[$key]->capacity = $classaccount;
-                $classonlines[$key]->teachername = $teachers[$classonline->teachername] ?? null;
                 $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
             }
             
