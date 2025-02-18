@@ -6660,7 +6660,7 @@ class V2 extends CI_Controller
         ->result();
 
         $classonline_ids = [];
-        foreach ($classonlines as $classonline) {
+        foreach ($classonlines2 as $classonline) {
             $classonline_ids[] = $classonline->cid;
         }
 
@@ -6673,6 +6673,17 @@ class V2 extends CI_Controller
             ->where_in('id', $classonline_ids)
             ->get('classonline')
             ->result();
+
+            foreach ($classonlines2 as $key => $classonline) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                    $classonlines2[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines2[$key]->teachername = null; // Set to null if teacher is not found
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines2[$key]->capacity = $classaccount;
+                $classonlines2[$key]->program = $classonline_dayofweeks[$classonline->id];
+            }
 
 
  
