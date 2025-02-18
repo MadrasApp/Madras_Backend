@@ -6775,9 +6775,22 @@ class V2 extends CI_Controller
 
             // Attach teacher names and schedules to classonlines
             foreach ($classonlines as $key => $classonline) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                    $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines[$key]->teachername = null;
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines[$key]->capacity = $classaccount;
                 $classonlines[$key]->teachername = $teachers[$classonline->teachername] ?? null;
-                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id] ?? [];
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
             }
+            
+            // Attach teacher names and schedules to classonlines
+            // foreach ($classonlines as $key => $classonline) {
+            //     $classonlines[$key]->teachername = $teachers[$classonline->teachername] ?? null;
+            //     $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id] ?? [];
+            // }
 
             // Return the filtered classonlines
             return $this->tools->outS(0, 'OK', ['classonlines' => $classonlines]);
