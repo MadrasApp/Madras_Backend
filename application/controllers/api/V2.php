@@ -8038,9 +8038,7 @@ class V2 extends CI_Controller
 
             // Select the classaccounts for the logged in user
             $db->select('c.*');
-            if ($user->id) {
-                $db->where('c.user_id', $user->id);
-            }
+            $db->where('c.user_id', $user->id);
             
             // If an id is provided (not 0) then filter by that classonline id
             if ($id != 0) {
