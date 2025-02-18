@@ -6637,17 +6637,21 @@ class V2 extends CI_Controller
         }
     }
 
-    // public function getSingleClassOnline($id = NULL) {
+    public function ema_getBookClassOnlinesNew() {
 
-    //     $id = (int) ($id ? $id : $this->input->post('id'));
-    //     // Get associated class online data
-    //     $classonlines = $this->db->select('*')
-    //     ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classonline_data'))
-    //     ->get('classonline')
-    //     ->result();
+        $id = (int)$this->input->post('id');
+        if (!$id) {
+            throw new Exception('Book ID is required', 1);
+        }
+        // Get associated class online data
+        $classonlines = $this->db->select('*')
+        ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classonline_data'))
+        ->get('classonline')
+        ->result();
 
-    //     return $this->tools->outS(0, 'OK', ['classonlines' => $classonlines]);
-    // }
+        return $this->tools->outS(0, 'OK', ['classonlines' => $classonlines]);
+    }
+
 
     public function ema_getBookClassOnlines()
     {
@@ -6667,7 +6671,7 @@ class V2 extends CI_Controller
             $classonlines = $this->db->select('cid')
                 ->where_in('data_type', ['book', 'hamniaz'])
                 ->where('data_id', $id)
-                ->get_compiled_select('classonline_data')
+                ->get('classonline_data')
                 ->result();
 
             $classonline_ids = [];
