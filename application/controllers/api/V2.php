@@ -6640,16 +6640,43 @@ class V2 extends CI_Controller
     public function ema_getBookClassOnlinesNew() {
 
         $id = (int)$this->input->post('id');
+        $book_id = (int)$this->input->post('book_id');
+
         if (!$id) {
             throw new Exception('Book ID is required', 1);
         }
-        // Get associated class online data
-        $classonlines = $this->db->select('*')
-        ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classonline_data'))
-        ->get('classonline')
+
+        $classonlines1 = $this->db->select('*')
+            ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $book_id)->get_compiled_select('classonline_data'))
+            ->get('classonline')
+            ->result();
+
+
+        // Retrieve related classonlines IDs
+        $classonlines2 = $this->db->select('cid')
+        ->where_in('data_type', ['book', 'hamniaz'])
+        ->where('data_id', $id)
+        ->get('classonline_data')
         ->result();
 
-        return $this->tools->outS(0, 'OK', ['classonlines' => $classonlines]);
+        $classonline_ids = [];
+        foreach ($classonlines as $classonline) {
+            $classonline_ids[] = $classonline->cid;
+        }
+
+        if (empty($classonline_ids)) {
+            return $this->tools->outS(0, 'No classonlines found', ['classonlines' => []]);
+        }
+
+        // Fetch classonlines based on retrieved IDs
+        $classonlines2 = $this->db->select('*')
+            ->where_in('id', $classonline_ids)
+            ->get('classonline')
+            ->result();
+
+
+ 
+        return $this->tools->outS(0, 'OK', ['classonlines1' => $classonlines1, 'classonlines2' => $classonlines2 ]);
     }
 
 
