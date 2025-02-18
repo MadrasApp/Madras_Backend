@@ -7939,9 +7939,9 @@ class V2 extends CI_Controller
         try {
             $user = $this->_loginNeed();
 
-            // if ($user === FALSE) {
-            //     throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-            // }
+            if ($user === FALSE) {
+                throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            }
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -8014,6 +8014,120 @@ class V2 extends CI_Controller
 
             $data['classaccounts'] = $classaccounts;
 
+            $this->tools->outS(0, 'OK', ["data" => $data]);
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function ema_getClassOnlineAccountsNew()
+    {
+        try {
+            $user = $this->_loginNeed();
+
+            // if ($user === FALSE) {
+            //     throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            // }
+
+            $limit = (int)$this->input->post('limit');
+            $limitstart = (int)$this->input->post('limitstart');
+            $id         = (int) $this->input->post('id');
+
+            $db = $this->db;
+            $data = array();
+
+            // Select the classaccounts for the logged in user
+            $db->select('c.*');
+            if ($user->id) {
+                $db->where('c.user_id', $user->id);
+            }
+            
+            // If an id is provided (not 0) then filter by that classonline id
+            if ($id != 0) {
+                $db->where('c.classonline_id', $id);
+            }
+            
+            if ($limit || $limitstart) {
+                $db->limit($limit, $limitstart);
+            }
+            $classaccounts = $db->get('classaccount c')->result();
+
+            // Gather the classonline ids from the user's accounts
+            $classonline_ids = [0];
+            foreach ($classaccounts as $classaccount) {
+                $classonline_ids[] = $classaccount->classonline_id;
+            }
+
+            // Get classonline records based on the collected ids
+            $db->select('c.*');
+            $db->where_in('c.id', $id);
+            $classonlines = $db->get('classonline c')->result();
+
+            
+
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            // Fetch and organize schedule data
+            $classonline_schedule = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_ids)
+                ->order_by('cid, dayofweek, starttime')
+                ->get('classonline_data')
+                ->result();
+
+            $classonline_dayofweeks = [];
+            foreach ($classonline_schedule as $schedule) {
+                $classonline_dayofweeks[$schedule->cid][] = [
+                    "dayofweek" => $schedule->dayofweek,
+                    "dayname" => $dayofweeks[$schedule->dayofweek],
+                    "starttime" => $schedule->starttime,
+                    "endtime" => $schedule->endtime
+                ];
+            }
+
+            // Fetch teacher names
+            $teacher_ids = array_unique(array_column($classonlines, 'teachername'));
+            if (!empty($teacher_ids)) {
+                $teachers = $this->db->select('c.id AS value, c.displayname AS text')
+                    ->where_in('c.id', $teacher_ids)
+                    ->get('users c')
+                    ->result();
+
+                $tempteachers = [];
+                foreach ($teachers as $teacher) {
+                    $tempteachers[$teacher->value] = $teacher->text;
+                }
+                $teachers = $tempteachers;
+            } else {
+                $teachers = [];
+            }
+
+            // mrm change
+            foreach ($classonlines as $key => $classonline) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                    $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines[$key]->teachername = null;
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines[$key]->capacity = $classaccount;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
+            }
+
+
+
+
+            $data['classaccounts'] = $classaccounts;
+            $data['classonlines'] = $classonlines;
+            
             $this->tools->outS(0, 'OK', ["data" => $data]);
         } catch (Exception $e) {
             $this->tools->outE($e);
