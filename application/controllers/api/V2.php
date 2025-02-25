@@ -4373,7 +4373,7 @@ class V2 extends CI_Controller
         }
 
         // We'll build a new array that includes extra post fields
-        $finalData = array();
+        $data = array();
 
         // 2) For each leitner record, figure out which table we need to query
         //    and LEFT JOIN with `posts` to get title, thumb, etc.
@@ -4412,12 +4412,12 @@ class V2 extends CI_Controller
                             ->row();
                         break;
                 }
-                $finalData[] = $v;
+                $data[] = $v;
             }
         }
 
         // 3) Return the enriched data array (not the original $results, unless you also updated it)
-        $this->tools->outS(0, $finalData);
+        $this->tools->outS(0, $data);
     }
 
 
