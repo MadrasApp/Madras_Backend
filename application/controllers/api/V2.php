@@ -4373,16 +4373,20 @@ class V2 extends CI_Controller
         }
 
         // We'll build a new array that includes extra post fields
-        $data = array();
+        $finalData = array();
 
         // 2) For each leitner record, figure out which table we need to query
         //    and LEFT JOIN with `posts` to get title, thumb, etc.
         foreach ($results as $k => $v) {
-            $dest = is_numeric($v->description) ? $v->description : 0;
+            if ($v->catid == 2) {
+                $dest = $v->description;
+            } else {
+                $dest = is_numeric($v->description) ? $v->description : 0;
+            }
             $v->data = new stdClass();
 
             // Only run if there's a numeric reference
-            if ($dest) {
+            if ($v->catid == 2 || $dest) {
                 switch ($v->catid) {
                     case 1: // یادداشت
                         // If you need to fetch a related notes entry or its book info, do it here
@@ -4412,12 +4416,12 @@ class V2 extends CI_Controller
                             ->row();
                         break;
                 }
-                $data[] = $v;
+                $finalData[] = $v;
             }
         }
 
         // 3) Return the enriched data array (not the original $results, unless you also updated it)
-        $this->tools->outS(0, $data);
+        $this->tools->outS(0, $finalData);
     }
 
 
