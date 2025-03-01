@@ -25,6 +25,8 @@ class V2 extends CI_Controller
         //if( ! $this->input->is_ajax_request() ) exit('No direct script access allowed');
 
         $this->load->model('m_user', 'user');
+        $this->load->helper('eitaa_helper');
+
         $this->setting = $this->settings->data;
     }
 
@@ -702,6 +704,8 @@ class V2 extends CI_Controller
             $last_name = $parsedData['user']['last_name'];
             $username = $parsedData['user']['username'] ?? 'user_' . $eitaa_id;
             $email = $parsedData['user']['email'] ?? $username . '@eitaa.com';
+
+            $full_name = $first_name . $last_name;
             
             if (!empty($eitaa_id)) {
                 $meta_key = 'eitaa_id';
@@ -725,6 +729,9 @@ class V2 extends CI_Controller
                     ];
 
                     $this->tools->outS(0,$response);
+
+                    $message = "سلام $full_name عزیز، به پلتفرم مدرس خوش آمدید!";
+                    send_eitaa_message($eitaa_id, $message);
                 } else {
                     // User creation logic
                     $user_data = ["username" => $username, "tel" => '', "displayname" => $first_name .' '. $last_name, "name" => $first_name , "family" => $last_name  , "email" => $email];
@@ -759,6 +766,9 @@ class V2 extends CI_Controller
                     ];
 
                     $this->tools->outS(0,$response);
+
+                    $message = "سلام $full_name عزیز، خوشحالیم که به مدرس پیوستی، ثبت نام شما با موفقیت انجام شد!";
+                    send_eitaa_message($eitaa_id, $message);
                 }
             } else {
                 $this->tools->outS(0, 'آیدی ایتا معتبر نمی باشد!');
