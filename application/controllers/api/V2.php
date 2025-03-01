@@ -2494,7 +2494,18 @@ class V2 extends CI_Controller
 
         // Restrict book content for unauthorized users
         if (!$fullAccess) {
-            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
+            $startPage = isset($data['book']->startpage) ? (int)$data['book']->startpage : 0;
+
+            // Find the correct start index in the pages array
+            $pagesArray = array_values($data['book']->pages['array']); // Ensure it's indexed properly
+            $startIndex = array_search($startPage, array_keys($pagesArray));
+
+            if ($startIndex === false) {
+                $startIndex = 0; // Default to beginning if startpage is not found
+            }
+
+            // Extract three pages starting from startIndex
+            $limitedPages = array_slice($pagesArray, $startIndex, 3, true);
             $data['book']->pages['array'] = $limitedPages;
             
             $offset = [];
