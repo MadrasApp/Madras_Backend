@@ -730,7 +730,7 @@ class V2 extends CI_Controller
 
                     $this->tools->outS(0,$response);
 
-                    $message = "سلام $full_name عزیز، به پلتفرم مدرس خوش آمدید!";
+                    $message = "سلام $full_name عزیز! 🎉\nبه پلتفرم مدرس خوش آمدید! 🏫🎓";
                     send_eitaa_message($eitaa_id, $message);
                 } else {
                     // User creation logic
@@ -767,7 +767,7 @@ class V2 extends CI_Controller
 
                     $this->tools->outS(0,$response);
 
-                    $message = "سلام $full_name عزیز، خوشحالیم که به مدرس پیوستی، ثبت نام شما با موفقیت انجام شد!";
+                    $message = "سلام $full_name عزیز! 🎉\nخوشحالیم که به مدرس پیوستی! 🏫\nثبت نام شما با موفقیت انجام شد. 🙌\nامیدواریم که تجربه‌ای عالی در مدرس داشته باشید. 🌟";
                     send_eitaa_message($eitaa_id, $message);
                 }
             } else {
@@ -2505,40 +2505,23 @@ class V2 extends CI_Controller
         // Restrict book content for unauthorized users
         if (!$fullAccess) {
             $startPage = isset($data['book']->startpage) ? (int)$data['book']->startpage : 0;
-        
-            // Get the pages array
-            $pagesArray = $data['book']->pages['array'];
-            $pageKeys = array_keys($pagesArray); // Extract actual page numbers
-        
-            // Find the correct start index based on the startPage
-            $startIndex = array_search($startPage, $pageKeys);
-            if ($startIndex === false) {
-                $startIndex = 0; // Default to beginning if startPage is not found
-            }
-        
-            // Extract 3 pages starting from startIndex
-            $selectedKeys = array_slice($pageKeys, $startIndex, 3, true);
-            $limitedPages = array_intersect_key($pagesArray, array_flip($selectedKeys));
-        
-            // Assign limited pages
+            $limitedPages = array_slice($data['book']->pages['array'], $startPage, ($startPage + 3), true);
             $data['book']->pages['array'] = $limitedPages;
-        
-            // Offset Calculation (Same as Original)
+            
             $offset = [];
             $currentPage = $startPage;
             foreach ($limitedPages as $key => $value) {
-                $currentPage += count($value); // Keep original logic
+                $currentPage += count($value);
                 $offset[] = $currentPage - 1;
             }
             $data['book']->pages['offset'] = implode(',', $offset);
-        
-            // Calculate total parts in limited pages
+            
             $totalPartsInLimitedPages = 0;
             foreach ($limitedPages as $value) {
                 $totalPartsInLimitedPages += count($value);
             }
-        
-            $data['parts'] = array_slice($data['parts'], $startIndex , $totalPartsInLimitedPages);
+            
+            $data['parts'] = array_slice($data['parts'], $startPage, $totalPartsInLimitedPages);
         }
         
 
