@@ -2496,31 +2496,32 @@ class V2 extends CI_Controller
         if (!$fullAccess) {
             $startPage = isset($data['book']->startpage) ? (int)$data['book']->startpage : 0;
 
-            // Find the correct start index in the pages array
-            $pagesArray = array_values($data['book']->pages['array']); // Ensure it's indexed properly
-            $startIndex = array_search($startPage, array_keys($pagesArray));
+            // Ensure the pages array is indexed properly
+            $pagesArray = $data['book']->pages['array']; // Keep original structure
+            $pageKeys = array_keys($pagesArray); // Extract the page numbers (keys)
 
+            // Find the correct start index based on the startPage
+            $startIndex = array_search($startPage, $pageKeys);
             if ($startIndex === false) {
-                $startIndex = 0; // Default to beginning if startpage is not found
+                $startIndex = 0; // Default to the beginning if not found
             }
 
             // Extract three pages starting from startIndex
-            $limitedPages = array_slice($pagesArray, $startIndex, 3, true);
-            $data['book']->pages['array'] = $limitedPages;
+            $selectedKeys = array_slice($pageKeys, $startIndex, 3, true);
+            $limitedPages = array_intersect_key($pagesArray, array_flip($selectedKeys));
             
+            $data['book']->pages['array'] = $limitedPages;
+
+            // Correct offset calculation
             $offset = [];
-            $currentPage = 0;
-            foreach ($limitedPages as $key => $value) {
-                $currentPage += count($value);
-                $offset[] = $currentPage - 1;
+            $currentPage = min($selectedKeys); // Start from the actual first page in the limited set
+            foreach ($selectedKeys as $key) {
+                $offset[] = $key; // The actual page numbers
             }
             $data['book']->pages['offset'] = implode(',', $offset);
-            
-            $totalPartsInLimitedPages = 0;
-            foreach ($limitedPages as $value) {
-                $totalPartsInLimitedPages += count($value);
-            }
-            
+
+            // Calculate how many parts exist in the limited pages
+            $totalPartsInLimitedPages = array_sum(array_map('count', $limitedPages));
             $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
         }
 
