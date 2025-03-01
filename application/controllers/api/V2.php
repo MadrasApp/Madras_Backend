@@ -2528,7 +2528,7 @@ class V2 extends CI_Controller
                 $totalPartsInLimitedPages += count($value);
             }
         
-            $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
+            $data['parts'] = array_slice($data['parts'], $startPage, $totalPartsInLimitedPages);
         }
         
 
