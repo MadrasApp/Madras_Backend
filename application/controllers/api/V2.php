@@ -2495,24 +2495,42 @@ class V2 extends CI_Controller
         // Restrict book content for unauthorized users
         if (!$fullAccess) {
             $startPage = isset($data['book']->startpage) ? (int)$data['book']->startpage : 0;
-            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
+        
+            // Get the pages array
+            $pagesArray = $data['book']->pages['array'];
+            $pageKeys = array_keys($pagesArray); // Extract actual page numbers
+        
+            // Find the correct start index based on the startPage
+            $startIndex = array_search($startPage, $pageKeys);
+            if ($startIndex === false) {
+                $startIndex = 0; // Default to beginning if startPage is not found
+            }
+        
+            // Extract 3 pages starting from startIndex
+            $selectedKeys = array_slice($pageKeys, $startIndex, 3, true);
+            $limitedPages = array_intersect_key($pagesArray, array_flip($selectedKeys));
+        
+            // Assign limited pages
             $data['book']->pages['array'] = $limitedPages;
-            
+        
+            // Offset Calculation (Same as Original)
             $offset = [];
             $currentPage = $startPage;
             foreach ($limitedPages as $key => $value) {
-                $currentPage += count($value);
+                $currentPage += count($value); // Keep original logic
                 $offset[] = $currentPage - 1;
             }
             $data['book']->pages['offset'] = implode(',', $offset);
-            
+        
+            // Calculate total parts in limited pages
             $totalPartsInLimitedPages = 0;
             foreach ($limitedPages as $value) {
                 $totalPartsInLimitedPages += count($value);
             }
-            
+        
             $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
         }
+        
 
         foreach ($data['parts'] as $pk => $part) {
             $data['parts'][$pk]->description = base64_encode($part->description);
