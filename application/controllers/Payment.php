@@ -452,7 +452,7 @@ class Payment extends CI_Controller
         $eitaa_id = $user_meta ? $user_meta->meta_value : null;
         $username = $user ? $user->username : 'کاربر';
 
-        // Get Book Name if Section is 'book'
+        //Get Book Name if Section is 'book'
         $book_name = null;
         if ($section == 'book') {
             $book_data = $this->db->select('b.name')
