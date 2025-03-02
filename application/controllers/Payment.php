@@ -455,9 +455,9 @@ class Payment extends CI_Controller
         //Get Book Name if Section is 'book'
         $book_name = null;
         if ($section == 'book') {
-            $book_data = $this->db->select('b.name')
+            $book_data = $this->db->select('b.title')
                                 ->from('factor_detail fd')
-                                ->join('books b', 'fd.book_id = b.id', 'left')
+                                ->join('posts b', 'fd.book_id = b.id', 'left')
                                 ->where('fd.factor_id', $factor->id)
                                 ->get()
                                 ->row();
