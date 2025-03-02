@@ -2504,12 +2504,11 @@ class V2 extends CI_Controller
 
         // Restrict book content for unauthorized users
         if (!$fullAccess) {
-            $startPage = isset($data['book']->startpage) ? (int)$data['book']->startpage : 0;
-            $limitedPages = array_slice($data['book']->pages['array'], $startPage, ($startPage + 3), true);
+            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
             $data['book']->pages['array'] = $limitedPages;
             
             $offset = [];
-            $currentPage = $startPage;
+            $currentPage = 0;
             foreach ($limitedPages as $key => $value) {
                 $currentPage += count($value);
                 $offset[] = $currentPage - 1;
@@ -2521,7 +2520,7 @@ class V2 extends CI_Controller
                 $totalPartsInLimitedPages += count($value);
             }
             
-            $data['parts'] = array_slice($data['parts'], $startPage, $totalPartsInLimitedPages);
+            $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
         }
         
 
