@@ -730,8 +730,6 @@ class V2 extends CI_Controller
 
                     $this->tools->outS(0,$response);
 
-                    $message = "سلام $full_name عزیز! 🎉\nبه پلتفرم مدرس خوش آمدید! 🏫🎓";
-                    send_eitaa_message($eitaa_id, $message);
                 } else {
                     // User creation logic
                     $user_data = ["username" => $username, "tel" => '', "displayname" => $first_name .' '. $last_name, "name" => $first_name , "family" => $last_name  , "email" => $email];
@@ -767,7 +765,7 @@ class V2 extends CI_Controller
 
                     $this->tools->outS(0,$response);
 
-                    $message = "سلام $full_name عزیز! 🎉\nخوشحالیم که به مدرس پیوستی! 🏫\nثبت نام شما با موفقیت انجام شد. 🙌\nامیدواریم که تجربه‌ای عالی در مدرس داشته باشید. 🌟";
+                    $message = "سلام $full_name عزیز! 🎉\nخوشحالیم که به مدرس پیوستی! \nثبت نام شما با موفقیت انجام شد. \nامیدواریم که تجربه‌ای عالی در مدرس داشته باشید. ";
                     send_eitaa_message($eitaa_id, $message);
                 }
             } else {
