@@ -1658,36 +1658,43 @@ class V2 extends CI_Controller
     public function GetUserAzmoon()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-
+    
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        
         $userid = $user->id;
         $this->load->library('form_validation');
         $this->form_validation->set_rules('term', 'ترم', 'trim|numeric');
         $this->form_validation->set_rules('bookid', 'آی دی کتاب', 'trim|numeric');
         $this->form_validation->set_rules('azmoon_type', 'مدل آزمون', 'trim|numeric');
         $this->form_validation->set_rules('azmoon_time', 'مدت آزمون', 'trim|numeric');
+        
         if ($this->form_validation->run() == FALSE)
             throw new Exception(implode('|', $this->form_validation->error_array()), 1);
-
+    
         $data = $this->input->post();
-
-        $this->db->select("a.*,pdate(`azmoon_date`) AS `shamsidate`");
-        $this->db->where("a.userid = $userid");
+    
+        $this->db->select("a.*, pdate(`azmoon_date`) AS `shamsidate`, p.title AS book_title");
+        $this->db->from("azmoon_result a");
+        $this->db->join("posts p", "p.id = a.bookid", "left"); // Join with posts table to get book title
+        $this->db->where("a.userid", $userid);
+    
         if (isset($data['term']) && (int)$data['term'])
-            $this->db->where("a.term = " . $data['term']);
+            $this->db->where("a.term", (int)$data['term']);
         if (isset($data['azmoon_type']) && (int)$data['azmoon_type'])
-            $this->db->where("a.azmoon_type = " . $data['azmoon_type']);
+            $this->db->where("a.azmoon_type", (int)$data['azmoon_type']);
         if (isset($data['azmoon_time']) && (int)$data['azmoon_time'])
-            $this->db->where("a.azmoon_time = " . $data['azmoon_time']);
+            $this->db->where("a.azmoon_time", (int)$data['azmoon_time']);
         if (isset($data['bookid']) && (int)$data['bookid'])
-            $this->db->where("a.bookid = " . $data['bookid']);
+            $this->db->where("a.bookid", (int)$data['bookid']);
+    
         $this->db->order_by('a.azmoon_date DESC');
-        //$this->db->limit(5,0);
-        $azmoons = $this->db->get('azmoon_result a')->result();
-
+        
+        $azmoons = $this->db->get()->result();
+    
         $this->tools->outS(0, array("azmoon" => $azmoons));
     }
+    
 
     /*===================================
 		MOBILE
