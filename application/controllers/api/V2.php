@@ -682,6 +682,7 @@ class V2 extends CI_Controller
 	   // $eitta_token2 is just for test, must be deleted later
 	    $eitaa_token2 = '61101070:ad]r(7#cP-xUVh4O9o3-vIfpRCdqv-whFaQH4pR-ul9NjebzU-3sESD}OD1-Aw4LkqYe7-TGL2lr61{-YKqmL(.3u-Br}sdOjyo-wPBVVW)ez-JB%M6JKIF-GOmXm,t]v-MFAMKHbuy-gsgz';
 	    $eitta_data = $this->input->post('eitaa_data');
+	    $eitta_utm = $this->input->post('utm');
 	    
 	    // Remove escaped backslashes
         $eitta_data = preg_replace('/\\\\"/', '"', $eitta_data);
@@ -745,14 +746,18 @@ class V2 extends CI_Controller
                     // After creating the user, attempt to log in again
                     // $user = $this->_loginNeed(TRUE, 'u.id');
 
-                    $meta_key = 'eitaa_id';
                     // Prepare the data array
-                    $data = [
-                        $meta_key => $eitaa_id
+                    $meta_data = [
+                        'eitaa_id' => $eitaa_id
                     ];
+
+                    // Add UTM to meta if present
+                    if (!empty($eitta_utm)) {
+                        $meta_data['utm'] = $eitta_utm;
+                    }
                     
                     // Call the updateMeta function
-                    $userModel->updateMeta($data, $new_user_id);
+                    $userModel->updateMeta($meta_data, $new_user_id);
                     
                     $this->db->select('*');
                     $this->db->where('id', $new_user_id);
