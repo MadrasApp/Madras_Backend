@@ -706,7 +706,7 @@ class V2 extends CI_Controller
             $username = $parsedData['user']['username'] ?? 'user_' . $eitaa_id;
             $email = $parsedData['user']['email'] ?? $username . '@eitaa.com';
 
-            $full_name = $first_name . $last_name;
+            $full_name = $first_name . ' ' . $last_name;
             
             if (!empty($eitaa_id)) {
                 $meta_key = 'eitaa_id';
@@ -723,6 +723,18 @@ class V2 extends CI_Controller
                      ->where('id', $user_id)
                      ->get('users')
                      ->row();
+
+                     // If UTM is provided, insert record into the new utm table with is_registered = 0
+                    if (!empty($eitta_utm)) {
+                        $utm_data = [
+                            'user_id'    => $user_id,
+                            'eitaa_id'   => $eitaa_id,
+                            'is_registered' => 0,
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'utm'        => $eitta_utm,
+                        ];
+                        $this->db->insert('utm', $utm_data);
+                    }
                     
                     $response = [
                         'login' => true,
@@ -750,14 +762,21 @@ class V2 extends CI_Controller
                     $meta_data = [
                         'eitaa_id' => $eitaa_id
                     ];
-
-                    // Add UTM to meta if present
-                    if (!empty($eitta_utm)) {
-                        $meta_data['utm'] = $eitta_utm;
-                    }
                     
                     // Call the updateMeta function
                     $userModel->updateMeta($meta_data, $new_user_id);
+
+                    // If UTM is provided, insert record into utm table with is_registered = 1
+                    if (!empty($eitta_utm)) {
+                        $utm_data = [
+                            'user_id'      => $new_user_id,
+                            'eitaa_id'     => $eitaa_id,
+                            'is_registered' => 1,
+                            'created_at'   => date("Y-m-d H:i:s"),
+                            'utm'          => $eitta_utm,
+                        ];
+                        $this->db->insert('utm', $utm_data);
+                    }
                     
                     $this->db->select('*');
                     $this->db->where('id', $new_user_id);
