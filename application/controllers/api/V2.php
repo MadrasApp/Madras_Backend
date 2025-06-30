@@ -2478,14 +2478,14 @@ class V2 extends CI_Controller
         $type = $this->input->post('type') ? $this->input->post('type') : $type;
         $filename = md5($id);
 
-        // Generate a unique Redis cache key
-        $cache_key = "book_data_{$id}_{$type}";
+        // // Generate a unique Redis cache key
+        // $cache_key = "book_data_{$id}_{$type}";
 
-        // Check if the data is cached in Redis
-        $cached_data = $this->cache->redis->get($cache_key);
-        if ($cached_data !== FALSE) {
-            return $this->tools->outS(0, "Book Data (Cached)", ['data' => json_decode($cached_data, true)]);
-        }
+        // // Check if the data is cached in Redis
+        // $cached_data = $this->cache->redis->get($cache_key);
+        // if ($cached_data !== FALSE) {
+        //     return $this->tools->outS(0, "Book Data (Cached)", ['data' => json_decode($cached_data, true)]);
+        // }
 
         // Validate book existence and published status
         if ($this->db->where('id', $id)->where('type', 'book')->count_all_results('posts') == 0) {
