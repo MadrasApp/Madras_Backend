@@ -29,7 +29,7 @@ class Media_upload extends CI_Controller {
         }
 
         // S3 config from environment variables
-        require_once APPPATH . 'third_party/aws-autoloader.php';
+        require_once FCPATH . 'vendor/autoload.php';
         $s3Config = [
             'region'  => getenv('AWS_REGION'),
             'version' => 'latest',
