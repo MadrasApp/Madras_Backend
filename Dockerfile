@@ -50,6 +50,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
+# Install AWS SDK for PHP
+RUN composer require aws/aws-sdk-php
+
 # Set the working directory
 WORKDIR /var/www/html
 
@@ -62,6 +65,13 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Expose ports 80 for Apache and 6379 for Redis
 EXPOSE 80 6379
+
+# Set default AWS environment variables (override in production)
+ENV AWS_ACCESS_KEY_ID=BWDSOR9C0NBLRJ731D1P
+ENV AWS_SECRET_ACCESS_KEY=d70GHwTERZ1BJ11hZCXfAuIFpuDjCm0Sniauy8Np
+ENV AWS_REGION=default
+ENV AWS_BUCKET=Amoozim
+ENV AWS_S3_ENDPOINT=https://s3.lexoya.com
 
 # Start Apache in the foreground and Redis server
 CMD service redis-server start && apache2-foreground
