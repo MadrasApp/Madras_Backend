@@ -50,8 +50,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
-# Install AWS SDK for PHP
-RUN composer require aws/aws-sdk-php
+# Copy composer files first for better Docker cache
+COPY composer.json composer.lock /var/www/html/
+
+# Install Composer dependencies (including AWS SDK)
+RUN composer install --no-dev --optimize-autoloader
 
 # Set the working directory
 WORKDIR /var/www/html
