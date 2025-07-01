@@ -61,7 +61,7 @@ $js_script = array(
 	echo '<script type="text/javascript" src="'.base_url().'js/'.$js.'"></script>'."\r";
 
 ?>
-    <script type="text/javascript">var AURL = '<?php echo  base_url('admin/api') ?>' </script>
+    <script type="text/javascript">var AURL = '<?php echo  base_url('admin/api') ?>'; var baseUrl = '<?php echo base_url(); ?>';</script>
 </head>
 <body>
 
