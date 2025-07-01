@@ -604,7 +604,7 @@ class V2 extends CI_Controller
 
         if (isset($data['avatar']) && !empty($data['avatar'])) {
             // API endpoint for the upload server
-            $uploadServerUrl = "https://hls.zipak.info/upload_files.php?username=_ac"; // Replace with actual URL
+            $uploadServerUrl = base_url('api/media_upload/upload'); // Replace with actual URL
         
             // Convert Base64 to a Temporary File
             $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['avatar']));
@@ -632,14 +632,10 @@ class V2 extends CI_Controller
         
             // Handle response from the upload server
             $uploadResponse = json_decode($response, true);
-            if ($httpCode !== 200 || empty($uploadResponse['file_name'])) {
+            if ($httpCode !== 200 || empty($uploadResponse['url'])) {
                 throw new Exception("خطا در بارگذاری تصویر پروفایل", 5);
             }
-        
-            $year = date("Y");  // Current year
-            $month = date("m"); // Current month
-
-            $avatar = "uploads/_ac/{$year}/{$month}/" . $uploadResponse['file_name'];
+            $avatar = $uploadResponse['key']; // or use $uploadResponse['url'] if you want the full S3 URL
 
         }
         
