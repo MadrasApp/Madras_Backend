@@ -1,6 +1,8 @@
 {
     "require": {
-        "aws/aws-sdk-php": "^3.0"
+        "aws/aws-sdk-php": "^3.185",
+        "guzzlehttp/guzzle": "^7.4",
+        "symfony/deprecation-contracts": "^2.2"
     },
     "config": {
         "optimize-autoloader": true,
