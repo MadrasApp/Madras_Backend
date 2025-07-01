@@ -1,6 +1,6 @@
 {
     "require": {
-        "aws/aws-sdk-php": "^3.185",
+        "aws/aws-sdk-php": "*",
         "guzzlehttp/guzzle": "^7.4",
         "symfony/deprecation-contracts": "^2.2"
     },
@@ -8,4 +8,4 @@
         "optimize-autoloader": true,
         "sort-packages": true
     }
-} 
+} e file
