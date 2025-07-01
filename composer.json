@@ -1,6 +1,6 @@
 {
     "require": {
-        "aws/aws-sdk-php": "*",
+        "aws/aws-sdk-php": "3.235.1",
         "guzzlehttp/guzzle": "^7.4",
         "symfony/deprecation-contracts": "^2.2"
     },
