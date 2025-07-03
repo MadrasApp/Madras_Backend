@@ -88,7 +88,6 @@ class Upload extends CI_Controller
 
     private function uploadToSFTP($localDir, $fileBaseName)
     {
-        // Load SFTP configuration
         $this->load->config('sftp');
         $sftpConfig = $this->config->item('sftp');
 
