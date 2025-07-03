@@ -171,7 +171,7 @@ function media(options,button,callback){
 	$media.css({'z-index':(Hz())+1});
 	
 	var uC = function(){
-		createUploader('.media-select-content-tab[tab=upload]', baseUrl + 'admin/media_upload/upload', updateMedia);
+		createUploader('.media-select-content-tab[tab=upload]', baseUrl + 'admin/Upload/index', updateMedia);
 	};
 	userCan('upload_file',uC);
 	
