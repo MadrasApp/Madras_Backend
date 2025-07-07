@@ -2,6 +2,11 @@
 
 use phpseclib3\Net\SFTP;
 
+// Add require statement for SFTP if autoload is not working
+if (!class_exists('phpseclib3\\Net\\SFTP')) {
+    require_once(APPPATH . '../vendor/autoload.php');
+}
+
 /**
  * Class Upload
  *
@@ -65,15 +70,16 @@ class Upload extends CI_Controller
                 $this->uploadToSFTP($directory, $fileName);
                 $msg = "Document uploaded successfully.";
                 $success = true;
+            } elseif ($this->isVideoFile($fileName)) {
+                $this->uploadToSFTP($directory, $fileName);
+                $msg = "Video uploaded successfully.";
+                $success = true;
+            } elseif ($this->isAudioFile($fileName)) {
+                $this->uploadToSFTP($directory, $fileName);
+                $msg = "Audio uploaded successfully.";
+                $success = true;
             } else {
-                $dashManifestUrl = $this->convertToDash($fullFilePath, $fileBaseName, $directory, $dir);
-                if (! empty($dashManifestUrl)) {
-                    $this->uploadToSFTP($directory, $fileBaseName);
-                    $msg = "File uploaded and converted to DASH format successfully.";
-                    $success = true;
-                } else {
-                    $msg = "File uploaded successfully, but DASH conversion failed.";
-                }
+                $msg = "Only image, document, video, and audio files are allowed.";
             }
 
         } catch (Exception $e) {
@@ -186,129 +192,6 @@ class Upload extends CI_Controller
         return $targetFile;
     }
 
-    private function convertToDash($sourceFile, $fileBaseName, $directory, $username)
-    {
-        $dashDir = $directory . "/dash";
-        if (! is_dir($dashDir)) {
-            if (! mkdir($dashDir, 0777, true)) {
-                log_message('error', 'Failed to create DASH directory.');
-                return '';
-            }
-        }
-
-        $isAudio = $this->isAudioFile($sourceFile);
-        $isVideo = $this->isVideoFile($sourceFile);
-
-        if (! $isAudio && ! $isVideo) {
-            log_message('error', 'File is neither recognized video nor audio: ' . $sourceFile);
-            return '';
-        }
-
-        $encodedFiles = [];
-
-        if ($isVideo) {
-            $resolutions = [
-                '480p'  => ['scale' => '-vf scale=854:480',   'bitrate' => '800k'],
-                '720p'  => ['scale' => '-vf scale=1280:720',  'bitrate' => '2000k'],
-                '1080p' => ['scale' => '-vf scale=1920:1080', 'bitrate' => '4500k'],
-            ];
-
-            foreach ($resolutions as $label => $options) {
-                $outputFile = $dashDir . "/" . $fileBaseName . "_{$label}.mp4";
-
-                $command = sprintf(
-                    'ffmpeg -y -i %s %s -map 0:v -map 0:a? -c:v libx264 -preset fast -crf 23 -b:v %s -c:a aac -b:a 128k %s 2>&1',
-                    escapeshellarg($sourceFile),
-                    $options['scale'],
-                    escapeshellarg($options['bitrate']),
-                    escapeshellarg($outputFile)
-                );
-
-                $output = shell_exec($command);
-                log_message('error', "FFmpeg Output ({$label}): " . $output);
-
-                if (file_exists($outputFile)) {
-                    $encodedFiles[] = $outputFile;
-                } else {
-                    log_message('error', "Failed to create {$label} version.");
-                }
-            }
-        } else if ($isAudio) {
-            $audioBitrates = [
-                '64k'  => '64k',
-                '128k' => '128k',
-                '256k' => '256k'
-            ];
-
-            foreach ($audioBitrates as $label => $bitrate) {
-                $outputFile = $dashDir . "/" . $fileBaseName . "_{$label}.m4a";
-
-                $command = sprintf(
-                    'ffmpeg -y -i %s -vn -c:a aac -b:a %s %s 2>&1',
-                    escapeshellarg($sourceFile),
-                    escapeshellarg($bitrate),
-                    escapeshellarg($outputFile)
-                );
-
-                $output = shell_exec($command);
-                log_message('error', "FFmpeg Audio Output ({$label}): " . $output);
-
-                if (file_exists($outputFile)) {
-                    $encodedFiles[] = $outputFile;
-                } else {
-                    log_message('error', "Failed to create {$label} version of the audio file.");
-                }
-            }
-        }
-
-        if (empty($encodedFiles)) {
-            return '';
-        }
-
-        $dashManifest = $dashDir . "/" . $fileBaseName . ".mpd";
-        $ffmpegDashCmd = 'ffmpeg -y ';
-
-        foreach ($encodedFiles as $encodedFile) {
-            $ffmpegDashCmd .= '-f mp4 -i ' . escapeshellarg($encodedFile) . ' ';
-        }
-
-        for ($i = 0; $i < count($encodedFiles); $i++) {
-            $ffmpegDashCmd .= '-map ' . $i . ' ';
-        }
-
-        if ($isAudio) {
-            $ffmpegDashCmd .= '-c copy -f dash -use_timeline 1 -use_template 1 -adaptation_sets "id=0,streams=a" ';
-        } else {
-            $ffmpegDashCmd .= '-c copy -f dash -use_timeline 1 -use_template 1 -adaptation_sets "id=0,streams=v id=1,streams=a" ';
-        }
-
-        $ffmpegDashCmd .= escapeshellarg($dashManifest) . ' 2>&1';
-
-        $dashOutput = shell_exec($ffmpegDashCmd);
-        log_message('error', "FFmpeg DASH Output: " . $dashOutput);
-
-        if (! file_exists($dashManifest)) {
-            log_message('error', "DASH manifest generation failed for {$fileBaseName}");
-            return '';
-        }
-
-        return base_url(
-            "uploads/{$username}/" . date("Y") . "/" . date("m") . "/{$fileBaseName}/dash/{$fileBaseName}.mpd"
-        );
-    }
-
-    private function isAudioFile($filename)
-    {
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        return in_array($ext, ['mp3','m4a','aac','wav','flac','ogg','wma']);
-    }
-
-    private function isVideoFile($filename)
-    {
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        return in_array($ext, ['mp4','mov','avi','mkv','webm','flv','wmv']);
-    }
-
     private function isImageFile($filename)
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -319,6 +202,18 @@ class Upload extends CI_Controller
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         return in_array($ext, ['pdf', 'doc', 'docx', 'txt', 'xlsx', 'xls', 'pptx', 'csv']);
+    }
+
+    private function isVideoFile($filename)
+    {
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        return in_array($ext, ['mp4', 'mkv', 'mov', 'avi', 'webm', 'flv']);
+    }
+
+    private function isAudioFile($filename)
+    {
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        return in_array($ext, ['mp3', 'wav', 'aac', 'ogg', 'flac', 'm4a']);
     }
 
     private function sendResponse($success, $msg, $dashManifestUrl)
