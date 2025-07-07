@@ -103,7 +103,7 @@ class Upload extends CI_Controller
         $sftp_pass = $sftpConfig['password'];
 
         // Determine the remote directory
-        $remoteDir = "/lexoya/var/www/html/uploads/" . $this->user->data->username . '/' . date("Y/m/") . $fileBaseName;
+        $remoteDir = "/uploads/" . $this->user->data->username . '/' . date("Y/m/") . $fileBaseName;
 
         $sftp = new SFTP($sftp_host, $sftp_port);
         if (! $sftp->login($sftp_user, $sftp_pass)) {
