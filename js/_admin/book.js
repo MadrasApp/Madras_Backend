@@ -257,6 +257,7 @@
 			setTimeout(function(){
 				$('[data-title]').trigger('mouseleave');
 			},100);
+			$p.data('saving', false);
 		}); 
 	
 		$(document).on('input','.book-part textarea,.book-part input',function(){
@@ -419,7 +420,8 @@
 		btn.removeClass('changed saved');
 		btn.addClass('saving');
 		
-		
+		if ($p.data('saving')) return;
+		$p.data('saving', true);
 		
 		var data = new FormData($p[0]);
 	
@@ -434,7 +436,7 @@
 			contentType : false,
 			dataType    : 'json', 
 			success     : function (data) {
-	
+				$p.data('saving', false);
 				console.log(data);
 			
 				btn.removeClass("saving");
@@ -463,6 +465,7 @@
 				}
 			},
 			error: function (a,b,c) {
+				$p.data('saving', false);
 				btn.removeClass('saving').addClass('fail');
 				
 				if(typeof fail == 'function') fail($p);

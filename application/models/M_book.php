@@ -443,12 +443,20 @@ class M_book extends CI_Model
         );
 
         if (isset($data['id']) && (int)$data['id']) {
-            $id = (int)$bookId;
+            $id = (int)$data['id'];
             unset($partData['book_id']);
-            $this->db->where('id', (int)$data['id'])->update('book_meta', $partData);
+            $this->db->where('id', $id)->update('book_meta', $partData);
         } else {
-            $this->db->insert('book_meta', $partData);
-            $id = $this->db->insert_id();
+            // Check for existing part with same book_id and order
+            $existing = $this->db->select('id')->where('book_id', (int)$bookId)->where('order', (int)$data['order'])->get('book_meta')->row();
+            if ($existing) {
+                $id = $existing->id;
+                unset($partData['book_id']);
+                $this->db->where('id', $id)->update('book_meta', $partData);
+            } else {
+                $this->db->insert('book_meta', $partData);
+                $id = $this->db->insert_id();
+            }
         }
         $count = $this->db->where('book_id', $id)->count_all_results('book_meta');
         $Xdata = array("part_count" => $count);
