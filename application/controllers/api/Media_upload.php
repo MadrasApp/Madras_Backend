@@ -11,6 +11,10 @@ class Media_upload extends CI_Controller {
     }
 
     public function upload() {
+        // Set PHP configuration for large uploads
+        ini_set('max_execution_time', 300); // 5 minutes
+        ini_set('memory_limit', '1024M'); // 1GB
+        
         if (empty($_FILES['file'])) {
             return $this->output->set_status_header(400)->set_output(json_encode(['error' => 'No file uploaded']));
         }
@@ -26,7 +30,7 @@ class Media_upload extends CI_Controller {
             // Documents
             'pdf', 'doc', 'docx', 'txt'
         ];
-        $max_size = 100 * 1024 * 1024; // 100MB
+        $max_size = 1000 * 1024 * 1024; // 1000MB (increased from 100MB)
 
         $file = $_FILES['file'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));

@@ -1,6 +1,8 @@
 <?php
 ini_set('post_max_size', '300M');
 ini_set('upload_max_filesize', '300M');
+ini_set('max_execution_time', 300); // 5 minutes for large uploads
+ini_set('memory_limit', '1024M'); // 1GB for large files
 /**
  * CodeIgniter
  *

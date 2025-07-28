@@ -207,7 +207,7 @@ class Upload extends CI_Controller
     private function isVideoFile($filename)
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        return in_array($ext, ['mp4', 'mkv', 'mov', 'avi', 'webm', 'flv']);
+        return in_array($ext, ['mp4', 'mkv', 'mov', 'avi', 'webm', 'flv', 'wmv', 'm4v', '3gp']);
     }
 
     private function isAudioFile($filename)
