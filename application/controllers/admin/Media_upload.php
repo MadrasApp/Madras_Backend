@@ -1,18 +1,38 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-use Aws\S3\S3Client;
-
 class Media_upload extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        // Add authentication/authorization as needed
+        $this->load->model('m_user', 'user');
+        $this->load->model('admin/m_media', 'media');
     }
 
     public function upload() {
+        // Check if user is logged in
+        if (!$this->user->check_login()) {
+            $response = [
+                'files' => [
+                    'action' => 'fail',
+                    'msg' => 'Login required'
+                ]
+            ];
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+
         if (empty($_FILES['file'])) {
-            return $this->output->set_status_header(400)->set_output(json_encode(['error' => 'No file uploaded']));
+            $response = [
+                'files' => [
+                    'action' => 'fail',
+                    'msg' => 'No file uploaded'
+                ]
+            ];
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
         }
 
         // Validate file type/size
@@ -31,44 +51,83 @@ class Media_upload extends CI_Controller {
         $file = $_FILES['file'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (!in_array($ext, $allowed_types)) {
-            return $this->output->set_status_header(400)->set_output(json_encode(['error' => 'Invalid file type']));
-        }
-        if ($file['size'] > $max_size) {
-            return $this->output->set_status_header(400)->set_output(json_encode(['error' => 'File too large']));
-        }
-
-        // S3 config from environment variables
-        require_once FCPATH . 'vendor/autoload.php';
-        $s3Config = [
-            'region'  => getenv('AWS_REGION'),
-            'version' => 'latest',
-            'credentials' => [
-                'key'    => getenv('AWS_ACCESS_KEY_ID'),
-                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
-            ],
-        ];
-        // Add endpoint for Lexoya S3 or other S3-compatible services
-        $endpoint = getenv('AWS_S3_ENDPOINT');
-        if ($endpoint) {
-            $s3Config['endpoint'] = $endpoint;
-            $s3Config['use_path_style_endpoint'] = true;
-        }
-        $s3 = new S3Client($s3Config);
-        $bucket = getenv('AWS_BUCKET');
-        $key = 'madras/uploads/' . uniqid() . '_' . basename($file['name']);
-
-        try {
-            $result = $s3->putObject([
-                'Bucket' => $bucket,
-                'Key'    => $key,
-                'SourceFile' => $file['tmp_name'],
-                'ACL'    => 'public-read', // or your preferred ACL
-            ]);
+            $response = [
+                'files' => [
+                    'action' => 'fail',
+                    'msg' => 'Invalid file type'
+                ]
+            ];
             return $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['url' => $result['ObjectURL'], 'key' => $key]));
-        } catch (Exception $e) {
-            return $this->output->set_status_header(500)->set_output(json_encode(['error' => $e->getMessage()]));
+                ->set_output(json_encode($response));
         }
+        if ($file['size'] > $max_size) {
+            $response = [
+                'files' => [
+                    'action' => 'fail',
+                    'msg' => 'File too large'
+                ]
+            ];
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+
+        try {
+            // Create directory structure
+            $dir = $this->user->data->username;
+            $fileBaseName = pathinfo($file['name'], PATHINFO_FILENAME);
+            $directory = $this->createDirectoryStructure($dir, $fileBaseName);
+            
+            // Move uploaded file
+            $fullFilePath = $this->moveUploadedFile($file['tmp_name'], $file['name'], $directory);
+            
+            // Return success response
+            $response = [
+                'files' => [
+                    'action' => 'done',
+                    'msg' => 'File uploaded successfully',
+                    'url' => $fullFilePath,
+                    'key' => $fullFilePath
+                ]
+            ];
+            
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+                
+        } catch (Exception $e) {
+            $response = [
+                'files' => [
+                    'action' => 'fail',
+                    'msg' => $e->getMessage()
+                ]
+            ];
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+    }
+
+    private function createDirectoryStructure($dir, $fileBaseName)
+    {
+        $dirArr = ['uploads', $dir, date("Y"), date("m"), $fileBaseName];
+        $directory = $this->media->mkDirArray($dirArr);
+        if (!$directory) {
+            throw new Exception("Failed to create directory structure.");
+        }
+        return $directory;
+    }
+
+    private function moveUploadedFile($tmpPath, $fileName, $directory)
+    {
+        $targetFile = $directory . "/" . $fileName;
+        $targetFile = $this->media->optimizedFileName($targetFile);
+
+        if (!move_uploaded_file($tmpPath, $targetFile)) {
+            throw new Exception("Failed to move uploaded file.");
+        }
+
+        return $targetFile;
     }
 }
