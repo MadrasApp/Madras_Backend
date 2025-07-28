@@ -297,7 +297,7 @@ class M_media extends CI_Model
         $a = @getimagesize($file);
 
         if (is_array($a) && isset($a[2]))
-            if (in_array($a[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG))) {
+            if (in_array($a[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP))) {
                 return true;
             }
         return false;
@@ -605,7 +605,14 @@ class M_media extends CI_Model
 
     public function fileCanInsert($file)
     {
-        $allowed_files = array('jpe', 'jpg', 'jpeg', 'png', 'gif', 'mp3', 'mp4', 'flv');
+        $allowed_files = array(
+            // Images
+            'jpe', 'jpg', 'jpeg', 'png', 'gif', 'webp',
+            // Audio formats
+            'mp3', 'wav', 'ogg', 'aac', 'm4a', 'flac', 'wma',
+            // Video formats
+            'mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'm4v', '3gp'
+        );
 
         $ext = strtolower(@pathinfo($file, PATHINFO_EXTENSION));
 
