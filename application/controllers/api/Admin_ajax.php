@@ -64,14 +64,24 @@ class Admin_ajax extends CI_Controller
 
         $include = $this->input->post('include');
         $exclude = $this->input->post('exclude');
+        // Always use the full list of supported image types for images
+        $image_types = array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp');
+        if ((!is_array($include) || empty($include)) && (!is_array($exclude) || empty($exclude))) {
+            if ($type == 'images') {
+                $include = $image_types;
+                $exclude = array();
+            } else if ($type == 'files') {
+                $include = array();
+                $exclude = $image_types;
+            }
+        }
+        // Defensive: if include/exclude is a string, convert to array
+        if (!is_array($include)) $include = $include == '' ? array() : array($include);
+        if (!is_array($exclude)) $exclude = $exclude == '' ? array() : array($exclude);
+
         $selectable = $this->input->post('selectable');
         $multiple = $this->input->post('multiple');
         $options = $this->input->post('options');
-
-        if (!$include && !$exclude) {
-            $include = $type == 'images' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp') : '';
-            $exclude = $type == 'files' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp') : '';
-        }
 
         if ($selectable == 'true') $class .= " selectable ";
         if ($multiple == 'false') $attr .= ' unique-group="media-select" ';
