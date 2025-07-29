@@ -273,9 +273,9 @@ $file_types =
 array(
 	'text_files'  =>array('doc','docx','log','msg','odt','pages','rtf','tex','txt','wpd','wps','pdf'),
 	'data_files'  =>array('csv','dat','gbr','ged','key','keychain','pps','ppt','pptx','sdf','tar','tax2012','tax2014','vcf','xml'),
-	'audio_files' =>array('aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma','ogg','aac','flac'),	
-	'video_files' =>array('3g2','3gp','asf','asx','avi','flv','m4v','mov','mp4','mpg','rm','Real','srt','swf','vob','wmv','webm','mkv'),	
-	'image_files' =>array('bmp','gif','jpg','png','tif','tiff','jpe','jpeg','webp'),	
+	'audio_files' =>array('aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma'),	
+	'video_files' =>array('3g2','3gp','asf','asx','avi','flv','m4v','mov','mp4','mpg','rm','Real','srt','swf','vob','wmv'),	
+	'image_files' =>array('bmp','gif','jpg','png','tif','tiff','jpe','jpeg'),	
 	'code_files'  =>array('asp','aspx','cer','cfm','csr','css','htm','html','js','jsp','php','rss','xhtml','c','class','cpp','cs','dtd','fla','h','java','lua','m','pl','py'),	
 	'zip_files'   =>array('7z','cbr','deb','gz','pkg','rar','rpm','sitx','zip','zipx'),	
 	'font_files'  =>array('fnt','fon','otf','ttf'),	
