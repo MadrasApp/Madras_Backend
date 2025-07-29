@@ -16,7 +16,7 @@ class Media_upload extends CI_Controller {
         }
 
         // Validate file type/size
-        $allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'pdf'];
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'pdf', 'mp3', 'wav', 'wma', 'ogg', 'aac', 'flac'];
         $max_size = 100 * 1024 * 1024; // 100MB
 
         $file = $_FILES['file'];

@@ -692,7 +692,7 @@ function insertToEditor(files){
 			
 			var html ;
 			switch(ext){
-				case 'jpeg':case 'jpe':case 'jpg':case 'png':case 'gif':				
+				case 'jpeg':case 'jpe':case 'jpg':case 'png':case 'gif':case 'webp':case 'avif':				
 				html = '<img src="'+path+'" class="inline-image" file="'+ $(file).data('file') +'" style="max-width:100%" alt="'+title+'" title="'+title+'" />';							
 				break;
 				
