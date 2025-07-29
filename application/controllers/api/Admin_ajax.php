@@ -69,8 +69,8 @@ class Admin_ajax extends CI_Controller
         $options = $this->input->post('options');
 
         if (!$include && !$exclude) {
-            $include = $type == 'images' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp') : '';
-            $exclude = $type == 'files' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp') : '';
+            $include = $type == 'images' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif') : '';
+            $exclude = $type == 'files' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif') : '';
         }
 
         if ($selectable == 'true') $class .= " selectable ";
