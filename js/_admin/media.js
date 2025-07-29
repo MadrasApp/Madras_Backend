@@ -507,13 +507,13 @@ function updateMediaSidbar(file,thumb,insert){
 	
 	var $info = $('<div/>',{'dir':'rtl'});
 	
-	if(ext == 'mp4' || ext == 'webm' || ext == 'avi' || ext == 'wmv' || ext == 'flv' || ext == 'mkv' || ext == 'm4v' || ext == '3gp' || ext == 'mov')
+	if(ext == 'mp4' || ext == 'webm')
 	{
 		privew = '<div style="text-align:center"><video controls style="max-width:100%">\
 					 <source src="'+path+'" type="video/'+ext+'">\
 					  Your browser does not support the video.\
 				  </video></div>';	
-	}else if(ext == 'mp3' || ext == 'ogg' || ext == 'wav' || ext == 'aac' || ext == 'm4a' || ext == 'flac' || ext == 'wma')
+	}else if(ext == 'mp3')
 	{
 		privew = '<div style="text-align:center"><audio  controls style="max-width: 100%;">\
 				  <source src="'+path+'" type="audio/mpeg" title="'+name+'">\
@@ -692,24 +692,24 @@ function insertToEditor(files){
 			
 			var html ;
 			switch(ext){
-				case 'jpeg':case 'jpe':case 'jpg':case 'png':case 'gif':case 'webp':				
+				case 'jpeg':case 'jpe':case 'jpg':case 'png':case 'gif':				
 				html = '<img src="'+path+'" class="inline-image" file="'+ $(file).data('file') +'" style="max-width:100%" alt="'+title+'" title="'+title+'" />';							
 				break;
 				
-				case 'mp3':case 'ogg':case 'wav':case 'aac':case 'm4a':case 'flac':case 'wma':
+				case 'mp3':case 'ogg':
 				html = '<p></p><div style="text-align:center"><audio  controls>\
 				  <source src="'+path+'" type="audio/mpeg" title="'+title+'">\
 				  Your browser does not support the audio tag.\
 				 </audio></div><p></p>';				 
 				break;
 								
-				case 'mp4':case 'webm':case 'mov':case 'avi':case 'wmv':case 'flv':case 'mkv':case 'm4v':case '3gp':
+				case 'mp4':case 'webm':case 'mov':
 				html = 
 				'<p></p><div style="text-align:center"><video controls style="max-width:100%">\
 					 <source src="'+path+'" type="video/'+ext+'">\
 					  Your browser does not support the video.\
 				  </video></div><p></p>';				  
-				break;
+				break;				
 			}
 			
 			EDITOR.insertHtml(html);
