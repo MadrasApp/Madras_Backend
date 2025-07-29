@@ -115,8 +115,9 @@ class Media_upload extends CI_Controller {
 
     private function createDirectoryStructure($dir, $fileBaseName)
     {
-        // Create structure: uploads/username/year/month/folder
-        $dirArr = ['uploads', $dir, date("Y"), date("m"), $fileBaseName];
+        // Create simple structure: uploads/username/
+        // This matches what the media listing expects
+        $dirArr = ['uploads', $dir];
         $directory = $this->media->mkDirArray($dirArr);
         if (!$directory) {
             throw new Exception("Failed to create directory structure.");
