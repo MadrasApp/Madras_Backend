@@ -26,9 +26,6 @@ class Upload extends CI_Controller
 
     public function index()
     {
-        // Log current PHP configuration for debugging
-        $this->logUploadConfiguration();
-
         // Default response data
         $success         = false;
         $msg             = '';
@@ -41,55 +38,16 @@ class Upload extends CI_Controller
             return;
         }
 
-        // Enhanced file upload validation with detailed error reporting
-        if (! isset($_FILES['file'])) {
-            $msg = 'No file data received in request.';
-            log_message('error', 'Upload failed: $_FILES array is empty');
+        // Check for a valid file in $_FILES
+        if (! isset($_FILES['file']) || ! is_uploaded_file($_FILES['file']['tmp_name'])) {
+            $msg = 'No valid file was uploaded.';
             $this->sendResponse($success, $msg, $dashManifestUrl);
             return;
         }
-
-        $file = $_FILES['file'];
-        
-        // Check for upload errors
-        if (isset($file['error']) && $file['error'] !== UPLOAD_ERR_OK) {
-            $errorMsg = $this->getUploadErrorMessage($file['error']);
-            $msg = 'File upload error: ' . $errorMsg;
-            log_message('error', 'Upload failed with error code ' . $file['error'] . ': ' . $errorMsg);
-            $this->sendResponse($success, $msg, $dashManifestUrl);
-            return;
-        }
-
-        // Check if file was actually uploaded
-        if (! is_uploaded_file($file['tmp_name'])) {
-            $msg = 'File upload validation failed. The file was not properly uploaded.';
-            log_message('error', 'Upload failed: is_uploaded_file() returned false for ' . $file['tmp_name']);
-            $this->sendResponse($success, $msg, $dashManifestUrl);
-            return;
-        }
-
-        // Check if temporary file exists and is readable
-        if (! file_exists($file['tmp_name']) || ! is_readable($file['tmp_name'])) {
-            $msg = 'Temporary file is not accessible.';
-            log_message('error', 'Upload failed: temp file not accessible - ' . $file['tmp_name']);
-            $this->sendResponse($success, $msg, $dashManifestUrl);
-            return;
-        }
-
-        // Check file size
-        if ($file['size'] <= 0) {
-            $msg = 'Uploaded file has invalid size (0 or negative).';
-            log_message('error', 'Upload failed: file size is ' . $file['size']);
-            $this->sendResponse($success, $msg, $dashManifestUrl);
-            return;
-        }
-
-        // Log successful file detection
-        log_message('info', 'File upload detected: ' . $file['name'] . ' (' . $file['size'] . ' bytes)');
 
         // Gather file data
-        $fileTemp     = $file['tmp_name'];
-        $fileName     = $file['name'];
+        $fileTemp     = $_FILES['file']['tmp_name'];
+        $fileName     = $_FILES['file']['name'];
         $fileBaseName = pathinfo($fileName, PATHINFO_FILENAME); // File name without extension
 
         // Determine the user directory (admin can override via POST)
@@ -132,35 +90,6 @@ class Upload extends CI_Controller
 
         // Output JSON response
         $this->sendResponse($success, $msg, $dashManifestUrl);
-    }
-
-    /**
-     * Test endpoint to check upload configuration
-     * Access via: /admin/upload/test
-     */
-    public function test()
-    {
-        // Check if user is logged in
-        if (! $this->user->check_login()) {
-            echo json_encode(['error' => 'login-needed']);
-            return;
-        }
-
-        $config = [
-            'upload_max_filesize' => ini_get('upload_max_filesize'),
-            'post_max_size' => ini_get('post_max_size'),
-            'max_execution_time' => ini_get('max_execution_time'),
-            'max_input_time' => ini_get('max_input_time'),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_file_uploads' => ini_get('max_file_uploads'),
-            'file_uploads' => ini_get('file_uploads'),
-            'upload_tmp_dir' => ini_get('upload_tmp_dir'),
-            'temp_dir_writable' => is_writable(sys_get_temp_dir()),
-            'php_version' => PHP_VERSION,
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'
-        ];
-
-        echo json_encode($config, JSON_PRETTY_PRINT);
     }
 
     private function uploadToSFTP($localDir, $fileBaseName)
@@ -301,49 +230,5 @@ class Upload extends CI_Controller
             $response,
             JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_TAG
         );
-    }
-
-    /**
-     * Get human-readable upload error message
-     */
-    private function getUploadErrorMessage($errorCode)
-    {
-        switch ($errorCode) {
-            case UPLOAD_ERR_INI_SIZE:
-                return 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
-            case UPLOAD_ERR_FORM_SIZE:
-                return 'The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form';
-            case UPLOAD_ERR_PARTIAL:
-                return 'The uploaded file was only partially uploaded';
-            case UPLOAD_ERR_NO_FILE:
-                return 'No file was uploaded';
-            case UPLOAD_ERR_NO_TMP_DIR:
-                return 'Missing a temporary folder';
-            case UPLOAD_ERR_CANT_WRITE:
-                return 'Failed to write file to disk';
-            case UPLOAD_ERR_EXTENSION:
-                return 'A PHP extension stopped the file upload';
-            default:
-                return 'Unknown upload error';
-        }
-    }
-
-    /**
-     * Log current PHP upload configuration for debugging
-     */
-    private function logUploadConfiguration()
-    {
-        $config = [
-            'upload_max_filesize' => ini_get('upload_max_filesize'),
-            'post_max_size' => ini_get('post_max_size'),
-            'max_execution_time' => ini_get('max_execution_time'),
-            'max_input_time' => ini_get('max_input_time'),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_file_uploads' => ini_get('max_file_uploads'),
-            'file_uploads' => ini_get('file_uploads'),
-            'upload_tmp_dir' => ini_get('upload_tmp_dir')
-        ];
-        
-        log_message('info', 'PHP Upload Configuration: ' . json_encode($config));
     }
 }
