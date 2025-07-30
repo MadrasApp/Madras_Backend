@@ -50,6 +50,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
+# Set PHP limits
+RUN echo "upload_max_filesize=1000M" > /usr/local/etc/php/conf.d/uploads.ini \
+&& echo "post_max_size=1000M" >> /usr/local/etc/php/conf.d/uploads.ini \
+&& echo "memory_limit=2048M" >> /usr/local/etc/php/conf.d/uploads.ini
+
+# Set Apache upload limit (1000MB in bytes)
+RUN echo "LimitRequestBody 1048576000" >> /etc/apache2/apache2.conf
+
 # Copy composer files first for better Docker cache
 COPY composer.json composer.lock /var/www/html/
 
