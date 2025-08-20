@@ -458,41 +458,41 @@ class M_book extends CI_Model
                 $id = $this->db->insert_id();
             }
         }
-        $count = $this->db->where('book_id', $id)->count_all_results('book_meta');
+        $count = $this->db->where('book_id', (int)$bookId)->count_all_results('book_meta');
         $Xdata = array("part_count" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
-        $count = $this->db->where('book_id', $id)->where('description IS NOT NULL')->count_all_results('book_meta');
-        $count = $count ? 1 : 0;
-        $Xdata = array("has_description" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $count = $this->db->where('book_id', (int)$bookId)->where('description IS NOT NULL')->count_all_results('book_meta');
+        $Xdata = array("has_description" => ($count ? 1 : 0));
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
-        $count = $partData['sound'] ? 1 : 0;
-        $Xdata = array("has_sound" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $count = $this->db->where('book_id', (int)$bookId)->where('sound IS NOT NULL')->count_all_results('book_meta');
+        $Xdata = array("has_sound" => ($count ? 1 : 0));
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
-        $count = intval($partData['video']) > 0;
-        $Xdata = array("has_video" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $count = $this->db->where('book_id', (int)$bookId)->where('video IS NOT NULL')->count_all_results('book_meta');
+        $Xdata = array("has_video" => ($count > 0 ? 1 : 0));
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
-        $count = $partData['image'] ? 1 : 0;
-        $Xdata = array("has_image" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $count = $this->db->where('book_id', (int)$bookId)->where('image IS NOT NULL')->count_all_results('book_meta');
+        $Xdata = array("has_image" => ($count ? 1 : 0));
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
-        $O = $this->db->select('book_id,SUM(IF( `text` IS NULL ,0,LENGTH(`text`)))	+
+        $O = $this->db->select('book_id,SUM(IF( `text` IS NULL ,0,LENGTH(`text`)))
+			+
 			SUM(IF( `description` IS NULL ,0,LENGTH(`description`))) +	
 			SUM(IF( `sound` IS NULL ,0,LENGTH(`sound`)))+
 			SUM(IF( `video` IS NULL ,0,LENGTH(`video`))) +	
-			SUM(IF( `image` IS NULL ,0,LENGTH(`image`))) AS C')->where('book_id', $id)->get('book_meta')->row();
+			SUM(IF( `image` IS NULL ,0,LENGTH(`image`))) AS C')->where('book_id', (int)$bookId)->get('book_meta')->row();
 
         $count = $O->C;
         $Xdata = array("size" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
-        $O = $this->db->select('COUNT(id) C')->where('book_id', $id)->get('user_books')->row();
+        $O = $this->db->select('COUNT(id) C')->where('book_id', (int)$bookId)->get('user_books')->row();
         $count = $O->C;
         $Xdata = array("has_download" => $count);
-        $this->db->where('id', $id)->update('posts', $Xdata);
+        $this->db->where('id', (int)$bookId)->update('posts', $Xdata);
 
         return TRUE;
     }
