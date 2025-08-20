@@ -413,10 +413,9 @@
 		var $p = $(p);
 		
 		var btn = $p.find('.book-save');
-		
-		if(!$p.hasClass('has-description'))
-			$p.find('.part-description').val('');
-		
+
+		// keep description even if UI toggle is off; server will treat empty string as NULL
+ 
 		btn.removeClass('changed saved');
 		btn.addClass('saving');
 		
@@ -605,8 +604,7 @@ function checkBookData(){
         }
         $(el).find('.part-order').val(i);
 
-        if(!$(el).hasClass('has-description'))
-            $(el).find('.part-description').val('');
+		// keep description text; do not forcibly clear
     });
 	if(key) setPages();
     return key;
