@@ -129,7 +129,7 @@ class Salereport extends CI_Controller {
         $this->db->where("parent",$id);
         $this->db->where("type","book");
         $this->db->order_by("position");
-		$O = $this->db->get("category")->result();
+		$O = $this->db->get("category")->result(); 
 		$cats = [];
 		foreach($O as $k=>$v){
 			$v->name = $level?str_repeat("|__",$level)." ".$v->name:$v->name;

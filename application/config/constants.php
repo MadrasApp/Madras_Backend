@@ -98,6 +98,8 @@ define('SECRET_KEY', '626f6f726f2062616261206d616e20696e6f20616e6a616d206e656d69
 define('CDN_URL', 'https://modir.madras.app/');
 define('EITAA_COLABRATION_TOKEN', 'bot355148:8b921ad0-7776-404b-bc78-43a9cd1a6164');
 
+
+
 /*
 |--------------------------------------------------------------------------
 | CMS Config
@@ -280,5 +282,10 @@ array(
 	'zip_files'   =>array('7z','cbr','deb','gz','pkg','rar','rpm','sitx','zip','zipx'),	
 	'font_files'  =>array('fnt','fon','otf','ttf'),	
 	'set_files'   =>array('cfg','ini','prf','config'),	
+
 );
+
+
+
+
 ?>

@@ -58,19 +58,26 @@ class M_post extends CI_Model
     }
 
     public function addEmpty($type = "post")
-    {
-        $id = $this->db->last_id('posts');
-        $data = array(
-            'id' => $id,
-            'type' => $type,
-            'author' => $this->user->user_id,
-            'draft' => $id,
-            'date_modified' => date("Y-m-d H:i:s"),
-            'date' => date("Y-m-d H:i:s")
-        );
-        $this->db->insert('posts', $data);
-        return $this->db->insert_id();
-    }
+{
+    // گرفتن آخرین id
+    $lastRow = $this->db->select_max('id')->get('posts')->row_array();
+    $lastId = isset($lastRow['id']) ? (int)$lastRow['id'] : 0;
+    $newId = $lastId + 1;
+
+    $data = array(
+        'id' => $newId,
+        'type' => $type,
+        'author' => $this->user->user_id,
+        'draft' => $newId,
+        'date_modified' => date("Y-m-d H:i:s"),
+        'date' => date("Y-m-d H:i:s")
+    );
+
+    $this->db->insert('posts', $data);
+
+    return $newId;
+}
+
 
     public function deleteEmpty()
     {
@@ -307,7 +314,19 @@ class M_post extends CI_Model
 
     public function LoadDataTableSelect($datatype, $field1 = "id", $field2 = "title")
     {
+        
+        if (in_array($datatype, ['publisher', 'writer', 'translator'])) {
+            $O = $this->db->select("$field1, $field2")
+                ->get($datatype)
+                ->result();
+            $data = array();
+            foreach ($O as $k => $v) {
+                $data[$v->{$field1}] = $v->{$field2};
+            }
+            return $data;
+        }
 
+       
         $suppliertype = $this->db->where("t.datatype = '$datatype'")->get('suppliertype t')->result();
         $data = array(0);
         foreach ($suppliertype as $k => $v) {
@@ -713,7 +732,7 @@ class M_post extends CI_Model
                     $result .= "<li item-id=$id parent=$parent name='$name'>";
 
                     $selectable && $result .= "<label>";
-                    $selectable && $result .= "<input type=radio value=$id name=category[] $checked>";
+                    $selectable && $result .= "<input type=checkbox value=$id name=category[] $checked>";
 
                     if ($pic) {
                         $result .= "<span class=category-list-img >";

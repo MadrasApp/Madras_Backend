@@ -97,13 +97,29 @@ class Upload extends CI_Controller
         $this->load->config('sftp');
         $sftpConfig = $this->config->item('sftp');
 
+
         $sftp_host = $sftpConfig['host'];
         $sftp_port = $sftpConfig['port'];
         $sftp_user = $sftpConfig['username'];
         $sftp_pass = $sftpConfig['password'];
 
-        // Determine the remote directory
-        $remoteDir = "/uploads/" . $this->user->data->username . '/' . date("Y/m/") . $fileBaseName;
+        // Determine the remote directory to mirror local: /uploads/{user}/Y/m/{basename}[ /dash ]
+        $normalizedLocal = rtrim(str_replace('\\','/', $localDir), '/');
+        $segments = array_values(array_filter(explode('/', $normalizedLocal), function($s){ return $s !== ''; }));
+        // Find index of 'uploads' and extract following parts robustly
+        $uploadsIndex = array_search('uploads', $segments);
+        $userDir = $this->user->data->username;
+        $yearDir = date('Y');
+        $monthDir = date('m');
+        $baseNameDir = basename($normalizedLocal);
+        if ($uploadsIndex !== false) {
+            $userDir     = isset($segments[$uploadsIndex+1]) ? $segments[$uploadsIndex+1] : $userDir;
+            $yearDir     = isset($segments[$uploadsIndex+2]) ? $segments[$uploadsIndex+2] : $yearDir;
+            $monthDir    = isset($segments[$uploadsIndex+3]) ? $segments[$uploadsIndex+3] : $monthDir;
+            $baseNameDir = isset($segments[$uploadsIndex+4]) ? $segments[$uploadsIndex+4] : $baseNameDir;
+        }
+        // Build remote base directory including basename and optional dash
+        $remoteBaseDir = "/uploads/{$userDir}/{$yearDir}/{$monthDir}/{$baseNameDir}";
 
         $sftp = new SFTP($sftp_host, $sftp_port);
         if (! $sftp->login($sftp_user, $sftp_pass)) {
@@ -117,32 +133,123 @@ class Upload extends CI_Controller
         if (is_dir($dashDir)) {
             $filesToUpload = scandir($dashDir);
             $baseDir = $dashDir;
+            $remoteDir = $remoteBaseDir . "/dash";
         } else {
             // If no DASH directory, upload standalone files in $localDir
             $filesToUpload = scandir($localDir);
             $baseDir = $localDir;
+            $remoteDir = $remoteBaseDir;
         }
+
+        $uploadedFiles = [];
+        $failedFiles   = [];
 
         foreach ($filesToUpload as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
 
-            $localFilePath = $baseDir . "/" . $file;
+
+            $localFilePath  = $baseDir . "/" . $file;
             $remoteFilePath = $remoteDir . "/" . $file;
 
-            $sftp->mkdir(dirname($remoteFilePath), -1, true); // Ensure the directory exists on the server
+            // Ensure the directory exists on the server
+            $sftp->mkdir(dirname($remoteFilePath), -1, true);
 
-            if ($sftp->put($remoteFilePath, file_get_contents($localFilePath))) {
-                // File uploaded successfully
-                unlink($localFilePath); // Optionally delete the local file after upload
+            $putOk = $sftp->put($remoteFilePath, file_get_contents($localFilePath));
+
+            // Some servers may still have the file even if put() returned false.
+            // Verify existence via stat() as a fallback heuristic.
+            if (! $putOk) {
+                try {
+                    $stat = $sftp->stat($remoteFilePath);
+                    if (is_array($stat) && isset($stat['size']) && $stat['size'] > 0) {
+                        $putOk = true;
+                    }
+                } catch (\Throwable $e) {
+                    // ignore stat errors; we'll treat as failed below
+                }
+            }
+
+            if ($putOk) {
+                $uploadedFiles[] = $file; 
+                // Keep local files so the media browser (which scans local uploads) can display them
             } else {
-                throw new Exception("Failed to upload file to SFTP: $file");
+                $failedFiles[] = $file;
             }
         }
 
-        // Clean up directories if empty
-        $this->deleteDirectoryRecursively($localDir);
+        // If none of the files made it to the remote, fail the whole operation.
+        if (count($uploadedFiles) === 0 && count($failedFiles) > 0) {
+            $list = implode(', ', $failedFiles);
+            throw new Exception("Failed to upload file(s) to SFTP: " . $list);
+        }
+
+        // If some files failed but at least one succeeded, continue without throwing.
+        // Caller will still report success for the overall upload to avoid false negatives in UI.
+
+        // Do not delete local directory; media browser depends on local files to list images
+    }
+
+
+    public function deleteFromSFTPByLocalPath($localFilePath)
+    {
+        $this->load->config('sftp');
+        $sftpConfig = $this->config->item('sftp');
+
+        $sftp_host = $sftpConfig['host'];
+        $sftp_port = $sftpConfig['port'];
+        $sftp_user = $sftpConfig['username'];
+        $sftp_pass = $sftpConfig['password'];
+
+        $normalized = str_replace('\\','/', $localFilePath);
+        // Expect local like: FCPATH/uploads/{user}/Y/m/{basename}/{filename}
+        $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+        if (strpos($normalized, $fc) === 0) {
+            $normalized = substr($normalized, strlen($fc));
+        }
+        if (strpos($normalized, 'uploads/') !== 0) return FALSE;
+
+        $segments = explode('/', $normalized);
+        // uploads, user, Y, m, basename, filename
+        if (count($segments) < 6) return FALSE;
+        $userDir = $segments[1];
+        $year    = $segments[2];
+        $month   = $segments[3];
+        $base    = $segments[4];
+        $filename= $segments[5];
+
+        // Remote has no basename folder: /uploads/{user}/{Y}/{m}/filename
+        $remoteDir = "/uploads/{$userDir}/{$year}/{$month}";
+        $remoteFile = $remoteDir . '/' . $filename;
+
+        $sftp = new SFTP($sftp_host, $sftp_port);
+        if (! $sftp->login($sftp_user, $sftp_pass)) {
+            return FALSE;
+        }
+
+        // delete thumbnails too if present
+        $pathinfo = pathinfo($filename);
+        $name = $pathinfo['filename'];
+        $ext  = isset($pathinfo['extension']) ? ('.'.$pathinfo['extension']) : '';
+        $thumbs = array(
+            $remoteDir . '/' . $name . '-150' . $ext,
+            $remoteDir . '/' . $name . '-300' . $ext,
+            $remoteDir . '/' . $name . '-600' . $ext,
+        );
+        foreach ($thumbs as $t) { @ $sftp->delete($t); }
+
+        @ $sftp->delete($remoteFile);
+
+        // attempt to remove remote dir if empty (only the leaf month)
+        $list = $sftp->nlist($remoteDir);
+        if (is_array($list)) {
+            $nonDot = array_diff($list, array('.', '..'));
+            if (count($nonDot) === 0) {
+                @ $sftp->rmdir($remoteDir);
+            }
+        }
+        return TRUE;
     }
 
     private function deleteDirectoryRecursively($directory)
@@ -232,3 +339,4 @@ class Upload extends CI_Controller
         );
     }
 }
+

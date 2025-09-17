@@ -49,12 +49,12 @@ class M_post extends CI_Model {
 			'id'     => $id,
 			'type'   => $type,
 			'author' => $this->user->user_id ,
-			'draft'  => $id, 
+			'draft'  => $id,
 			'date_modified' => date("Y-m-d H:i:s"),
 			'date' => date("Y-m-d H:i:s")
 		);
-		$this->db->insert('posts',$data);	
-		return $this->db->insert_id();			
+		$this->db->insert('posts',$data);
+		return $this->db->insert_id();
 	}
 	
 	public function deleteEmpty()

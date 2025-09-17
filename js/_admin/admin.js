@@ -454,6 +454,8 @@ function uploader(u,callback){
 			
 			$(data.context).closest('.upload-row').addClass('done');
 			$(checkButton).clone(true).appendTo(data.context).fadeIn();			
+			// Stop and hide the progress animation immediately on success
+			progress.fadeOut();
 			setTimeout(function(){
 				$(data.context).hide(1000,function(){$(this).remove()});
 			},4000);

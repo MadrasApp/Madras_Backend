@@ -1,43 +1,61 @@
 <?php
 
-    // Base path for your server
-    $base_path = CDN_URL; // Replace with your actual base URL
-    $requested_url = $_SERVER['REQUEST_URI']; // Full requested URL
 
-    // Debug: Log the raw URI
-    error_log("Raw URI: " . $requested_url);
+// Resolve requested URI and map to local uploads path safely
+$requested_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
 
-    // Sanitize or encode the requested URL
-    $requested_url = filter_var($requested_url, FILTER_SANITIZE_URL);
+// Log raw URI for debugging
+error_log('Raw URI: ' . $requested_url);
 
-    // Remove base path and leading slash
-    $relative_path = str_replace($base_path, '', $requested_url);
-    $relative_path = ltrim($relative_path, '/');
+// Sanitize and decode URL, keep slashes
+$requested_url = filter_var($requested_url, FILTER_SANITIZE_URL);
+$requested_url = urldecode($requested_url);
 
-    // Define the local file path (where the media files are stored on your server)
-    $file_path = '/lexoya/var/www/html/' . $relative_path;
+// Find '/uploads/' in the URI and build a relative path from there
+$pos = strpos($requested_url, '/uploads/');
+if ($pos === false) {
+    header('HTTP/1.0 400 Bad Request');
+    echo 'Invalid uploads path';
+    exit;
+}
 
-    // Check if the file exists
-    if (file_exists($file_path)) {
-        // Get the MIME type of the file
-        $mime_type = mime_content_type($file_path);
+$relative_path = substr($requested_url, $pos + 1); // remove leading '/'
 
-        // Set headers to serve the file
-        header("Content-Type: $mime_type");
-        header("Content-Length: " . filesize($file_path));
-        header("Content-Disposition: inline; filename=\"" . basename($file_path) . "\"");
+// Prevent directory traversal
+if (strpos($relative_path, '..') !== false) {
+    header('HTTP/1.0 400 Bad Request');
+    echo 'Invalid path';
+    exit;
+}
 
-        // Read and output the file content
-        readfile($file_path);
-        exit;
-    } else {
-        // Debug: Log file not found
-        error_log("File not found: $file_path");
-        
-        // Return a 404 error
-        header("HTTP/1.0 404 Not Found");
-        echo "File not found: $file_path";
-        exit;
+// Build absolute filesystem path using FCPATH
+$fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+$file_path = $fc . $relative_path; // forward slashes are fine on Windows
+
+// On Windows, filenames may be stored in legacy encodings. If not found with UTF-8,
+// try CP1256 (common for Persian on Windows) as a fallback.
+if (!file_exists($file_path) && strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    $cp1256_path = @iconv('UTF-8', 'CP1256//TRANSLIT', $file_path);
+    if ($cp1256_path && file_exists($cp1256_path)) {
+        $file_path = $cp1256_path;
     }
+}
+
+// Check file existence and serve
+if (file_exists($file_path)) {
+    $mime_type = function_exists('mime_content_type') ? mime_content_type($file_path) : 'application/octet-stream';
+    header('Content-Type: ' . $mime_type);
+    header('Content-Length: ' . filesize($file_path));
+    header('Content-Disposition: inline; filename="' . basename($file_path) . '"');
+    readfile($file_path);
+    exit;
+}
+
+// Not found: log and 404
+error_log('File not found: ' . $file_path);
+header('HTTP/1.0 404 Not Found');
+echo 'File not found: ' . $file_path;
+exit;
+
 
 ?>

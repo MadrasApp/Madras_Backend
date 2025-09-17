@@ -36,7 +36,8 @@ class M_media extends CI_Model
 
     public function scanPrimaryDir($full_path = "")
     {
-        $files = scandir($full_path);
+        if (!is_dir($full_path)) return array();
+        $files = @scandir($full_path);
         $folders = array();
         $return = array();
 
@@ -548,8 +549,13 @@ class M_media extends CI_Model
         if ($type == 'images') {
             $thumb = $info['thumb150'];
             if (!file_exists($thumb)) $thumb = $info['file'];
+
+            $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+            $rel = ltrim(str_replace($fc, '', str_replace('\\','/', $thumb)), '/');
+            $result .= '<img src="' . base_url($rel) . '">';
+
             $cleaned_thumb = str_replace("/lexoya/var/www/html/", "/", $thumb);
-            $result .= '<img src="' . base_url() . $cleaned_thumb . '">';
+            $result .= '<img src="' . 
 
             $footer_info = $this->imageSize($file);
         } else {
@@ -589,6 +595,14 @@ class M_media extends CI_Model
                 @unlink($this->getThumb($file, '600'));
             }
             if (@unlink($file)) {
+                // attempt to remove parent directory if empty (photo-named folder)
+                $parent = pathinfo($file, PATHINFO_DIRNAME);
+                if (is_dir($parent)) {
+                    $items = @scandir($parent);
+                    if (is_array($items) && count(array_diff($items, array('.', '..'))) === 0) {
+                        @rmdir($parent);
+                    }
+                }
                 return TRUE;
             }
         }
@@ -597,7 +611,17 @@ class M_media extends CI_Model
 
     public function imageSize($file, $return = "string")
     {
+        // On Windows with Persian paths, try CP1256 fallback if UTF-8 fails
         $image = @getimagesize($file);
+        if ($image === false && strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $cp1256 = @iconv('UTF-8', 'CP1256//TRANSLIT', $file);
+            if ($cp1256 && file_exists($cp1256)) {
+                $image = @getimagesize($cp1256);
+                if ($image !== false) {
+                    $file = $cp1256;
+                }
+            }
+        }
         if (is_array($image) && isset($image[1]))
             return $return == "string" ? $image[0] . "x" . $image[1] : array($image[0], $image[1]);
         return "";
