@@ -1,5 +1,6 @@
 <?php
 
+
 // Resolve requested URI and map to local uploads path safely
 $requested_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
 
@@ -55,5 +56,6 @@ error_log('File not found: ' . $file_path);
 header('HTTP/1.0 404 Not Found');
 echo 'File not found: ' . $file_path;
 exit;
+
 
 ?>

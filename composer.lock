@@ -4,7 +4,10 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+
     "content-hash": "3b4d5c113394b489908ab18426136a83",
+
+ 
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -572,6 +575,7 @@
         },
         {
             "name": "phpseclib/phpseclib",
+
             "version": "3.0.46",
             "source": {
                 "type": "git",
@@ -609,6 +613,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+
             "license": [
                 "MIT"
             ],
@@ -662,6 +667,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
+
                 "source": "https://github.com/phpseclib/phpseclib/tree/3.0.46"
             },
             "funding": [
@@ -679,6 +685,7 @@
                 }
             ],
             "time": "2025-06-26T16:29:55+00:00"
+
         },
         {
             "name": "psr/http-client",

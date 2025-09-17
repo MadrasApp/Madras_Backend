@@ -98,10 +98,6 @@ define('SECRET_KEY', '626f6f726f2062616261206d616e20696e6f20616e6a616d206e656d69
 define('CDN_URL', 'https://modir.madras.app/');
 define('EITAA_COLABRATION_TOKEN', 'bot355148:8b921ad0-7776-404b-bc78-43a9cd1a6164');
 
-/*
-upload_path
-*/
-
 
 
 /*
@@ -279,13 +275,14 @@ $file_types =
 array(
 	'text_files'  =>array('doc','docx','log','msg','odt','pages','rtf','tex','txt','wpd','wps','pdf'),
 	'data_files'  =>array('csv','dat','gbr','ged','key','keychain','pps','ppt','pptx','sdf','tar','tax2012','tax2014','vcf','xml'),
-	'audio_files' =>array('aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma'), 
-	'video_files' =>array('3g2','3gp','asf','asx','avi','flv','m4v','mov','mp4','mpg','rm','Real','srt','swf','vob','wmv'), 
-	'image_files' =>array('bmp','gif','jpg','png','tif','tiff','jpe','jpeg','webp'), 
-	'code_files'  =>array('asp','aspx','cer','cfm','csr','css','htm','html','js','jsp','php','rss','xhtml','c','class','cpp','cs','dtd','fla','h','java','lua','m','pl','py'), 
-	'zip_files'   =>array('7z','cbr','deb','gz','pkg','rar','rpm','sitx','zip','zipx'), 
-	'font_files'  =>array('fnt','fon','otf','ttf'), 
-	'set_files'   =>array('cfg','ini','prf','config'), 
+	'audio_files' =>array('aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma'),	
+	'video_files' =>array('3g2','3gp','asf','asx','avi','flv','m4v','mov','mp4','mpg','rm','Real','srt','swf','vob','wmv'),	
+	'image_files' =>array('bmp','gif','jpg','png','tif','tiff','jpe','jpeg','webp'),	
+	'code_files'  =>array('asp','aspx','cer','cfm','csr','css','htm','html','js','jsp','php','rss','xhtml','c','class','cpp','cs','dtd','fla','h','java','lua','m','pl','py'),	
+	'zip_files'   =>array('7z','cbr','deb','gz','pkg','rar','rpm','sitx','zip','zipx'),	
+	'font_files'  =>array('fnt','fon','otf','ttf'),	
+	'set_files'   =>array('cfg','ini','prf','config'),	
+
 );
 
 

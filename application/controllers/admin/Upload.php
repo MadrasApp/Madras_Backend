@@ -97,6 +97,7 @@ class Upload extends CI_Controller
         $this->load->config('sftp');
         $sftpConfig = $this->config->item('sftp');
 
+
         $sftp_host = $sftpConfig['host'];
         $sftp_port = $sftpConfig['port'];
         $sftp_user = $sftpConfig['username'];
@@ -148,6 +149,7 @@ class Upload extends CI_Controller
                 continue;
             }
 
+
             $localFilePath  = $baseDir . "/" . $file;
             $remoteFilePath = $remoteDir . "/" . $file;
 
@@ -188,6 +190,7 @@ class Upload extends CI_Controller
 
         // Do not delete local directory; media browser depends on local files to list images
     }
+
 
     public function deleteFromSFTPByLocalPath($localFilePath)
     {
