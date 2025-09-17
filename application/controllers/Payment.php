@@ -6,6 +6,8 @@ class Payment extends CI_Controller
     {
         parent::__construct();
 
+        $this->load->helper('eitaa_helper');
+
         $error[-1] = 'خطا در پردازش اطلاعات ارسالی';
         $error[-3] = 'ورودیها حاوی کارکترهای غیرمجاز میباشند';
         $error[-4] = 'کلمه عبور یا کد فروشنده اشتباه است';
@@ -55,7 +57,7 @@ class Payment extends CI_Controller
             $this->load->view('client/v_footer', $data);
         }
     }
-
+    
     private function _paybook($id)
     {
         $this->load->model('m_book', 'book');
@@ -76,7 +78,7 @@ class Payment extends CI_Controller
         $this->load->view('client/v_payment_form', $data);
         $this->load->view('client/v_footer', $data);
     }
-
+    
     /*==================================
                 PAYMENT CLASS DOREH
     ===================================*/
@@ -438,6 +440,55 @@ class Payment extends CI_Controller
                 'state' => "پرداخت موفق، استفاده از کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)"
             ]);
         }
+
+        $user_id = $factor->user_id;
+        $user = $this->db->select('username')->where('id', $user_id)->get('users')->row();
+        $user_meta = $this->db->select('meta_value')
+                            ->where('meta_name', 'eitaa_id')
+                            ->where('user_id', $user_id)
+                            ->get('user_meta')
+                            ->row();
+
+        $eitaa_id = $user_meta ? $user_meta->meta_value : null;
+        $username = $user ? $user->username : 'کاربر';
+
+        //Get Book Name if Section is 'book'
+        $book_name = null;
+        if ($section == 'book') {
+            $book_data = $this->db->select('b.title')
+                                ->from('factor_detail fd')
+                                ->join('posts b', 'fd.book_id = b.id', 'left')
+                                ->where('fd.factor_id', $factor->id)
+                                ->get()
+                                ->row();
+            if ($book_data) {
+                $book_name = $book_data->name;
+            }
+        }
+
+        if ($eitaa_id) {
+            if (!empty($username)) {
+                $text = "📢 *{$username} عزیز، پرداخت شما با موفقیت انجام شد!* 🎉\n\n";
+            } else {
+                $text = "📢 *کاربر عزیز، پرداخت شما با موفقیت انجام شد!* 🎉\n\n";
+            }
+        
+            if ($book_name) {
+                $text .= "📖 *کتاب خریداری شده:* {$book_name}\n\n";
+            }
+        
+            $text .= "🧾 *اطلاعات فاکتور:*\n";
+            $text .= "🆔 *شماره فاکتور:* {$factor->id}\n";
+            $text .= "💰 *مبلغ پرداخت شده:* " . number_format($factor->price) . " تومان\n";
+            $text .= "💳 *قیمت بدون تخفیف:* " . number_format($factor->cprice) . " تومان\n";
+            $text .= "🗓️ *تاریخ پرداخت:* " . jdate('d F y - H:i') . "\n";
+            $text .= "📅 *تاریخ ایجاد سفارش:* " . jdate('d F y - H:i', $factor->cdate) . "\n\n";
+            
+            $text .= "🙏 *از خرید شما متشکریم! امیدواریم که تجربه‌ی فوق‌العاده‌ای داشته باشید.* 🌟";
+        
+            send_eitaa_message($eitaa_id, $text);
+        }
+        
 
         $data['config'] = $config;
         $data['factor'] = $factor;

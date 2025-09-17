@@ -26,25 +26,81 @@ class M_category extends CI_Model
         }
         return $count == count($cat_id);
     }
+ 
+    // public function checkDiscountCode($code, $startcode, $plan_id,$category_id, $user_id)
+    // {
+    //     $plan_id = (array)$plan_id;
+    //     $user_id = (int)$user_id;
+    //     $discount_id = NULL;
+    //     $banTime = 48 * 3600;
 
-    public function checkDiscountCode($code, $startcode, $plan_id,$category_id, $user_id)
+    //     $ban = $this->db->where([
+    //         'user_id' => $user_id,
+    //         'event' => 'discount_ban',
+    //         'datestr >' => time() - $banTime,
+    //     ])->get('logs', 1)->row();
+
+    //     if (!empty($ban)) {
+    //         $remTime = $banTime / 3600 - floor((time() - $ban->datestr) / 3600);
+    //         return "شما تا {$remTime} ساعت دیگر نمی توانید از این بخش استفاده کنید";
+    //     }
+
+    //     if ($plan_id) {
+    //         foreach ($plan_id as $key => $value) {
+    //             $bookid = $category_id[$key];
+    //             $plan_id[$key] = "$startcode$value@$bookid";
+    //         }
+    //         $this->db->where_in("CONCAT(category_id,'@',bookid)", $plan_id);
+    //     }
+    //     $discounts = $this->db->where('code', $code)->where("(expdate > UNIX_TIMESTAMP() OR ISNULL (expdate))")->get('discounts')->result();//Alireza Balvardi
+    //     if ($code && !count($discounts)) {
+    //         return "کد تخفیف وارد شده معتبر نیست";
+    //     }
+    //     $discount_ids = [];
+    //     foreach ($discounts as $key=>$discount) {
+    //         if ($code && $discount->used == $discount->maxallow) {
+    //             $discount_ids["used"][$discount->category_id] = "سقف استفاده از کد تخفیف وارد شده تکمیل شده است";
+    //         }
+
+    //         if ($code && $discount->category_id && !in_array($discount->category_id."@".$discount->bookid,$plan_id)) {
+    //             $discount_ids["notallowed"][$discount->category_id] = "کد تخفیف وارد شده برای خرید این سطح نیست";
+    //         }
+
+    //         $discountused = $this->db
+    //             ->where('user_id', $user_id)
+    //             ->where('discount_id', $discount_id)
+    //             ->get('discount_used')->row();
+    //         if ($discountused) {
+    //             $discount_ids["usedbefore"][$discount->id] = "شما از کد تخفیف وارد شده قبلا استفاده کردید";
+    //         }
+
+    //         if ($code && $discount->category_id && in_array($discount->category_id."@".$discount->bookid,$plan_id)) {
+    //             $discount_ids["allowed"][$discount->bookid] = $discount;
+    //         }
+    //     }
+    //     return $discount_ids;
+    // }
+    
+    public function checkDiscountCode($code, $startcode, $plan_id, $category_id, $user_id)
     {
         $plan_id = (array)$plan_id;
         $user_id = (int)$user_id;
-        $discount_id = NULL;
-        $banTime = 48 * 3600;
-
+        $discount_ids = []; // Array to hold all discount validation messages
+        $banTime = 48 * 3600; // 48 hours in seconds
+    
+        // Check if the user is banned from using discounts
         $ban = $this->db->where([
             'user_id' => $user_id,
             'event' => 'discount_ban',
             'datestr >' => time() - $banTime,
         ])->get('logs', 1)->row();
-
+    
         if (!empty($ban)) {
             $remTime = $banTime / 3600 - floor((time() - $ban->datestr) / 3600);
             return "شما تا {$remTime} ساعت دیگر نمی توانید از این بخش استفاده کنید";
         }
-
+    
+        // Validate plan_id and category_id
         if ($plan_id) {
             foreach ($plan_id as $key => $value) {
                 $bookid = $category_id[$key];
@@ -52,34 +108,58 @@ class M_category extends CI_Model
             }
             $this->db->where_in("CONCAT(category_id,'@',bookid)", $plan_id);
         }
-        $discounts = $this->db->where('code', $code)->where("(expdate > UNIX_TIMESTAMP() OR ISNULL (expdate))")->get('discounts')->result();//Alireza Balvardi
+    
+        // Fetch discounts matching the code
+        $discounts = $this->db
+            ->where('code', $code)
+            ->where("(expdate > UNIX_TIMESTAMP() OR ISNULL(expdate))") // Check expiration
+            ->get('discounts')
+            ->result();
+    
+        // Check if the discount code exists and is valid
         if ($code && !count($discounts)) {
             return "کد تخفیف وارد شده معتبر نیست";
         }
-        $discount_ids = [];
-        foreach ($discounts as $key=>$discount) {
-            if ($code && $discount->used == $discount->maxallow) {
+    
+        // Process each discount
+        foreach ($discounts as $discount) {
+            // Check if the discount has reached its usage limit
+            if ($discount->used >= $discount->maxallow) {
                 $discount_ids["used"][$discount->category_id] = "سقف استفاده از کد تخفیف وارد شده تکمیل شده است";
+                continue; // Skip to the next discount
             }
-
-            if ($code && $discount->category_id && !in_array($discount->category_id."@".$discount->bookid,$plan_id)) {
+    
+            // Check if the discount is applicable to the plan and category
+            if ($discount->category_id && !in_array($discount->category_id . "@" . $discount->bookid, $plan_id)) {
                 $discount_ids["notallowed"][$discount->category_id] = "کد تخفیف وارد شده برای خرید این سطح نیست";
+                continue; // Skip to the next discount
             }
-
-            $discountused = $this->db
+    
+            // Check if the user has already used this discount
+            $discount_used = $this->db
                 ->where('user_id', $user_id)
-                ->where('discount_id', $discount_id)
-                ->get('discount_used')->row();
-            if ($discountused) {
+                ->where('discount_id', $discount->id) // Use $discount->id instead of $discount_id
+                ->get('discount_used')
+                ->row();
+    
+            if ($discount_used) {
                 $discount_ids["usedbefore"][$discount->id] = "شما از کد تخفیف وارد شده قبلا استفاده کردید";
+                continue; // Skip to the next discount
             }
-
-            if ($code && $discount->category_id && in_array($discount->category_id."@".$discount->bookid,$plan_id)) {
-                $discount_ids["allowed"][$discount->bookid] = $discount;
-            }
+    
+            // Add the discount to the allowed list
+            $discount_ids["allowed"][$discount->bookid] = $discount;
         }
-        return $discount_ids;
+    
+        // Return the first allowed discount, or all validation messages if no valid discount
+        if (!empty($discount_ids["allowed"])) {
+            return $discount_ids["allowed"]; // Return allowed discounts
+        }
+    
+        return $discount_ids; // Return validation messages
     }
+ 
+
 
     public function createFactor($user_id, $category_ids, $plan_ids, $discount_ids = [])
     {
@@ -149,64 +229,164 @@ class M_category extends CI_Model
 
         $this->db->where('id', $factor_id);
         $factor = $this->db->where('id', $factor_id)->get('factors', 1)->row();
-
+        $factor->discount_details = $discounts;
         return array('done' => TRUE, 'msg' => 'ok', 'factor' => $factor);
     }
-
+    
     public function getFactor($factor_id)
     {
         $factor_id = str_replace("DC-", "", $factor_id);
         return $this->db->where('id', $factor_id)->get('factors')->row();
     }
 
+    // public function updatetFactor($factor_id, $data)
+    // {
+    //     $factor_id = str_replace("DC-", "", $factor_id);
+    //     $factor = $this->db->where('id', $factor_id)->get('factors', 1)->row();
+    //     if (isset($data['status']) && is_numeric($data['status']) && $data['status'] == 0) {
+    //         $data_ids = explode(",",$factor->data_id);
+    //         foreach ($data_ids as $data_id){
+    //             list($category_id, $plan_id) = explode(".", $data_id);
+    //             $enddate = date('Y-m-d', strtotime('+' . $plan_id . ' month'));
+    //             $membershipdata = array(
+    //                 'factor_id' => $factor_id,
+    //                 'user_id' => $factor->user_id,
+    //                 'cat_id' => $category_id,
+    //                 'membership_id' => $plan_id,
+    //                 'startdate' => date('Y-m-d'),
+    //                 'enddate' => $enddate,
+    //             );
+    //             $category_ids = [$category_id];
+    //             $this->db->insert('user_catmembership', $membershipdata);
+    //             $categories = $this->db->where('parent', $category_id)->get('category')->result();
+    //             foreach ($categories as $category) {
+    //                 $category_ids[] = $category->id;
+    //                 $subcategories = $this->db->where('parent', $category->id)->get('category')->result();
+    //                 if (count($subcategories)) {
+    //                     foreach ($subcategories as $subcategory) {
+    //                         $category_ids[] = $subcategory->id;
+    //                     }
+    //                 }
+    //             }
+    //             $books = $this->db->select('id')->where('category IN(' . implode(",", $category_ids) . ")")->get('posts')->result();
+    //             $book_ids = [];
+    //             foreach ($books as $book) {
+    //                 $book_ids[] = $book->id;
+    //                 $this->db->insert('user_books', array(
+    //                     'book_id' => $book->id,
+    //                     'user_id' => $factor->user_id,
+    //                     'factor_id' => $factor_id,
+    //                     'expiremembership' => $enddate
+    //                 ));
+    //             }
+    //             if (count($book_ids)) {
+    //                 $this->db->set("has_bought", "has_bought+1", false);
+    //                 $this->db->where_in('id', implode(",", $book_ids), false)->update('posts');
+    //             }
+    //         }
+    //     }
+    //     $this->db->where('id', $factor_id)->update('factors', $data);
+    // }
+
     public function updatetFactor($factor_id, $data)
     {
         $factor_id = str_replace("DC-", "", $factor_id);
         $factor = $this->db->where('id', $factor_id)->get('factors', 1)->row();
+    
         if (isset($data['status']) && is_numeric($data['status']) && $data['status'] == 0) {
-            $data_ids = explode(",",$factor->data_id);
-            foreach ($data_ids as $data_id){
+            $data_ids = explode(",", $factor->data_id);
+    
+            foreach ($data_ids as $data_id) {
                 list($category_id, $plan_id) = explode(".", $data_id);
-                $enddate = date('Y-m-d', strtotime('+' . $plan_id . ' month'));
-                $membershipdata = array(
-                    'factor_id' => $factor_id,
-                    'user_id' => $factor->user_id,
-                    'cat_id' => $category_id,
-                    'membership_id' => $plan_id,
-                    'startdate' => date('Y-m-d'),
-                    'enddate' => $enddate,
-                );
+    
+                $new_duration = '+' . $plan_id . ' month';
+                $new_enddate = date('Y-m-d', strtotime($new_duration));
+    
+                // Check if the category is active and the end date has not passed
+                $existing_membership = $this->db
+                    ->where('user_id', $factor->user_id)
+                    ->where('cat_id', $category_id)
+                    ->where('enddate >=', date('Y-m-d')) // Check if end date is in the future
+                    ->get('user_catmembership', 1)
+                    ->row();
+    
+                if ($existing_membership) {
+                    // Calculate the new end date by adding the new duration to the current end date
+                    $current_enddate = $existing_membership->enddate;
+                    $new_enddate = date('Y-m-d', strtotime($new_duration, strtotime($current_enddate)));
+    
+                    // Update the end date in the database
+                    $this->db
+                        ->where('id', $existing_membership->id)
+                        ->update('user_catmembership', ['enddate' => $new_enddate]);
+                } else {
+                    // Insert a new membership record if the category is not active or does not exist
+                    $membershipdata = array(
+                        'factor_id' => $factor_id,
+                        'user_id' => $factor->user_id,
+                        'cat_id' => $category_id,
+                        'membership_id' => $plan_id,
+                        'startdate' => date('Y-m-d'),
+                        'enddate' => $new_enddate,
+                    );
+                    $this->db->insert('user_catmembership', $membershipdata);
+                }
+    
+                // Fetch all subcategories
                 $category_ids = [$category_id];
-                $this->db->insert('user_catmembership', $membershipdata);
                 $categories = $this->db->where('parent', $category_id)->get('category')->result();
                 foreach ($categories as $category) {
                     $category_ids[] = $category->id;
                     $subcategories = $this->db->where('parent', $category->id)->get('category')->result();
-                    if (count($subcategories)) {
-                        foreach ($subcategories as $subcategory) {
-                            $category_ids[] = $subcategory->id;
-                        }
+                    foreach ($subcategories as $subcategory) {
+                        $category_ids[] = $subcategory->id;
                     }
                 }
-                $books = $this->db->select('id')->where('category IN(' . implode(",", $category_ids) . ")")->get('posts')->result();
+    
+                // Fetch books within the categories
+                $books = $this->db
+                    ->select('id')
+                    ->where_in('category', $category_ids)
+                    ->get('posts')
+                    ->result();
+    
                 $book_ids = [];
                 foreach ($books as $book) {
                     $book_ids[] = $book->id;
-                    $this->db->insert('user_books', array(
-                        'book_id' => $book->id,
-                        'user_id' => $factor->user_id,
-                        'factor_id' => $factor_id,
-                        'expiremembership' => $enddate
-                    ));
+    
+                    // Always use the calculated or updated end date
+                    $existing_book = $this->db
+                        ->where('book_id', $book->id)
+                        ->where('user_id', $factor->user_id)
+                        ->get('user_books', 1)
+                        ->row();
+    
+                    if ($existing_book) {
+                        // Update expiremembership if the book already exists for the user
+                        $this->db
+                            ->where('id', $existing_book->id)
+                            ->update('user_books', ['expiremembership' => $new_enddate]);
+                    } else {
+                        // Insert new book record if it doesn't exist
+                        $this->db->insert('user_books', array(
+                            'book_id' => $book->id,
+                            'user_id' => $factor->user_id,
+                            'factor_id' => $factor_id,
+                            'expiremembership' => $new_enddate, // Use the correct calculated end date
+                        ));
+                    }
                 }
+    
                 if (count($book_ids)) {
                     $this->db->set("has_bought", "has_bought+1", false);
-                    $this->db->where_in('id', implode(",", $book_ids), false)->update('posts');
+                    $this->db->where_in('id', $book_ids)->update('posts');
                 }
             }
         }
+    
         $this->db->where('id', $factor_id)->update('factors', $data);
     }
+    
     public function setFactorPaid($factor_id, $ref_id = NULL)
     {
         $this->updatetFactor($factor_id, [

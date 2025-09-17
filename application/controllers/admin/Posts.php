@@ -34,23 +34,23 @@ class Posts extends CI_Controller {
 		$this->load->view('admin/v_footer',$data);
 
 	}
-		
+
 	public function addedit($type="post",$op="add",$id=NULL)
-	{		
+	{
 		$data = $this->settings->data;
-		
+
 		global $POST_TYPES;
-		
+
 		if( isset($POST_TYPES[$type]) )
 		{
 			$data['form'] = $POST_TYPES[$type]['support'];
 		}
 		else
-		{	
+		{
 			show_404();
 			return;
 		}
-		
+
 		switch($op)
 		{
 			case 'add':
@@ -61,55 +61,56 @@ class Posts extends CI_Controller {
 				$data['post_id'] = $this->post->addEmpty($type);
 			}
 			else
-			{	
+			{
 				show_404();
 				return;
-			}			
+			}
 			break;
 			case 'edit':
 			if( $this->user->can('edit_'.$type) )
 			{
 				$data['_title'] = ' | Edit '.$type;
-				$data['post_id'] = $id;				
+				$data['post_id'] = $id;
 			}
 			else
-			{	
+			{
 				show_404();
 				return;
-			}			
-			break;			
+			}
+			break;
 		}
-		
+
 		$data['type'] = $type;
-		
+
 		$data['meta'] = array();
-		
+
 		$post_meta = $this->post->getPostMeta($data['post_id']);
-		
+
 		if(is_array($post_meta))
 		foreach($post_meta as $index => $row)
 		{
-			$data['meta'][$row->meta_key] = $row->meta_value; 
+			$data['meta'][$row->meta_key] = $row->meta_value;
 		}
-		
+
 		$data['nashr'] = array();
-		
+
 		$post_nashr = $this->post->getPostNashr($data['post_id']);
-		
+
 		if(is_array($post_nashr))
 		foreach($post_nashr as $index => $row)
 		{
-			$data['nashr'][$row->nashr_key] = $row->nashr_value; 
+			$data['nashr'][$row->nashr_key] = $row->nashr_value;
 		}
-		
+
 		$data['post']  = $this->db->where('id',$data['post_id'])->get('posts',1)->result_array();
 		$data['users'] = $this->db->where('level !=','user')->get('users')->result_array();
 
-		
+
 		if( isset(  $data['post'][0] ) )
 		{
 			$data['post'] = $data['post'][0];
-			
+
+
 			if( $data['post']['type'] == $type )
 			{
                 if($type == 'book')
@@ -125,15 +126,15 @@ class Posts extends CI_Controller {
                     }
                 }
                 $this->load->view('admin/v_header',$data);
-				$this->load->view('admin/v_sidebar',$data);	
+				$this->load->view('admin/v_sidebar',$data);
 				$this->load->view('admin/posts/v_edit',$data);
 				$this->load->view('admin/v_footer',$data);
-				
+
 			}else show_404();
-			
+
 		}else show_404();
 	}
-	
+
 	public function fehrestBook($id=NULL){//Alireza Balvardi
 	
 		$data = $this->settings->data;
@@ -619,13 +620,24 @@ class Posts extends CI_Controller {
 			$categoryData[$v->id] = $v->name;
 		}
 
-		$O = $this->db->select('p.id,c.parent C,c.name')->join('ci_category c','p.category = c.id','inner',FALSE)->get('posts p')->result();
+		$O = $this->db->select('p.id,c.parent C,c.name')->join('ci_category c','FIND_IN_SET(c.id, p.category)','inner',FALSE)->get('posts p')->result();
 		$category_parent_id = array();
 		$category_name = array();
+		$book_categories = array();
+		
+		// جمع‌آوری تمام دسته‌بندی‌های هر کتاب
 		foreach($O as $k=>$v){
-			$category_parent_id[$v->id] = $v->C;
+			if(!isset($book_categories[$v->id])){
+				$book_categories[$v->id] = array();
+			}
 			$top = isset($categoryData[$v->C])?$categoryData[$v->C]:null;
-			$category_name[$v->id] = $top?$categoryData[$v->C].' &nbsp; <i class="fa fa-angle-double-left"></i> &nbsp '.$v->name:$v->name;
+			$cat_name = $top?$categoryData[$v->C].' &nbsp; <i class="fa fa-angle-double-left"></i> &nbsp '.$v->name:$v->name;
+			$book_categories[$v->id][] = $cat_name;
+		}
+		
+		// ایجاد رشته نهایی برای نمایش
+		foreach($book_categories as $book_id => $categories){
+			$category_name[$book_id] = implode(' | ', $categories);
 		}
 		$data['extra']['category_parent_id'] = $category_parent_id;
 		$data['extra']['category_name'] = $category_name;

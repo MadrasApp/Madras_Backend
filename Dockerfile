@@ -1,5 +1,5 @@
-# Use an official PHP image with Apache
-FROM php:7.4-apache
+# Use PHP image from the specified registry with Apache
+FROM registry.docker.ir/library/php:7.4-apache
 
 # Set environment variables for Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html
@@ -14,13 +14,14 @@ RUN apt-get update && apt-get install -y \
     git \
     mariadb-client \
     curl \
-    libxml2-dev \  # Required for SOAP
+    libxml2-dev \
+    redis-server \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql mysqli zip soap \  # Install SOAP
-    && docker-php-ext-enable gd pdo_mysql mysqli zip soap  # Enable SOAP
+    && docker-php-ext-install gd pdo pdo_mysql mysqli zip soap \
+    && docker-php-ext-enable gd pdo_mysql mysqli zip soap
 
 # Enable Apache mod_rewrite for CodeIgniter
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
 # Configure Apache to allow .htaccess overrides
 RUN echo '<Directory /var/www/html>\n\
@@ -29,8 +30,39 @@ RUN echo '<Directory /var/www/html>\n\
 </Directory>' > /etc/apache2/conf-available/override.conf \
     && a2enconf override
 
+# Add new configuration to serve /lexoya/var/www/html/uploads
+RUN echo '<Directory /lexoya/var/www/html/uploads>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride None\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/lexoya.conf \
+    && a2enconf lexoya
+
+# Ensure the lexoya directory exists and set permissions
+RUN mkdir -p /lexoya/var/www/html/uploads \
+    && chown -R www-data:www-data /lexoya \
+    && chmod -R 775 /lexoya
+
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install PHP Redis extension
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+# Set PHP limits
+RUN echo "upload_max_filesize=1000M" > /usr/local/etc/php/conf.d/uploads.ini \
+&& echo "post_max_size=1000M" >> /usr/local/etc/php/conf.d/uploads.ini \
+&& echo "memory_limit=2048M" >> /usr/local/etc/php/conf.d/uploads.ini
+
+# Set Apache upload limit (1000MB in bytes)
+RUN echo "LimitRequestBody 1048576000" >> /etc/apache2/apache2.conf
+
+# Copy composer files first for better Docker cache
+COPY composer.json composer.lock /var/www/html/
+
+# Install Composer dependencies (including AWS SDK)
+RUN composer install --no-dev --optimize-autoloader
 
 # Set the working directory
 WORKDIR /var/www/html
@@ -42,8 +74,15 @@ COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/uploads /var/www/html/temp
 
-# Expose port 80 for Apache
-EXPOSE 80
+# Expose ports 80 for Apache and 6379 for Redis
+EXPOSE 80 6379
 
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
+# Set default AWS environment variables (override in production)
+ENV AWS_ACCESS_KEY_ID=BWDSOR9C0NBLRJ731D1P
+ENV AWS_SECRET_ACCESS_KEY=d70GHwTERZ1BJ11hZCXfAuIFpuDjCm0Sniauy8Np
+ENV AWS_REGION=default
+ENV AWS_BUCKET=amoozim
+ENV AWS_S3_ENDPOINT=https://s3.lexoya.com
+
+# Start Apache in the foreground and Redis server
+CMD service redis-server start && apache2-foreground

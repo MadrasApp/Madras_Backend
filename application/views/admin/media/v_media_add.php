@@ -8,7 +8,7 @@
       <span class="fileinput-button button">
         <span>افزودن فایل</span>
         <input id="fileupload" class="fileupload-input" name="file" type="file" multiple 
-        u-url='<?php echo base_url()."admin/upload/" ?>'>
+        u-url="<?php echo base_url('admin/Upload/index'); ?>">
       </span>
     </div>
     

@@ -69,8 +69,8 @@ class Admin_ajax extends CI_Controller
         $options = $this->input->post('options');
 
         if (!$include && !$exclude) {
-            $include = $type == 'images' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif') : '';
-            $exclude = $type == 'files' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif') : '';
+            $include = $type == 'images' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp', 'avif') : '';
+            $exclude = $type == 'files' ? array('jpg', 'jpe', 'jpeg', 'png', 'gif', 'webp', 'avif') : '';
         }
 
         if ($selectable == 'true') $class .= " selectable ";
@@ -79,7 +79,9 @@ class Admin_ajax extends CI_Controller
         $options = $options == 'true' ? TRUE : FALSE;
 
 
-        $dir = "uploads/";
+        // Build uploads dir based on FCPATH to work on both Linux and Windows
+        $baseUploads = rtrim(str_replace('\\','/', FCPATH), '/').'/uploads/';
+        $dir = $baseUploads;
         if ($user_dir = $this->input->post('dir')) {
             if ($this->user->is_admin() or $user_dir == $this->user->data->username)
                 $dir .= $user_dir;
@@ -111,7 +113,8 @@ class Admin_ajax extends CI_Controller
         $dir = array();
 
         if ($this->user->is_admin()) {
-            $dir = $this->media->scanPrimaryDir('uploads');
+            $baseUploads = rtrim(str_replace('\\','/', FCPATH), '/').'/uploads/';
+            $dir = $this->media->scanPrimaryDir($baseUploads);
             $permission = TRUE;
         }
         $data = array('permission' => $permission, 'user' => $this->user->data->username, 'list' => $dir);
@@ -128,13 +131,103 @@ class Admin_ajax extends CI_Controller
 
             $file = $this->input->post('file');
 
-            $dir = explode('/', $file);
+            // Normalize to filesystem path under FCPATH/uploads
+            $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+            $file = urldecode($file);
+            $file = str_replace('\\','/', $file);
+            
+            // If a full URL was sent, strip base_url and keep relative
+            $base = rtrim(base_url(), '/').'/';
+            if (strpos($file, $base) === 0) {
+                $file = substr($file, strlen($base));
+            }
 
-            if (!$this->user->is_admin() && $dir[1] != $this->user->data->username) {
+            // If the string contains '/uploads/', extract from there
+            $posUploads = strpos($file, '/uploads/');
+            if ($posUploads !== FALSE) {
+                $relative = substr($file, $posUploads + 1); // remove leading '/'
+            } else {
+                // If it already includes FCPATH, strip it to get relative
+                if (strpos($file, $fc) === 0) {
+                    $file = substr($file, strlen($fc));
+                }
+                // Ensure we only operate inside uploads
+                if (strpos($file, 'uploads/') !== 0) {
+                    $file = 'uploads/' . ltrim($file, '/');
+                }
+                $relative = $file;
+            }
+            $file = $fc . $relative;
+
+            $parts = explode('/', $relative);
+            // Expected: uploads/{username}/...
+            $owner = isset($parts[1]) ? $parts[1] : '';
+
+            if (!$this->user->is_admin() && $owner != $this->user->data->username) {
                 $msg = "you are not allowed to delete this file !";
             } elseif ($this->media->deleteFile($file)) {
                 $done = TRUE;
                 $msg = "file deleted successfully";
+                // Also delete from SFTP if applicable
+                try {
+                    $normalized = str_replace('\\','/', $file);
+                    $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+                    if (strpos($normalized, $fc) === 0) $normalized = substr($normalized, strlen($fc));
+                    $parts = explode('/', $normalized); // uploads/user/Y/m/base/filename
+                    if (count($parts) >= 6 && $parts[0] === 'uploads') {
+                        $userDir  = $parts[1];
+                        $year     = $parts[2];
+                        $month    = $parts[3];
+                        $baseName = $parts[4];
+                        $filename = $parts[5];
+
+                        $this->load->config('sftp');
+                        $sftpConfig = $this->config->item('sftp');
+                        if (is_array($sftpConfig)) {
+                            if (file_exists(FCPATH.'vendor/autoload.php')) {
+                                require_once FCPATH.'vendor/autoload.php';
+                            }
+                            if (class_exists('phpseclib3\\Net\\SFTP')) {
+                                $sftp = new \phpseclib3\Net\SFTP($sftpConfig['host'], $sftpConfig['port']);
+                                if (@$sftp->login($sftpConfig['username'], $sftpConfig['password'])) {
+                                    $remoteBaseDir = "/uploads/{$userDir}/{$year}/{$month}/{$baseName}";
+                                    $remoteFile = $remoteBaseDir . '/' . $filename;
+                                    $pi = pathinfo($filename);
+                                    $name = $pi['filename'];
+                                    $ext  = isset($pi['extension']) ? ('.'.$pi['extension']) : '';
+                                    // delete main file and thumbs in the basename folder
+                                    @$sftp->delete($remoteFile);
+                                    @$sftp->delete($remoteBaseDir . '/' . $name . '-150' . $ext);
+                                    @$sftp->delete($remoteBaseDir . '/' . $name . '-300' . $ext);
+                                    @$sftp->delete($remoteBaseDir . '/' . $name . '-600' . $ext);
+                                    // Attempt to remove dash subdir files if that folder exists and becomes empty
+                                    $dashDir = $remoteBaseDir . '/dash';
+                                    $dashList = @$sftp->nlist($dashDir);
+                                    if (is_array($dashList)) {
+                                        $dashNonDot = array_diff($dashList, array('.', '..'));
+                                        if (count($dashNonDot) === 0) {
+                                            @$sftp->rmdir($dashDir);
+                                        }
+                                    }
+                                    // attempt to remove remote basename dir if empty
+                                    $list = @$sftp->nlist($remoteBaseDir);
+                                    if (is_array($list)) {
+                                        $nonDot = array_diff($list, array('.', '..'));
+                                        if (count($nonDot) === 0) {
+                                            @$sftp->rmdir($remoteBaseDir);
+                                        }
+                                    }
+                                } else {
+                                    log_message('error', 'SFTP login failed for delete operation');
+                                }
+                            } else {
+                                log_message('error', 'phpseclib SFTP class not found for delete operation');
+                            }
+                        }
+                    }
+                } catch (Exception $e) {
+                    log_message('error', 'SFTP delete exception: '.$e->getMessage());
+                }
             } else $msg = "can not delete file '$file' !";
         } else $msg = "you are not allowed to delete this file !";
         $data = array('done' => $done, 'file' => $file, 'msg' => $msg);
@@ -504,11 +597,11 @@ class Admin_ajax extends CI_Controller
             if (!$id) {
                 throw new Exception('اطلاعاتی ارسال نشده', 1);
             }
-            $this->db->select('b.id,u.tel,ub.expiremembership,IF(ub.expiremembership="0000-00-00","",pdate(ub.expiremembership)) AS expdate,IF(ub.expiremembership < CURDATE(),0,1) AS state,u.displayname');
+            $this->db->select('b.id,u.tel,ub.expiremembership,IF(ub.expiremembership IS NULL","",pdate(ub.expiremembership)) AS expdate,IF(ub.expiremembership IS NULL OR ub.expiremembership < CURDATE(), 0, 1) AS state,u.displayname');
             $this->db->join('ci_posts b', 'ub.book_id=b.id', 'inner', FALSE);
             $this->db->join('ci_users u', 'ub.user_id=u.id', 'inner', FALSE);
             $this->db->where('b.id', $id);
-            $this->db->where('ub.expiremembership <> "0000-00-00"');
+            $this->db->where('ub.expiremembership IS NOT NULL');
             $books = $this->db->get('user_books ub')->result();
             $this->tools->outS(0, 'OK', array('result' => $books));
         } catch (Exception $e) {
@@ -2462,8 +2555,19 @@ class Admin_ajax extends CI_Controller
                 if (!$this->db->where('id', $id)->update('publisher', $data))
                     throw new Exception("خطا در انجام عملیات", 1);
             } else {
+    
+                $lastRow = $this->db->select_max('id')->get('publisher')->row_array();
+                $lastId = isset($lastRow['id']) ? (int)$lastRow['id'] : 0;
+                $newId = $lastId + 1;
+                
+                $data["id"] = $newId;
                 $data["uid"] = $this->user->user_id;
-                $this->db->insert('publisher', $data);
+                
+                if ($this->db->insert('publisher', $data)) {
+                    $id = $newId;
+                } else {
+                    throw new Exception("خطا در ذخیره ناشر", 1);
+                }
             }
             $this->tools->outS(0, 'انتشارات ' . $title . ' ثبت شد');
         } catch (Exception $e) {
@@ -2498,8 +2602,19 @@ class Admin_ajax extends CI_Controller
                 if (!$this->db->where('id', $id)->update('writer', $data))
                     throw new Exception("خطا در انجام عملیات", 1);
             } else {
+                
+                $lastRow = $this->db->select_max('id')->get('writer')->row_array();
+                $lastId = isset($lastRow['id']) ? (int)$lastRow['id'] : 0;
+                $newId = $lastId + 1;
+                
+                $data["id"] = $newId;
                 $data["uid"] = $this->user->user_id;
-                $this->db->insert('writer', $data);
+                
+                if ($this->db->insert('writer', $data)) {
+                    $id = $newId;
+                } else {
+                    throw new Exception("خطا در ذخیره نویسنده", 1);
+                }
             }
             $this->tools->outS(0, 'نویسنده ' . $title . ' ثبت شد');
         } catch (Exception $e) {
@@ -2534,8 +2649,19 @@ class Admin_ajax extends CI_Controller
                 if (!$this->db->where('id', $id)->update('translator', $data))
                     throw new Exception("خطا در انجام عملیات", 1);
             } else {
+                
+                $lastRow = $this->db->select_max('id')->get('translator')->row_array();
+                $lastId = isset($lastRow['id']) ? (int)$lastRow['id'] : 0;
+                $newId = $lastId + 1;
+                
+                $data["id"] = $newId;
                 $data["uid"] = $this->user->user_id;
-                $this->db->insert('translator', $data);
+                
+                if ($this->db->insert('translator', $data)) {
+                    $id = $newId;
+                } else {
+                    throw new Exception("خطا در ذخیره مترجم", 1);
+                }
             }
             $this->tools->outS(0, 'مترجم ' . $title . ' ثبت شد');
         } catch (Exception $e) {
@@ -4242,7 +4368,12 @@ class Admin_ajax extends CI_Controller
             if ($action) {
                 $classaccounts->where('user_id > 0');
             }
-            $classaccounts->select("a.*,IF(a.upddate,pdate(a.upddate),'') AS upddate,IF(DATE(a.regdate)='0000-00-00','',pdate(DATE(a.regdate))) AS regdate,CONCAT(u.username,'[',u.displayname,']') udata");
+            $classaccounts->select("
+                a.*, 
+                IF(a.upddate IS NOT NULL, pdate(a.upddate), '') AS upddate, 
+                IF(a.regdate IS NOT NULL, pdate(a.regdate), '') AS regdate, 
+                CONCAT(u.username, '[', u.displayname, ']') AS udata
+            ");
             $classaccounts->join('ci_users u', 'a.user_id=u.id', 'left', FALSE);
             $result = $classaccounts->get('classaccount a')->result();
             foreach ($result as $key => $item) {

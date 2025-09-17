@@ -1,37 +1,29 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
+use phpseclib3\Net\SFTP;
+
+// Add require statement for SFTP if autoload is not working
+if (!class_exists('phpseclib3\\Net\\SFTP')) {
+    require_once(APPPATH . '../vendor/autoload.php');
+}
+
 /**
  * Class Upload
  *
  * Handles file uploads and converts them (audio/video) to DASH format using FFmpeg.
+ * Uploads the resulting files to an SFTP server.
  */
 class Upload extends CI_Controller
 {
-    /**
-     * @var array Stores site settings.
-     */
     public $setting;
 
-    /**
-     * Upload constructor.
-     */
     public function __construct()
     {
         parent::__construct();
-
-        // Load necessary models and libraries
         $this->load->model('m_user', 'user');
         $this->load->model('admin/m_media', 'media');
-        
-        // Example: if you have a Settings model
-        // $this->setting = $this->settings->data;
     }
 
-    /**
-     * Main method for handling file uploads and DASH conversion.
-     *
-     * @return void Outputs JSON response.
-     */
     public function index()
     {
         // Default response data
@@ -66,20 +58,28 @@ class Upload extends CI_Controller
         }
 
         try {
-            // 1) Create the target directory structure
             $directory = $this->createDirectoryStructure($dir, $fileBaseName);
-
-            // 2) Move the uploaded file to final location
             $fullFilePath = $this->moveUploadedFile($fileTemp, $fileName, $directory);
 
-            // 3) Convert file (audio/video) to DASH
-            $dashManifestUrl = $this->convertToDash($fullFilePath, $fileBaseName, $directory, $dir);
-
-            if (! empty($dashManifestUrl)) {
-                $msg     = "File uploaded and converted to DASH format successfully.";
+            if ($this->isImageFile($fileName)) {
+                $this->uploadToSFTP($directory, $fileName);
+                $msg = "Image uploaded successfully.";
+                $success = true;
+            } elseif ($this->isDocumentFile($fileName)) {
+                // Handle document file upload
+                $this->uploadToSFTP($directory, $fileName);
+                $msg = "Document uploaded successfully.";
+                $success = true;
+            } elseif ($this->isVideoFile($fileName)) {
+                $this->uploadToSFTP($directory, $fileName);
+                $msg = "Video uploaded successfully.";
+                $success = true;
+            } elseif ($this->isAudioFile($fileName)) {
+                $this->uploadToSFTP($directory, $fileName);
+                $msg = "Audio uploaded successfully.";
                 $success = true;
             } else {
-                $msg     = "File uploaded successfully, but DASH conversion failed.";
+                $msg = "Only image, document, video, and audio files are allowed.";
             }
 
         } catch (Exception $e) {
@@ -92,71 +92,200 @@ class Upload extends CI_Controller
         $this->sendResponse($success, $msg, $dashManifestUrl);
     }
 
-    /**
-     * Serve the MPD (DASH Manifest) file if it exists.
-     *
-     * @param string $username
-     * @param string $year
-     * @param string $month
-     * @param string $video_name
-     *
-     * @return void
-     */
-    public function serve_mpd($username, $year, $month, $video_name)
+    private function uploadToSFTP($localDir, $fileBaseName)
     {
-        $mpdPath = FCPATH . "uploads/$username/$year/$month/$video_name/dash/$video_name.mpd";
+        $this->load->config('sftp');
+        $sftpConfig = $this->config->item('sftp');
 
-        if (file_exists($mpdPath)) {
-            header("Content-Type: application/dash+xml");
-            readfile($mpdPath);
-        } else {
-            show_404();
+        $sftp_host = $sftpConfig['host'];
+        $sftp_port = $sftpConfig['port'];
+        $sftp_user = $sftpConfig['username'];
+        $sftp_pass = $sftpConfig['password'];
+
+        // Determine the remote directory to mirror local: /uploads/{user}/Y/m/{basename}[ /dash ]
+        $normalizedLocal = rtrim(str_replace('\\','/', $localDir), '/');
+        $segments = array_values(array_filter(explode('/', $normalizedLocal), function($s){ return $s !== ''; }));
+        // Find index of 'uploads' and extract following parts robustly
+        $uploadsIndex = array_search('uploads', $segments);
+        $userDir = $this->user->data->username;
+        $yearDir = date('Y');
+        $monthDir = date('m');
+        $baseNameDir = basename($normalizedLocal);
+        if ($uploadsIndex !== false) {
+            $userDir     = isset($segments[$uploadsIndex+1]) ? $segments[$uploadsIndex+1] : $userDir;
+            $yearDir     = isset($segments[$uploadsIndex+2]) ? $segments[$uploadsIndex+2] : $yearDir;
+            $monthDir    = isset($segments[$uploadsIndex+3]) ? $segments[$uploadsIndex+3] : $monthDir;
+            $baseNameDir = isset($segments[$uploadsIndex+4]) ? $segments[$uploadsIndex+4] : $baseNameDir;
         }
+        // Build remote base directory including basename and optional dash
+        $remoteBaseDir = "/uploads/{$userDir}/{$yearDir}/{$monthDir}/{$baseNameDir}";
+
+        $sftp = new SFTP($sftp_host, $sftp_port);
+        if (! $sftp->login($sftp_user, $sftp_pass)) {
+            throw new Exception("Failed to connect to SFTP server.");
+        }
+
+        // Check if the directory contains a DASH folder or standalone files
+        $dashDir = $localDir . "/dash";
+        $filesToUpload = [];
+
+        if (is_dir($dashDir)) {
+            $filesToUpload = scandir($dashDir);
+            $baseDir = $dashDir;
+            $remoteDir = $remoteBaseDir . "/dash";
+        } else {
+            // If no DASH directory, upload standalone files in $localDir
+            $filesToUpload = scandir($localDir);
+            $baseDir = $localDir;
+            $remoteDir = $remoteBaseDir;
+        }
+
+        $uploadedFiles = [];
+        $failedFiles   = [];
+
+        foreach ($filesToUpload as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $localFilePath  = $baseDir . "/" . $file;
+            $remoteFilePath = $remoteDir . "/" . $file;
+
+            // Ensure the directory exists on the server
+            $sftp->mkdir(dirname($remoteFilePath), -1, true);
+
+            $putOk = $sftp->put($remoteFilePath, file_get_contents($localFilePath));
+
+            // Some servers may still have the file even if put() returned false.
+            // Verify existence via stat() as a fallback heuristic.
+            if (! $putOk) {
+                try {
+                    $stat = $sftp->stat($remoteFilePath);
+                    if (is_array($stat) && isset($stat['size']) && $stat['size'] > 0) {
+                        $putOk = true;
+                    }
+                } catch (\Throwable $e) {
+                    // ignore stat errors; we'll treat as failed below
+                }
+            }
+
+            if ($putOk) {
+                $uploadedFiles[] = $file; 
+                // Keep local files so the media browser (which scans local uploads) can display them
+            } else {
+                $failedFiles[] = $file;
+            }
+        }
+
+        // If none of the files made it to the remote, fail the whole operation.
+        if (count($uploadedFiles) === 0 && count($failedFiles) > 0) {
+            $list = implode(', ', $failedFiles);
+            throw new Exception("Failed to upload file(s) to SFTP: " . $list);
+        }
+
+        // If some files failed but at least one succeeded, continue without throwing.
+        // Caller will still report success for the overall upload to avoid false negatives in UI.
+
+        // Do not delete local directory; media browser depends on local files to list images
     }
 
-    /**
-     * Creates the directory structure for the uploaded file.
-     *
-     * Directory structure: uploads/<username>/<year>/<month>/<file_base_name>/
-     *
-     * @param string $dir           Username or overridden directory name.
-     * @param string $fileBaseName  Base name of the file (without extension).
-     *
-     * @return string Final directory path.
-     * @throws Exception If directory creation fails.
-     */
+    public function deleteFromSFTPByLocalPath($localFilePath)
+    {
+        $this->load->config('sftp');
+        $sftpConfig = $this->config->item('sftp');
+
+        $sftp_host = $sftpConfig['host'];
+        $sftp_port = $sftpConfig['port'];
+        $sftp_user = $sftpConfig['username'];
+        $sftp_pass = $sftpConfig['password'];
+
+        $normalized = str_replace('\\','/', $localFilePath);
+        // Expect local like: FCPATH/uploads/{user}/Y/m/{basename}/{filename}
+        $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+        if (strpos($normalized, $fc) === 0) {
+            $normalized = substr($normalized, strlen($fc));
+        }
+        if (strpos($normalized, 'uploads/') !== 0) return FALSE;
+
+        $segments = explode('/', $normalized);
+        // uploads, user, Y, m, basename, filename
+        if (count($segments) < 6) return FALSE;
+        $userDir = $segments[1];
+        $year    = $segments[2];
+        $month   = $segments[3];
+        $base    = $segments[4];
+        $filename= $segments[5];
+
+        // Remote has no basename folder: /uploads/{user}/{Y}/{m}/filename
+        $remoteDir = "/uploads/{$userDir}/{$year}/{$month}";
+        $remoteFile = $remoteDir . '/' . $filename;
+
+        $sftp = new SFTP($sftp_host, $sftp_port);
+        if (! $sftp->login($sftp_user, $sftp_pass)) {
+            return FALSE;
+        }
+
+        // delete thumbnails too if present
+        $pathinfo = pathinfo($filename);
+        $name = $pathinfo['filename'];
+        $ext  = isset($pathinfo['extension']) ? ('.'.$pathinfo['extension']) : '';
+        $thumbs = array(
+            $remoteDir . '/' . $name . '-150' . $ext,
+            $remoteDir . '/' . $name . '-300' . $ext,
+            $remoteDir . '/' . $name . '-600' . $ext,
+        );
+        foreach ($thumbs as $t) { @ $sftp->delete($t); }
+
+        @ $sftp->delete($remoteFile);
+
+        // attempt to remove remote dir if empty (only the leaf month)
+        $list = $sftp->nlist($remoteDir);
+        if (is_array($list)) {
+            $nonDot = array_diff($list, array('.', '..'));
+            if (count($nonDot) === 0) {
+                @ $sftp->rmdir($remoteDir);
+            }
+        }
+        return TRUE;
+    }
+
+    private function deleteDirectoryRecursively($directory)
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        // Get all files and subdirectories in the current directory
+        $files = array_diff(scandir($directory), array('.', '..'));
+
+        // Loop through all files and delete them
+        foreach ($files as $file) {
+            $filePath = $directory . DIRECTORY_SEPARATOR . $file;
+            if (is_dir($filePath)) {
+                // Recursively delete subdirectories
+                $this->deleteDirectoryRecursively($filePath);
+            } else {
+                // Delete the file
+                unlink($filePath);
+            }
+        }
+
+        // Once all contents are deleted, delete the directory itself
+        rmdir($directory);
+    }
+
     private function createDirectoryStructure($dir, $fileBaseName)
     {
-        $dirArr = [
-            'uploads',
-            $dir,
-            date("Y"),
-            date("m"),
-            $fileBaseName
-        ];
-
-        // Create directories if they don't exist
+        $dirArr = ['uploads', $dir, date("Y"), date("m"), $fileBaseName];
         $directory = $this->media->mkDirArray($dirArr);
         if (! $directory) {
             throw new Exception("Failed to create directory structure.");
         }
-
         return $directory;
     }
 
-    /**
-     * Moves the uploaded file to the given directory, ensuring the file name is unique.
-     *
-     * @param string $tmpPath    Temporary file path.
-     * @param string $fileName   Original file name.
-     * @param string $directory  Target directory path.
-     *
-     * @return string The full path to the moved file.
-     * @throws Exception If the file move fails.
-     */
     private function moveUploadedFile($tmpPath, $fileName, $directory)
     {
-        // Make sure the file name is optimized/unique
         $targetFile = $directory . "/" . $fileName;
         $targetFile = $this->media->optimizedFileName($targetFile);
 
@@ -167,195 +296,30 @@ class Upload extends CI_Controller
         return $targetFile;
     }
 
-    /**
-     * Converts the uploaded file (audio/video) to DASH format using ffmpeg.
-     *
-     * @param string $sourceFile     Full path to the source video or audio file.
-     * @param string $fileBaseName   Base name of the file (no extension).
-     * @param string $directory      The parent directory holding the new file.
-     * @param string $username       The username/directory segment for generating URL.
-     *
-     * @return string The DASH manifest URL if successful, empty string otherwise.
-     */
-    private function convertToDash($sourceFile, $fileBaseName, $directory, $username)
-    {
-        // Create DASH output directory
-        $dashDir = $directory . "/dash";
-        if (! is_dir($dashDir)) {
-            if (! mkdir($dashDir, 0777, true)) {
-                log_message('error', 'Failed to create DASH directory.');
-                return '';
-            }
-        }
-
-        $isAudio = $this->isAudioFile($sourceFile);
-        $isVideo = $this->isVideoFile($sourceFile);
-
-        // If it's not recognized audio or video, skip
-        if (! $isAudio && ! $isVideo) {
-            log_message('error', 'File is neither recognized video nor audio: ' . $sourceFile);
-            return '';
-        }
-
-        // We'll store each encoded track (audio or video) in this array
-        $encodedFiles = [];
-
-        // If it's a video, produce multiple resolutions
-        if ($isVideo) {
-            $resolutions = [
-                '480p'  => ['scale' => '-vf scale=854:480',   'bitrate' => '800k'],
-                '720p'  => ['scale' => '-vf scale=1280:720',  'bitrate' => '2000k'],
-                '1080p' => ['scale' => '-vf scale=1920:1080', 'bitrate' => '4500k'],
-            ];
-
-            foreach ($resolutions as $label => $options) {
-                $outputFile = $dashDir . "/" . $fileBaseName . "_{$label}.mp4";
-
-                // For video encoding with audio:
-                // - map 0:v => video track
-                // - map 0:a? => optional audio track
-                // - c:v libx264 => video codec
-                // - c:a aac => audio codec
-                $command = sprintf(
-                    'ffmpeg -y -i %s %s -map 0:v -map 0:a? -c:v libx264 -preset fast -crf 23 -b:v %s -c:a aac -b:a 128k %s 2>&1',
-                    escapeshellarg($sourceFile),
-                    $options['scale'],
-                    escapeshellarg($options['bitrate']),
-                    escapeshellarg($outputFile)
-                );
-
-                $output = shell_exec($command);
-                log_message('error', "FFmpeg Output ({$label}): " . $output);
-
-                if (file_exists($outputFile)) {
-                    $encodedFiles[] = $outputFile;
-                } else {
-                    log_message('error', "Failed to create {$label} version.");
-                }
-            }
-        }
-        // If it's audio, produce multiple bitrates
-        else if ($isAudio) {
-            $audioBitrates = [
-                '64k'  => '64k',
-                '128k' => '128k',
-                '256k' => '256k'
-            ];
-
-            foreach ($audioBitrates as $label => $bitrate) {
-                // Encode to MP4 container (or M4A) with AAC
-                $outputFile = $dashDir . "/" . $fileBaseName . "_{$label}.m4a";
-
-                // -vn => no video track
-                $command = sprintf(
-                    'ffmpeg -y -i %s -vn -c:a aac -b:a %s %s 2>&1',
-                    escapeshellarg($sourceFile),
-                    escapeshellarg($bitrate),
-                    escapeshellarg($outputFile)
-                );
-
-                $output = shell_exec($command);
-                log_message('error', "FFmpeg Audio Output ({$label}): " . $output);
-
-                if (file_exists($outputFile)) {
-                    $encodedFiles[] = $outputFile;
-                } else {
-                    log_message('error', "Failed to create {$label} version of the audio file.");
-                }
-            }
-        }
-
-        // If we didn't produce any output, fail
-        if (empty($encodedFiles)) {
-            return '';
-        }
-
-        // Build final .mpd from all encoded files
-        $dashManifest    = $dashDir . "/" . $fileBaseName . ".mpd";
-        $ffmpegDashCmd   = 'ffmpeg -y ';
-
-        // Each encoded file is a new input
-        // => -f mp4 -i encodedFile
-        foreach ($encodedFiles as $encodedFile) {
-            $ffmpegDashCmd .= '-f mp4 -i ' . escapeshellarg($encodedFile) . ' ';
-        }
-
-        // We must map each input with -map X
-        // For example, if we have 3 encoded files => -map 0 -map 1 -map 2
-        // This depends on how many resolutions/bitrates we produced
-        for ($i = 0; $i < count($encodedFiles); $i++) {
-            $ffmpegDashCmd .= '-map ' . $i . ' ';
-        }
-
-        // Decide adaptation sets based on audio/video
-        // If audio only => "id=0,streams=a"
-        // If video => "id=0,streams=v id=1,streams=a"
-        if ($isAudio) {
-            // Audio-only
-            $ffmpegDashCmd .= '-c copy -f dash -use_timeline 1 -use_template 1 '
-                              . '-adaptation_sets "id=0,streams=a" ';
-        } else {
-            // Video + audio
-            $ffmpegDashCmd .= '-c copy -f dash -use_timeline 1 -use_template 1 '
-                              . '-adaptation_sets "id=0,streams=v id=1,streams=a" ';
-        }
-
-        // Finish the command
-        $ffmpegDashCmd .= escapeshellarg($dashManifest) . ' 2>&1';
-
-        // Execute
-        $dashOutput = shell_exec($ffmpegDashCmd);
-        log_message('error', "FFmpeg DASH Output: " . $dashOutput);
-
-        // Check if .mpd exists
-        if (! file_exists($dashManifest)) {
-            log_message('error', "DASH manifest generation failed for {$fileBaseName}");
-            return '';
-        }
-
-        // Construct final MPD URL
-        return base_url(
-            "uploads/{$username}/" . date("Y") . "/" . date("m") . "/{$fileBaseName}/dash/{$fileBaseName}.mpd"
-        );
-    }
-
-    /**
-     * Check if the file is recognized as an audio file by extension.
-     *
-     * @param string $filename Path to the file.
-     *
-     * @return bool
-     */
-    private function isAudioFile($filename)
+    private function isImageFile($filename)
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        // Extend this list with all audio extensions you support
-        return in_array($ext, ['mp3','m4a','aac','wav','flac','ogg','wma']);
+        return in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'avif']);
     }
 
-    /**
-     * Check if the file is recognized as a video file by extension.
-     *
-     * @param string $filename Path to the file.
-     *
-     * @return bool
-     */
+    private function isDocumentFile($filename)
+    {
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        return in_array($ext, ['pdf', 'doc', 'docx', 'txt', 'xlsx', 'xls', 'pptx', 'csv']);
+    }
+
     private function isVideoFile($filename)
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        // Extend this list with all video extensions you support
-        return in_array($ext, ['mp4','mov','avi','mkv','webm','flv','wmv']);
+        return in_array($ext, ['mp4', 'mkv', 'mov', 'avi', 'webm', 'flv']);
     }
 
-    /**
-     * Sends a JSON response and terminates the request.
-     *
-     * @param bool   $success         Whether the operation was successful.
-     * @param string $msg             A message indicating success/failure details.
-     * @param string $dashManifestUrl The DASH manifest URL if available.
-     *
-     * @return void
-     */
+    private function isAudioFile($filename)
+    {
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        return in_array($ext, ['mp3', 'wav', 'aac', 'ogg', 'flac', 'm4a']);
+    }
+
     private function sendResponse($success, $msg, $dashManifestUrl)
     {
         $response = [
@@ -366,10 +330,10 @@ class Upload extends CI_Controller
             ]
         ];
 
-        // Output JSON response
         echo json_encode(
             $response,
             JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_TAG
         );
     }
 }
+
