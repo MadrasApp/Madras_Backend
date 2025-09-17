@@ -19,9 +19,14 @@ class V2 extends CI_Controller
 
         parent::__construct();
 
+        // Load the Redis cache driver
+        $this->load->driver('cache', array('adapter' => 'redis', 'backup' => 'file'));
+
         //if( ! $this->input->is_ajax_request() ) exit('No direct script access allowed');
 
         $this->load->model('m_user', 'user');
+        $this->load->helper('eitaa_helper');
+
         $this->setting = $this->settings->data;
     }
 
@@ -163,10 +168,12 @@ class V2 extends CI_Controller
         $user = $this->_loginNeed(TRUE, 'u.id');
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+
         $data = $this->input->post();
         $uid = $user->id;
         if (!$uid || empty($data))
             throw new Exception("اطلاعات ارسالی صحیح نیست", 1);
+
         $kalameh = trim(@$data["kalameh"]);
         $translate = trim(@$data["translate"]);
         $Limit = is_numeric(@$data["Limit"]) ? $data["Limit"] : 100;
@@ -177,6 +184,7 @@ class V2 extends CI_Controller
         $bookid = intval(@$data["bookid"]);
         $dicid = intval(@$data["dicid"]);
 
+        // Fetch dictionary languages
         $O = $this->db->select('id,title')->get('diclang')->result();
         $diclang = array();
         foreach ($O as $k => $v) {
@@ -190,18 +198,28 @@ class V2 extends CI_Controller
                 $this->db->order_by('a.fromlang,a.kalameh', 'ASC');
                 $this->db->limit($Limit, $Limitstart);
             }
-            $this->db->select('a.id,a.kalameh,a.translate');
+
+            // Selecting book title and thumbnail correctly
+            $this->db->select('a.id, a.kalameh, a.translate, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
+            $this->db->from('userdictionary a');
+            $this->db->join('userdicbook u', 'u.dicid = a.id', 'LEFT');
+            $this->db->join('posts p', 'p.ID = u.bookid', 'LEFT');
+
             if ($fromlang)
                 $this->db->where('a.fromlang', $fromlang);
             if ($tolang)
                 $this->db->where('a.tolang', $tolang);
+
             $this->db->where('a.uid', $uid);
-            //$this->db->where('u.uid=a.uid');
-            //$this->db->where('u.bookid='.$bookid);
-            //$this->db->join('ci_userdicbook u','(u.dicid=a.id)','LEFT');
-            $results = $this->db->get('userdictionary a')->result();
+            $results = $this->db->get()->result();
         } else {
-            $this->db->select('a.*,u.bookid');
+            // Fetching records including book title and thumbnail correctly
+            $this->db->select('a.*, u.bookid, p.title AS book_title, p.thumb AS book_thumbnail');
+            $this->db->from('userdictionary a');         // no 'ci_' here
+            $this->db->join('userdicbook u', 'u.dicid = a.id', 'LEFT');
+            $this->db->join('posts p', 'p.ID = u.bookid', 'LEFT');
+
+
             if ($kalameh) {
                 $this->db->where('a.kalameh', $kalameh);
             }
@@ -209,11 +227,12 @@ class V2 extends CI_Controller
                 $this->db->where('a.fromlang', $fromlang);
             if ($tolang)
                 $this->db->where('a.tolang', $tolang);
+
             $this->db->where('a.uid', $uid);
-            $this->db->join('ci_userdicbook u', '(u.dicid=a.id)', 'LEFT');
-            $results = $this->db->get('userdictionary as a')->result();
+            $results = $this->db->get()->result();
         }
 
+        // If translation exists, handle update or insert operation
         if ($translate) {
             if (count($results)) {
                 $dicid = $results[0]->id;
@@ -223,19 +242,27 @@ class V2 extends CI_Controller
             try {
                 $this->load->library('form_validation');
                 $this->form_validation->set_rules('id', 'ID', 'trim');
-                if ($dicid)
-                    $this->form_validation->set_rules('kalameh', 'کلمه', 'trim|required');
-                else
-                    $this->form_validation->set_rules('kalameh', 'کلمه', 'trim|required');
+                $this->form_validation->set_rules('kalameh', 'کلمه', 'trim|required');
                 $this->form_validation->set_rules('translate', 'ترجمه', 'trim|required');
+
                 if ($this->form_validation->run() == FALSE) {
                     throw new Exception(implode(' | ', $this->form_validation->error_array()), 1);
                 }
+
                 $translate = trim(strip_tags($data["translate"]));
                 $regdate = date("Y-m-d H:i:s");
-                $data = array("kalameh" => $kalameh, "translate" => $translate, "regdate" => $regdate, "fromlang" => $fromlang, "tolang" => $tolang);
+
+                $data = array(
+                    "kalameh" => $kalameh,
+                    "translate" => $translate,
+                    "regdate" => $regdate,
+                    "fromlang" => $fromlang,
+                    "tolang" => $tolang
+                );
+
                 $status = 0;
                 $results = 'کلمه ' . $kalameh . ' ثبت شد';
+
                 if ($dicid) {
                     if (!$this->db->where('id', $dicid)->update('userdictionary', $data)) {
                         $status = 1;
@@ -243,15 +270,17 @@ class V2 extends CI_Controller
                     }
                 } else {
                     $data["uid"] = $uid;
-
                     $this->db->insert('userdictionary', $data);
                     $dicid = $this->db->insert_id();
                 }
+
                 if ($bookid) {
-                    $data = array();
-                    $data["uid"] = $uid;
-                    $data["bookid"] = $bookid;
-                    $data["dicid"] = $dicid;
+                    $data = array(
+                        "uid" => $uid,
+                        "bookid" => $bookid,
+                        "dicid" => $dicid
+                    );
+
                     $insert_query = $this->db->insert_string('userdicbook', $data);
                     $insert_query = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $insert_query);
                     $this->db->query($insert_query);
@@ -260,8 +289,11 @@ class V2 extends CI_Controller
                 $this->tools->outE($e);
             }
         }
+
         $this->tools->outS(0, $results, array("dicid" => $dicid));
     }
+
+
 
     public function DeleteUserKalameh()
     {
@@ -544,7 +576,7 @@ class V2 extends CI_Controller
 		$this->form_validation->set_rules('email'         , 'ایمیل'        , 'trim|xss_clean|valid_email|required');
 		else
 		$this->form_validation->set_rules('email'         , 'ایمیل'        , 'trim|xss_clean|valid_email|required|is_unique[users.email]');
-*/
+        */
         if ($user->tel == str_replace('+98', '0', $data['mobile']))
             $this->myformvalidator->set_rules('mobile', 'موبایل', 'trim|xss_clean|required|valid_mobile');
         else
@@ -569,17 +601,44 @@ class V2 extends CI_Controller
         $data = $this->input->post();
 
         $avatar = $user->avatar;
-        if (isset($data['avatar']) && $data['avatar'] != '') {
-            $this->load->model('admin/m_media', 'media');
-            $this->media->deleteFile($user->avatar);
 
-            $image = "profile-{$user->id}";
-            $dir = "uploads/_ac/";
-            $resImg = $this->media->base64ToImg($data['avatar'], $image, $dir);
-            $avatar = $dir . $resImg;
+        if (isset($data['avatar']) && !empty($data['avatar'])) {
+            // API endpoint for the upload server
+            $uploadServerUrl = base_url('api/media_upload/upload'); // Replace with actual URL
+        
+            // Convert Base64 to a Temporary File
+            $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['avatar']));
+            $tempFilePath = tempnam(sys_get_temp_dir(), 'avatar_') . ".jpg";
+            file_put_contents($tempFilePath, $imageData);
+     
+            // Prepare File Upload Request
+            $curlFile = new CURLFile($tempFilePath, 'image/jpeg', "profile-{$user->id}.jpg");
+            $postData = [
+                'file' => $curlFile,
+            ];
+        
+            // Send File to Upload Server via cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $uploadServerUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        
+            // Delete the temporary file after upload
+            @unlink($tempFilePath);
+        
+            // Handle response from the upload server
+            $uploadResponse = json_decode($response, true);
+            if ($httpCode !== 200 || empty($uploadResponse['url'])) {
+                throw new Exception("خطا در بارگذاری تصویر پروفایل", 5);
+            }
+            $avatar = $uploadResponse['key']; // or use $uploadResponse['url'] if you want the full S3 URL
 
-            $this->media->creatThumb($avatar);
         }
+        
 
         $udata = array(
             'username' => $data['username'],
@@ -617,8 +676,9 @@ class V2 extends CI_Controller
 	    $userModel = new M_user();
 	    $eitaa_token = EITAA_TOKEN;
 	   // $eitta_token2 is just for test, must be deleted later
-	    $eitaa_token2 = '61101070:zY(y@M-MlLbZq-24taNK-,6iClr-#n41K0-puno38-cIoKKj-PL1hVD-x7Hn)$-8XPDQs-v16Eq!-eD[2AC-UT3Osc-7Cz%Ms-RfQmgD-qfuRAi-nj{{j3-ChLbEp-wDf?XJ-IB9fle-AU4~93-SUjeaz-9}?U1t-2iYOz]-Gg3zJ~-WPGewW-wF5Rky-X8ZMAp-ow9';
+	    $eitaa_token2 = '61101070:ad]r(7#cP-xUVh4O9o3-vIfpRCdqv-whFaQH4pR-ul9NjebzU-3sESD}OD1-Aw4LkqYe7-TGL2lr61{-YKqmL(.3u-Br}sdOjyo-wPBVVW)ez-JB%M6JKIF-GOmXm,t]v-MFAMKHbuy-gsgz';
 	    $eitta_data = $this->input->post('eitaa_data');
+	    $eitta_utm = $this->input->post('utm');
 	    
 	    // Remove escaped backslashes
         $eitta_data = preg_replace('/\\\\"/', '"', $eitta_data);
@@ -641,6 +701,8 @@ class V2 extends CI_Controller
             $last_name = $parsedData['user']['last_name'];
             $username = $parsedData['user']['username'] ?? 'user_' . $eitaa_id;
             $email = $parsedData['user']['email'] ?? $username . '@eitaa.com';
+
+            $full_name = $first_name . ' ' . $last_name;
             
             if (!empty($eitaa_id)) {
                 $meta_key = 'eitaa_id';
@@ -657,6 +719,18 @@ class V2 extends CI_Controller
                      ->where('id', $user_id)
                      ->get('users')
                      ->row();
+
+                     // If UTM is provided, insert record into the new utm table with is_registered = 0
+                    if (!empty($eitta_utm)) {
+                        $utm_data = [
+                            'user_id'    => $user_id,
+                            'eitaa_id'   => $eitaa_id,
+                            'is_registered' => 0,
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'utm'        => $eitta_utm,
+                        ];
+                        $this->db->insert('utm', $utm_data);
+                    }
                     
                     $response = [
                         'login' => true,
@@ -664,6 +738,7 @@ class V2 extends CI_Controller
                     ];
 
                     $this->tools->outS(0,$response);
+
                 } else {
                     // User creation logic
                     $user_data = ["username" => $username, "tel" => '', "displayname" => $first_name .' '. $last_name, "name" => $first_name , "family" => $last_name  , "email" => $email];
@@ -679,14 +754,25 @@ class V2 extends CI_Controller
                     // After creating the user, attempt to log in again
                     // $user = $this->_loginNeed(TRUE, 'u.id');
 
-                    $meta_key = 'eitaa_id';
                     // Prepare the data array
-                    $data = [
-                        $meta_key => $eitaa_id
+                    $meta_data = [
+                        'eitaa_id' => $eitaa_id
                     ];
                     
                     // Call the updateMeta function
-                    $userModel->updateMeta($data, $new_user_id);
+                    $userModel->updateMeta($meta_data, $new_user_id);
+
+                    // If UTM is provided, insert record into utm table with is_registered = 1
+                    if (!empty($eitta_utm)) {
+                        $utm_data = [
+                            'user_id'      => $new_user_id,
+                            'eitaa_id'     => $eitaa_id,
+                            'is_registered' => 1,
+                            'created_at'   => date("Y-m-d H:i:s"),
+                            'utm'          => $eitta_utm,
+                        ];
+                        $this->db->insert('utm', $utm_data);
+                    }
                     
                     $this->db->select('*');
                     $this->db->where('id', $new_user_id);
@@ -698,6 +784,9 @@ class V2 extends CI_Controller
                     ];
 
                     $this->tools->outS(0,$response);
+
+                    $message = "سلام $full_name عزیز! 🎉\nخوشحالیم که به مدرس پیوستی! \nثبت نام شما با موفقیت انجام شد. \nامیدواریم که تجربه‌ای عالی در مدرس داشته باشید. ";
+                    send_eitaa_message($eitaa_id, $message);
                 }
             } else {
                 $this->tools->outS(0, 'آیدی ایتا معتبر نمی باشد!');
@@ -1589,36 +1678,43 @@ class V2 extends CI_Controller
     public function GetUserAzmoon()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-
+    
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        
         $userid = $user->id;
         $this->load->library('form_validation');
         $this->form_validation->set_rules('term', 'ترم', 'trim|numeric');
         $this->form_validation->set_rules('bookid', 'آی دی کتاب', 'trim|numeric');
         $this->form_validation->set_rules('azmoon_type', 'مدل آزمون', 'trim|numeric');
         $this->form_validation->set_rules('azmoon_time', 'مدت آزمون', 'trim|numeric');
+        
         if ($this->form_validation->run() == FALSE)
             throw new Exception(implode('|', $this->form_validation->error_array()), 1);
-
+    
         $data = $this->input->post();
-
-        $this->db->select("a.*,pdate(`azmoon_date`) AS `shamsidate`");
-        $this->db->where("a.userid = $userid");
+    
+        $this->db->select("a.*, pdate(`azmoon_date`) AS `shamsidate`, p.title AS book_title");
+        $this->db->from("azmoon_result a");
+        $this->db->join("posts p", "p.id = a.bookid", "left"); // Join with posts table to get book title
+        $this->db->where("a.userid", $userid);
+    
         if (isset($data['term']) && (int)$data['term'])
-            $this->db->where("a.term = " . $data['term']);
+            $this->db->where("a.term", (int)$data['term']);
         if (isset($data['azmoon_type']) && (int)$data['azmoon_type'])
-            $this->db->where("a.azmoon_type = " . $data['azmoon_type']);
+            $this->db->where("a.azmoon_type", (int)$data['azmoon_type']);
         if (isset($data['azmoon_time']) && (int)$data['azmoon_time'])
-            $this->db->where("a.azmoon_time = " . $data['azmoon_time']);
+            $this->db->where("a.azmoon_time", (int)$data['azmoon_time']);
         if (isset($data['bookid']) && (int)$data['bookid'])
-            $this->db->where("a.bookid = " . $data['bookid']);
+            $this->db->where("a.bookid", (int)$data['bookid']);
+    
         $this->db->order_by('a.azmoon_date DESC');
-        //$this->db->limit(5,0);
-        $azmoons = $this->db->get('azmoon_result a')->result();
-
+        
+        $azmoons = $this->db->get()->result();
+    
         $this->tools->outS(0, array("azmoon" => $azmoons));
     }
+    
 
     /*===================================
 		MOBILE
@@ -1914,7 +2010,7 @@ class V2 extends CI_Controller
     public function bookList()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-        $base = base_url();
+        $base = CDN_URL;
 
         $hasmembership = (int)$this->input->post('hasmembership');
         $limit = (int)$this->input->post('limit');
@@ -1926,18 +2022,18 @@ class V2 extends CI_Controller
 
         $this->load->model('m_book', 'book');
 
-        $this->db->select('ub.book_id,ub.need_update');
+        $this->db->select('ub.book_id,ub.need_update, UNIX_TIMESTAMP(ub.expiremembership) as expiremembership');
         $this->db->where('ub.user_id', $user->id);
         if (!$hasmembership) {
-            $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
+            $this->db->where("(ISNULL(ub.expiremembership))");
         }
         $UB = $this->db->get('user_books ub');
         $allbooks = $UB->result();
         $total = count($allbooks);
-        $this->db->select('ub.book_id,ub.need_update');
+        $this->db->select('ub.book_id,ub.need_update, UNIX_TIMESTAMP(ub.expiremembership) as expiremembership');
         $this->db->where('ub.user_id', $user->id);
         if (!$hasmembership) {
-            $this->db->where("(ISNULL(ub.expiremembership) OR ub.expiremembership = '0000-00-00')");
+            $this->db->where("(ISNULL(ub.expiremembership))");
         }
         $this->db->join('ci_factors f', '(ub.factor_id=f.id AND f.status=0)', 'inner', FALSE);
         if ($limit || $limitstart) {
@@ -1947,12 +2043,15 @@ class V2 extends CI_Controller
         $bookids = [0];
         $accessUnixTimes = [0];
         $need_update = [];
+        $expiremembership = [];
         foreach ($results as $k => $v) {
             $bookids[$v->book_id] = $v->book_id;
             $need_update[$v->book_id] = $v->need_update;
+            $expiremembership[$v->book_id] = $v->expiremembership;
+            $is_expired[$v->book_id] = ($v->expiremembership && $v->expiremembership < time()) ? true : false;
             $accessUnixTimes[$v->book_id] = $v->accessUnixTime ? intval($v->accessUnixTime) : null;
         }
-        $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->get('posts p')->result();
+        $books = $this->db->where('p.id IN(' . implode(',', $bookids) . ')')->where('p.published', 1)->get('posts p')->result();
         $post_meta = $this->db->where('p.post_id IN(' . implode(',', $bookids) . ')')->get('post_meta p')->result();
 
         $meta = array();
@@ -2013,6 +2112,8 @@ class V2 extends CI_Controller
             $books[$k]->cover = $v->thumb ? $base . $v->thumb : null;
             $books[$k]->cover300 = $v->thumb ? $base . thumb($v->thumb, 300) : null;
             $books[$k]->need_update = $need_update[$v->id];
+            $books[$k]->expiremembership = $expiremembership[$v->id];
+            $books[$k]->is_expired = $is_expired[$v->id];
             $books[$k]->pagecount = $meta[$v->id]["pagecount"];
             $books[$k]->isvideo = $meta[$v->id]["isvideo"];
             $books[$k]->startpage = $meta[$v->id]["startpage"];
@@ -2032,6 +2133,7 @@ class V2 extends CI_Controller
             $books[$k]->has_test = $v->has_test ? true : false;
             $books[$k]->has_tashrihi = $v->has_tashrihi ? true : false;
             $books[$k]->has_description = $v->has_description ? true : false;
+            $books[$k]->accessUnixTime = $accessUnixTimes[$v->id];
             unset($v->thumb);
         }
         $this->LoadNashr($bookscontroller, $books, $bookids);
@@ -2039,7 +2141,7 @@ class V2 extends CI_Controller
         $pagination = array();
         $pagination["limitstart"] = $limitstart;
         $pagination["limit"] = $limit;
-        $pagination["total"] = $count;
+        $pagination["total"] = $total;
 
         $this->tools->outS(0, 'OK', ['books' => $books, 'pagination' => $pagination]);
     }
@@ -2142,7 +2244,7 @@ class V2 extends CI_Controller
         //$categories = $this->post->setCategoryPostsCount($categories);
         $this->tools->outS(0, NULL, ['data' => $categories]);
     }
-
+    
     public function getCategoryArrayWithLimit($parent = 0, $post_type = 'book', $limit = 1)
     {
         $categories = $this->post->getCategoryArrayWithLimit((int)$parent, $post_type, $limit = 1);
@@ -2359,34 +2461,45 @@ class V2 extends CI_Controller
     public function ema_getBook($id = NULL, $type = 'zip')
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-
         $userid = $user->id;
+
+        // Prevent browser caching
         $this->output->set_header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
         $this->output->set_header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
         $this->output->set_header('Pragma: no-cache');
         $this->output->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
-        $id = (int)$id;
-        $id = $id ? $id : (int)$this->input->post('id');
+        // Get book ID and type from POST request
+        $id = (int) ($id ? $id : $this->input->post('id'));
         $type = $this->input->post('type') ? $this->input->post('type') : $type;
         $filename = md5($id);
 
-        if ($this->db->where('id', $id)->where('type', 'book')->count_all_results('posts') == 0)
+        // // Generate a unique Redis cache key
+        // $cache_key = "book_data_{$id}_{$type}";
+
+        // // Check if the data is cached in Redis
+        // $cached_data = $this->cache->redis->get($cache_key);
+        // if ($cached_data !== FALSE) {
+        //     return $this->tools->outS(0, "Book Data (Cached)", ['data' => json_decode($cached_data, true)]);
+        // }
+
+        // Validate book existence and published status
+        if ($this->db->where('id', $id)->where('type', 'book')->count_all_results('posts') == 0) {
             throw new Exception("Invalid book id", 2);
-
-
-        if ($this->db->where('id', $id)->where('type', 'book')->where('published', 1)->count_all_results('posts') == 0)
+        }
+        if ($this->db->where('id', $id)->where('type', 'book')->where('published', 1)->count_all_results('posts') == 0) {
             throw new Exception("This book is not active", 1);
+        }
 
+        // Load book model
         $this->load->model('m_book', 'book');
 
-        // Check if the user has this book in their books list
+        // Check if user has full access to the book
         $userBooks = $this->book->getUserBooks($userid);
-        $userBookIds = array_column($userBooks, 'id'); // Assuming each book object has an 'id' field
-
+        $userBookIds = array_column($userBooks, 'id');
         $fullAccess = in_array($id, $userBookIds);
 
-        //get the book info
+        // Get book information
         $book = $this->post->getPosts([
             'type' => 'book',
             'order' => 'p.date_modified desc',
@@ -2394,78 +2507,47 @@ class V2 extends CI_Controller
             'limit' => 1
         ])[0];
 
-        $classonlines = $this->db->select('cid')
-            ->where_in('data_type',['book','hamniaz'])
-            ->where('data_id',$id)
-            ->get('classonline_data')
-            ->result();
-
-        $classonline_ids = [0];
-        foreach ($classonlines as $classonline){
-            $classonline_ids[$classonline->cid] = $classonline->cid;
-        }
-
+        // Get associated class online data
         $classonlines = $this->db->select('*')
-            ->where_in('id',$classonline_ids)
+            ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classonline_data'))
             ->get('classonline')
             ->result();
-
-
         $book->classonline = $classonlines;
 
-        $classrooms = $this->db->select('cid')
-            ->where_in('data_type',['book','hamniaz'])
-            ->where('data_id',$id)
-            ->get('classroom_data')
-            ->result();
-
-        $classroom_ids = [0];
-        foreach ($classrooms as $classroom){
-            $classroom_ids[$classroom->cid] = $classroom->cid;
-        }
-
+        // Get associated classrooms
         $classrooms = $this->db->select('*')
-            ->where_in('id',$classroom_ids)
+            ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $id)->get_compiled_select('classroom_data'))
             ->get('classroom')
             ->result();
-
-
         $book->classroom = $classrooms;
 
+        // Retrieve additional book data
         $data['book'] = $book;
-
-        //get the book indexes
         $data['indexes'] = $this->book->getBookIndexesById($id);
-
-        //get the book parts
         $data['parts'] = $this->book->getBookPartsById($id);
-
         $data['tests'] = $this->book->getBookTests($id);
 
+        // Restrict book content for unauthorized users
         if (!$fullAccess) {
-            // Step 1: Limit pages in the book object to the first 3 entries in 'array'
-            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true); // First 3 entries in 'array'
+            $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
             $data['book']->pages['array'] = $limitedPages;
-        
-            // Step 2: Recalculate the 'offset' based on the rule
+            
             $offset = [];
             $currentPage = 0;
             foreach ($limitedPages as $key => $value) {
-                $currentPage += count($value); // Add the number of pages represented by this entry
-                $offset[] = $currentPage - 1; // Use the last page of the current group
+                $currentPage += count($value);
+                $offset[] = $currentPage - 1;
             }
-            $data['book']->pages['offset'] = implode(',', $offset); // Update the offset
-        
-            // Step 3: Calculate the total number of parts within the limited pages
+            $data['book']->pages['offset'] = implode(',', $offset);
+            
             $totalPartsInLimitedPages = 0;
             foreach ($limitedPages as $value) {
                 $totalPartsInLimitedPages += count($value);
             }
-        
-            // Step 4: Adjust parts to match the limited pages
+            
             $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
         }
-                          
+        
 
         foreach ($data['parts'] as $pk => $part) {
             $data['parts'][$pk]->description = base64_encode($part->description);
@@ -2473,37 +2555,16 @@ class V2 extends CI_Controller
 
         $data['tests'] = base64_encode($this->MakeJSON($data['tests']));
 
+        // Cache the book data in Redis for 1 hour
+        $this->cache->redis->save($cache_key, json_encode($data), 3600);
 
-        if ($type == 'json')
+        // Return JSON response if requested
+        if ($type == 'json') {
             return $this->tools->outS(0, NULL, ['data' => $data]);
+        }
 
+        // Prepare ZIP download
         $this->load->library('zip');
-
-        /*
-		 *
-		 *
-		if(isset($book->sample_questions) && ! empty($book->sample_questions))
-		{
-			foreach ($book->sample_questions as $ak=>$attachment)
-			{
-				$baseName = 'sample_questions/' . basename($attachment['path']);
-				$this->zip->read_file($attachment['path'],$baseName);
-				$book->sample_questions[$ak]['path'] = $baseName;
-			}
-		}
-
-		if(isset($book->attachments) && ! empty($book->attachments))
-		{
-			foreach ($book->attachments as $ak=>$attachment)
-			{
-				$baseName = 'attachments/' . basename($attachment['path']);
-				$this->zip->read_file($attachment['path'],$baseName);
-				$book->attachments[$ak]['path'] = $baseName;
-			}
-		}
-		 *
-		 */
-
         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
                 $baseName = 'images/' . basename($v->image);
@@ -2518,13 +2579,10 @@ class V2 extends CI_Controller
 
         $temp = 'temp/book/' . $filename . '.zip';
         $dir = 'temp/book';
-        if (!is_dir($dir))
-            mkdir($dir);
+        if (!is_dir($dir)) mkdir($dir);
         $this->zip->archive($temp);
 
-        $ubData = array(
-            'need_update' => 0,
-        );
+        $ubData = ['need_update' => 0];
         $this->db->where('book_id', $id)->where('user_id', $userid)->update('user_books', $ubData);
 
         $filesize = filesize($temp);
@@ -2537,13 +2595,9 @@ class V2 extends CI_Controller
         header('Pragma: no-cache');
 
         readfile($temp);
-
         @unlink($temp);
         exit;
-
-        //$this->zip->download($filename);
     }
-
 
     public function getBook($id = NULL, $type = 'zip')
     {
@@ -2664,8 +2718,16 @@ class V2 extends CI_Controller
 
         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
-                $baseName = 'images/' . basename($v->image);
-                $this->zip->read_file($v->image, $baseName);
+                // Only proceed if $v->image is set and not empty
+                if (!empty($v->image)) {
+                    $fullPath = '/lexoya/var/www/html/' . $v->image;
+                    // Check if the file exists and is a file
+                    if (is_file($fullPath)) {
+                        // Set the file name inside the ZIP (keeping the images folder structure)
+                        $baseName = 'images/' . basename($fullPath);
+                        $this->zip->read_file($fullPath, $baseName);
+                    }
+                }
             }
         }
 
@@ -2804,7 +2866,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
-
+    
     public function getUserBooks($user_id = NULL)
     {
         $user_id = (int)$user_id;
@@ -3323,7 +3385,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "حذف شد");
     }
-
+    
     public function ema_deleteItem()
     {
         $user = $this->_loginNeed();
@@ -3392,7 +3454,6 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "حذف شد");
     }
-
 
     public function HNS()
     {
@@ -4319,42 +4380,86 @@ class V2 extends CI_Controller
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
         $data = $this->input->post();
-        if ($user === FALSE)
+        if ($user === FALSE) {
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
+
         $this->load->library('form_validation');
         $this->form_validation->set_rules('lid', 'شماره جعبه لایتنر', 'trim|required');
         if ($this->form_validation->run() == FALSE) {
             throw new Exception(implode(' | ', $this->form_validation->error_array()), 1);
         }
+
         $uid = $user->id;
-        if ($data['lid']) {
-            $results = $this->db->select('*')->where('user_id', $uid)->where('lid', $data['lid'])->get('leitner')->result();
+
+        // 1) Fetch all leitner rows for the user
+        if (!empty($data['lid'])) {
+            $results = $this->db
+                ->select('*')
+                ->where('user_id', $uid)
+                ->where('lid', $data['lid'])
+                ->get('leitner')
+                ->result();
         } else {
-            $results = $this->db->select('*')->where('user_id', $uid)->get('leitner')->result();
+            $results = $this->db
+                ->select('*')
+                ->where('user_id', $uid)
+                ->get('leitner')
+                ->result();
         }
-        $data = array();
+
+        // We'll build a new array that includes extra post fields
+        $finalData = array();
+
+        // 2) For each leitner record, figure out which table we need to query
+        //    and LEFT JOIN with `posts` to get title, thumb, etc.
         foreach ($results as $k => $v) {
-            $dest = is_numeric($v->description) ? $v->description : 0;
-            $v->data = new stdClass;
-            if ($dest) {
+            if ($v->catid == 2) {
+                $dest = $v->description;
+            } else {
+                $dest = is_numeric($v->description) ? $v->description : 0;
+            }
+            $v->data = new stdClass();
+
+            // Only run if there's a numeric reference
+            if ($v->catid == 2 || $dest) {
                 switch ($v->catid) {
-                    case 1://یادداشت
+                    case 1: // یادداشت
+                        // If you need to fetch a related notes entry or its book info, do it here
                         break;
-                    case 2://لغت
+
+                    case 2: // لغت
+                        // If you need to fetch a related word/dictionary entry or its book info, do it here
                         break;
-                    case 3://سوال تستی
-                        $v->data = array();
-                        $v->data = $this->db->where('id', (int)$dest)->order_by('id', 'ASC')->get('tests')->row();
+
+                    case 3: // سوال تستی
+                        // Example: `tests` table has a `bookid` referencing `posts.ID`
+                        $v->data = $this->db
+                            ->select('tests.*, p.title as book_title, p.thumb as book_thumb')
+                            ->join('posts p', 'p.ID = tests.book_id', 'left')
+                            ->where('tests.id', (int)$dest)
+                            ->get('tests')
+                            ->row();
                         break;
-                    case 4://سوال تشریحی
-                        $v->data = $this->db->where('id', (int)$dest)->order_by('id', 'ASC')->get('tashrihi')->row();
+
+                    case 4: // سوال تشریحی
+                        // Example: `tashrihi` also has a `bookid` referencing `posts.ID`
+                        $v->data = $this->db
+                            ->select('tashrihi.*, p.title as book_title, p.thumb as book_thumb')
+                            ->join('posts p', 'p.ID = tashrihi.book_id', 'left')
+                            ->where('tashrihi.id', (int)$dest)
+                            ->get('tashrihi')
+                            ->row();
                         break;
                 }
-                $data[] = $v;
+                $finalData[] = $v;
             }
         }
-        $this->tools->outS(0, $results);
+
+        // 3) Return the enriched data array (not the original $results, unless you also updated it)
+        $this->tools->outS(0, $finalData);
     }
+
 
     public function addLeitner()
     {
@@ -4581,7 +4686,7 @@ class V2 extends CI_Controller
         if ($user === FALSE) throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
         //
         $user_id = (int)$user->id;
-        $base = base_url();
+        $base = CDN_URL;
         $action = $this->input->post('action');
         $section = $this->input->post('section');
         $sectionid = (int)$this->input->post('sectionid');
@@ -4714,6 +4819,82 @@ class V2 extends CI_Controller
         return array($place, $placeTitle);
     }
 
+
+    //=========================================
+    public function fetchFile(){
+        $base_path = base_url() ; // Base path for this script
+        $requested_url = $_SERVER['REQUEST_URI']; // Full request URI
+        $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
+        $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
+        $outputString = str_replace("api/v2/fetchFile/", "", $relative_path);
+        $file_path = '/lexoya/var/www/html/'. $outputString;
+        $file_path = str_replace("api/v2/fetchFile/", "", $file_path);
+
+
+        if (file_exists($file_path)) {
+            $mime_type = mime_content_type($file_path);
+            header("Content-Type: $mime_type");
+            header("Content-Length: " . filesize($file_path));
+            header("Content-Disposition: inline; filename=\"" . basename($file_path) . "\""); // Display file directly in browser
+            readfile($file_path);
+            exit;
+        } else {
+            header("HTTP/1.0 404 Not Found");
+            echo $file_path;
+            exit;
+        }
+    }
+
+    public function siteHealth() {
+        return $this->tools->outS(200, 'ok');
+    }
+
+    public function collabrationMessageEitaa() {
+        // توکن بات خود را اینجا وارد کنید
+        $token = EITAA_COLABRATION_TOKEN;
+    
+        // آیدی چت یا کاربری که می‌خواهید پیام ارسال شود
+        $chat_id = 10406720;
+    
+        // متن پیام که از طریق ورودی ارسال شده
+        $text = $this->input->post('text');
+    
+        // URL صحیح برای API ایتا یار
+        $apiUrl = 'https://eitaayar.ir/api/' . $token . '/sendMessage';
+    
+        // مقداردهی cURL
+        $request = curl_init();
+    
+        // تنظیمات cURL
+        curl_setopt($request, CURLOPT_URL, $apiUrl); // آدرس API
+        curl_setopt($request, CURLOPT_POST, true); // ارسال درخواست POST
+        curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0); // غیرفعال کردن تأیید SSL (در صورت نیاز)
+        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false); // غیرفعال کردن تأیید SSL (در صورت نیاز)
+        curl_setopt($request, CURLOPT_POSTFIELDS, http_build_query([
+            'chat_id' => $chat_id,
+            'text' => $text,
+        ])); // ارسال داده‌ها به API
+        curl_setopt($request, CURLOPT_RETURNTRANSFER, true); // دریافت پاسخ API
+    
+        // اجرای درخواست و دریافت پاسخ
+        $response = curl_exec($request);
+    
+        // بررسی خطاهای احتمالی cURL
+        if (curl_errno($request)) {
+            echo 'Curl error: ' . curl_error($request);
+        } else {
+            echo $response; // نمایش پاسخ API
+        }
+    
+        // بستن cURL
+        curl_close($request);
+    }
+   
+
+
+
+    //=========================================
+
     //=========================================
     public function getLastClasses()
     {
@@ -4723,7 +4904,11 @@ class V2 extends CI_Controller
         $title = $this->input->post('title');
         $limit = $limit < 1000 ? $limit : 1000;
         $section = $this->input->post('section');
-        $baseurl = base_url();
+        $baseurl = CDN_URL;
+
+        // Limit the number of results to 1000 to avoid large cache keys
+        $limit = $limit < 1000 ? $limit : 1000;
+
         $allowsection = array(
             'doreh',
             'classroom',
@@ -4747,6 +4932,17 @@ class V2 extends CI_Controller
 
         if (!in_array($section, $allowsection)) {
             throw new Exception("لطفا در ارسال اطلاعات دقت نمایید", 1);
+        }
+
+        // Generate a unique cache key based on the request parameters
+        $cache_key = "last_classes_{$section}_{$limit}_{$start}_{$did}_{$title}";
+
+        // Check if data is cached in Redis
+        $cached_data = $this->cache->redis->get($cache_key);
+        
+        if ($cached_data !== FALSE) {
+            // Cache hit, return the cached data
+            return $this->tools->outS(0, "اطلاعات کلی", ["data" => $cached_data["data"], "pagination" => $cached_data["pagination"]]);
         }
 
         switch ($section) {
@@ -5269,6 +5465,14 @@ class V2 extends CI_Controller
         $pagination["start"] = $start;
         $pagination["limit"] = $limit;
         $pagination["total"] = $count;
+
+        // Cache the result for 1 hour (3600 seconds)
+        $cache_data = [
+            "data" => $data[$section],
+            "pagination" => $pagination
+        ];
+        $this->cache->redis->save($cache_key, $cache_data, 3600);  // Cache the result for 1 hour
+
         return $this->tools->outS(0, "اطلاعات کلی", ["data" => $data[$section], "pagination" => $pagination]);
     }
 
@@ -5468,7 +5672,7 @@ class V2 extends CI_Controller
     //=========================================
     public function getClassJalasatDetail0($id)
     {
-        $base = base_url();
+        $base = CDN_URL;
 
         $SO = $this->db
             ->select('j.*,dc.ostadid,dc.placeid,s.paragraphid,dc.dorehid,dc.classid,dc.image,s.id sid,d.pages,s.bookid,d.id dataid,d.image,d.pdf,d.audio,d.audio_duration,d.video,d.video_duration,s.id subjalasattid,s.paragraphid page,s.description sdescription,s.startPos,s.endPos')
@@ -5633,7 +5837,7 @@ class V2 extends CI_Controller
                 }
                 throw new Exception("دوره کلاس $id حذف شده است", 2);
             }
-            $base = base_url();
+            $base = CDN_URL;
             $books = array();
             $book_ids = array(0);
             $db = $this->db;
@@ -5906,7 +6110,7 @@ class V2 extends CI_Controller
 
             if (!$this->db->where('id', $id)->count_all_results('dorehclass'))
                 throw new Exception('این عرضه کننده حذف شده است', 2);
-            $base = base_url();
+            $base = CDN_URL;
             $books = array();
             $book_ids = array(0);
             $db = $this->db;
@@ -6151,15 +6355,15 @@ class V2 extends CI_Controller
             if (!$this->db->where('id', $id)->where("type = 'book'")->count_all_results('posts')) {
                 throw new Exception('این عرضه کننده حذف شده است', 2);
             }
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $book = $this->db
                 ->select("p.*")
                 ->where('p.id', $id)
                 ->get('posts p')->row();
             if ($book->thumb) {
-                $book->thumb = str_replace('/lexoya/var/www/html/', '', $book->thumb);
-		$book->thumb = base_url() . $book->thumb;
+		$book->thumb = str_replace('/lexoya/var/www/html/', '', $book->thumb);
+		$book->thumb = CDN_URL . $book->thumb;
             }
 
             $category = $book->category;
@@ -6170,6 +6374,8 @@ class V2 extends CI_Controller
                 }
             } while ($categorydata->parent);
             $membership = [
+                "category_id" => $categorydata->id,
+                "name" => $categorydata->name,
                 "membership1" => $categorydata->membership1, "discountmembership1" => $categorydata->discountmembership1,
                 "membership3" => $categorydata->membership3, "discountmembership3" => $categorydata->discountmembership3,
                 "membership6" => $categorydata->membership6, "discountmembership6" => $categorydata->discountmembership6,
@@ -6406,8 +6612,10 @@ class V2 extends CI_Controller
                 ->result();
 
             foreach ($classonlines as $key => $classonline) {
-                if ($classonline->teachername) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
                     $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines[$key]->teachername = null; // Set to null if teacher is not found
                 }
                 $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
                 $classonlines[$key]->capacity = $classaccount;
@@ -6445,13 +6653,13 @@ class V2 extends CI_Controller
             ];
 
 
-            $userbook = $this->db->select('*,UNIX_TIMESTAMP(expiremembership) ExpTime')
+            $userbook = $this->db->select('*,UNIX_TIMESTAMP(expiremembership) AS ExpTime')
                 ->where('book_id', $id)
                 ->where('user_id', $uid)
                 ->where('(ISNULL(expiremembership) OR (NOT ISNULL(expiremembership) AND expiremembership > CURDATE()))')
                 ->get('user_books')
                 ->row();
-
+                
             $this->tools->outS(0, 'OK', 
                 [
                     "book" => $book,
@@ -6468,6 +6676,169 @@ class V2 extends CI_Controller
             $this->tools->outE($e);
         }
     }
+
+    public function ema_getBookClassOnlinesNew() {
+
+        $id = (int)$this->input->post('id');
+        $book_id = (int)$this->input->post('book_id');
+
+        if (!$id) {
+            throw new Exception('Book ID is required', 1);
+        }
+
+        $classonlines1 = $this->db->select('*')
+            ->where_in('id', $this->db->select('cid')->where_in('data_type', ['book', 'hamniaz'])->where('data_id', $book_id)->get_compiled_select('classonline_data'))
+            ->get('classonline')
+            ->result();
+
+
+        // Retrieve related classonlines IDs
+        $classonlines2 = $this->db->select('cid')
+        ->where_in('data_type', ['book', 'hamniaz'])
+        ->where('data_id', $id)
+        ->get('classonline_data')
+        ->result();
+
+        $classonline_ids = [];
+        foreach ($classonlines2 as $classonline) {
+            $classonline_ids[] = $classonline->cid;
+        }
+
+        if (empty($classonline_ids)) {
+            return $this->tools->outS(0, 'No classonlines found', ['classonlines' => []]);
+        }
+
+        // Fetch classonlines based on retrieved IDs
+        $classonlines2 = $this->db->select('*')
+            ->where_in('id', $classonline_ids)
+            ->get('classonline')
+            ->result();
+
+            foreach ($classonlines2 as $key => $classonline) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                    $classonlines2[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines2[$key]->teachername = null; // Set to null if teacher is not found
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines2[$key]->capacity = $classaccount;
+                $classonlines2[$key]->program = $classonline_dayofweeks[$classonline->id];
+            }
+
+
+ 
+        return $this->tools->outS(0, 'OK', ['classonlines1' => $classonlines1, 'classonlines2' => $classonlines2 ]);
+    }
+
+
+    public function ema_getBookClassOnlines()
+    {
+        try {
+            // Check if the user is logged in
+            // $user = $this->_loginNeed(TRUE, 'u.id');
+            // if (!$user) {
+            //     throw new Exception('User authentication required', 401);
+            // }
+
+            $id = (int)$this->input->post('id');
+            if (!$id) {
+                throw new Exception('Book ID is required', 1);
+            }
+
+            // Retrieve related classonlines IDs
+            $classonlines = $this->db->select('cid')
+                ->where_in('data_type', ['book', 'hamniaz'])
+                ->where('data_id', $id)
+                ->get('classonline_data')
+                ->result();
+
+            $classonline_ids = [];
+            foreach ($classonlines as $classonline) {
+                $classonline_ids[] = $classonline->cid;
+            }
+
+            if (empty($classonline_ids)) {
+                return $this->tools->outS(0, 'No classonlines found', ['classonlines' => []]);
+            }
+
+            // Fetch classonlines based on retrieved IDs
+            $classonlines = $this->db->select('*')
+                ->where_in('id', $classonline_ids)
+                ->get('classonline')
+                ->result();
+
+            // Prepare day-of-week mapping
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            // Fetch and organize schedule data
+            $classonline_schedule = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_ids)
+                ->order_by('cid, dayofweek, starttime')
+                ->get('classonline_data')
+                ->result();
+
+            $classonline_dayofweeks = [];
+            foreach ($classonline_schedule as $schedule) {
+                $classonline_dayofweeks[$schedule->cid][] = [
+                    "dayofweek" => $schedule->dayofweek,
+                    "dayname" => $dayofweeks[$schedule->dayofweek],
+                    "starttime" => $schedule->starttime,
+                    "endtime" => $schedule->endtime
+                ];
+            }
+
+            // Fetch teacher names
+            $teacher_ids = array_unique(array_column($classonlines, 'teachername'));
+            if (!empty($teacher_ids)) {
+                $teachers = $this->db->select('c.id AS value, c.displayname AS text')
+                    ->where_in('c.id', $teacher_ids)
+                    ->get('users c')
+                    ->result();
+
+                $tempteachers = [];
+                foreach ($teachers as $teacher) {
+                    $tempteachers[$teacher->value] = $teacher->text;
+                }
+                $teachers = $tempteachers;
+            } else {
+                $teachers = [];
+            }
+
+            // mrm change
+            foreach ($classonlines as $key => $classonline) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                    $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines[$key]->teachername = null;
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines[$key]->capacity = $classaccount;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
+            }
+            
+            // Attach teacher names and schedules to classonlines
+            // foreach ($classonlines as $key => $classonline) {
+            //     $classonlines[$key]->teachername = $teachers[$classonline->teachername] ?? null;
+            //     $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id] ?? [];
+            // }
+
+            // Return the filtered classonlines
+            return $this->tools->outS(0, 'OK', ['classonlines' => $classonlines]);
+
+        } catch (Exception $e) {
+            return $this->tools->outE($e);
+        }
+    }
+
 
     //=========================================
     public function extlogin()
@@ -6729,7 +7100,7 @@ class V2 extends CI_Controller
     {
         try {
             $data = $this->input->post();
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
             $id = intval($id) ? $id : $data["id"];
@@ -6803,7 +7174,7 @@ class V2 extends CI_Controller
     {
         try {
             $data = $this->input->post();
-            $base = base_url();
+            $base = CDN_URL;
             $offer = intval($data["offer"]);
             $db = $this->db;
             if ($offer) {
@@ -6831,7 +7202,7 @@ class V2 extends CI_Controller
         //offer
         try {
             $data = $this->input->post();
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
             $id = intval($data["id"]);
             $offer = intval($data["offer"]);
 
@@ -6930,7 +7301,7 @@ class V2 extends CI_Controller
     public function getAdvertise($priority = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
             $data = $this->input->post();
             $priority = intval($priority) ? $priority : $data["priority"];
 
@@ -6943,7 +7314,9 @@ class V2 extends CI_Controller
                 throw new Exception('موردی یافت نشد', 2);
             }
             foreach ($advertise as $k => $v) {
-                $advertise[$k]->image = $v->image ? $baseurl . $v->image : null;
+                $original_url = $baseurl . $v->image;
+                $new_url = preg_replace('/\/lexoya\/.*?\/uploads/', 'uploads', $original_url);
+                $advertise[$k]->image = $v->image ? $new_url : null;
                 if ($v->section) {
                     $out = new stdClass();
                     $text["category"] = "دسته بندی";
@@ -6954,7 +7327,11 @@ class V2 extends CI_Controller
                     $text["membership"] = "اشتراک";
                     $text["link"] = "آدرس وب";
                     if (intval($v->link)) {
-                        switch ($v->section) {
+                        $section = $v->section;
+                        if ($section == "membership") {
+                            $section = "category";
+                        }
+                        switch ($section) {
                             case "tecat":
                             case "category":
                                 $select = "id AS value,name AS text,pic,icon";
@@ -6969,7 +7346,7 @@ class V2 extends CI_Controller
                         }
                         $this->db->select($select);
                         $this->db->where("id", $v->link);
-                        $out = (object)$this->db->get($v->section)->row();
+                        $out = (object)$this->db->get($section)->row();
                     } else {
                         $out->id = 0;
                         $out->text = $v->link;
@@ -6992,7 +7369,7 @@ class V2 extends CI_Controller
     public function getMembership($id = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -7072,7 +7449,7 @@ class V2 extends CI_Controller
     public function getCategories($id = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -7108,20 +7485,20 @@ class V2 extends CI_Controller
         }
 
         $this->load->model('m_category', 'category');
-
-        if ($this->category->isBought($user->id, $category_id, $plan_id)) {
-            $data = $this->db
-                ->where_in('cat_id', $category_id)
-                ->where('enddate > NOW()')
-                ->order_by('enddate DESC')
-                ->get("user_catmembership")->row();
-            $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
-            //throw new Exception("اشتراک قبلا خریداری شده است", 5);
-        } else {
+        
+        // if ($this->category->isBought($user->id, $category_id, $plan_id)) {
+        //     $data = $this->db
+        //         ->where_in('cat_id', $category_id)
+        //         ->where('enddate > NOW()')
+        //         ->order_by('enddate DESC')
+        //         ->get("user_catmembership")->row();
+        //     $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
+        //     //throw new Exception("اشتراک قبلا خریداری شده است", 5);
+        // } else {
             $discountCode = $this->input->post('code');
             $discount_id = 0;
             if ($discountCode) {
-                $discount_id = (int)$this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+                $discount_id = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
             }
             if (!isset($discount_ids["allowed"])) {
                 $discount_ids = [];
@@ -7155,8 +7532,100 @@ class V2 extends CI_Controller
                 $data['link'] = site_url('payment/paycategory/' . $factor->id);
             }
             $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
-        }
+        // }
     }
+    
+    // public function buyCategoryBazar()
+    // {
+    //     $user = $this->_loginNeed();
+
+    //     if ($user === FALSE) {
+    //         throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+    //     }
+    //     $action = $this->input->post('action');
+    //     if (!strlen($action)) {
+    //         throw new Exception("کد فعالیت الزامی می باشد", 1);
+    //     }
+    //     $ref_id = $this->input->post('ref_id');
+    //     if (!strlen($ref_id)) {
+    //         throw new Exception("کد رهگیری الزامی می باشد", 1);
+    //     }
+
+    //     $category_id = $this->input->post('category_id');
+    //     $category_id = explode(",", $category_id);
+    //     $plan_id = $this->input->post('plan_id');
+    //     $plan_id = explode(",", $plan_id);
+    //     if (!count($category_id) || !count($plan_id)) {
+    //         throw new Exception("شماره دسته بندی یا شماره پلن عضویت الزامی است", 1);
+    //     }
+
+    //     $this->load->model('m_category', 'category');
+
+    //     if ($this->category->isBought($user->id, $category_id, $plan_id)) {
+    //         $data = $this->db
+    //             ->where_in('cat_id', $category_id)
+    //             ->where('enddate > NOW()')
+    //             ->order_by('enddate DESC')
+    //             ->get("user_catmembership")->row();
+    //         $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
+    //         //throw new Exception("اشتراک قبلا خریداری شده است", 5);
+    //     } else {
+    //         $discountCode = $this->input->post('code');
+    //         $discount_ids = [];
+    //         if ($discountCode) {
+    //             $discount_ids = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+    //         }
+    //         if (!isset($discount_ids["allowed"])) {
+    //             $discount_ids = [];
+    //         } else {
+    //             $discount_ids = $discount_ids["allowed"];
+    //         }
+    //         $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_ids);
+
+    //         if ($cf['done'] == FALSE) {
+    //             throw new Exception($cf['msg'], 5);
+    //         }
+
+    //         $factor = $cf['factor'];
+    //         $data = ['factor' => $factor];
+
+    //         if ($factor->price == 0) {
+    //             $this->category->updatetFactor($factor->id, [
+    //                 'state' => count($discount_ids) ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+    //                 'status' => 0,
+    //                 'pdate' => time()
+    //             ]);
+
+    //             if (count($discount_ids)) {
+    //                 $this->category->setDiscountUsed($discount_ids, $factor->id);
+    //             }
+
+    //             $data['free'] = TRUE;
+    //             $data['link'] = NULL;
+
+    //         } else {
+    //             $data['link'] = site_url('payment/paycategory/' . $factor->id);
+    //         }
+    //         if (in_array($action, ["bazar", "myket"]) && $ref_id) {
+    //             $factor->state = 'پرداخت موفق';
+    //             $factor->status = 0;
+    //             $factor->pdate = $factor->cdate;
+    //             $factor->paid = $factor->price;
+    //             $factor->ref_id = $action . ":" . $ref_id;
+    //             $this->category->updatetFactor($factor->id, [
+    //                 'state' => $factor->state,
+    //                 'status' => $factor->status,
+    //                 'pdate' => $factor->pdate,
+    //                 'paid' => $factor->paid,
+    //                 'ref_id' => $factor->ref_id
+    //             ]);
+    //             $data = [];
+    //             $data['factor'] = $factor;
+    //             $data['link'] = '';
+    //         }
+    //         $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+    //     }
+    // }
 
     public function buyCategoryBazar()
     {
@@ -7165,10 +7634,12 @@ class V2 extends CI_Controller
         if ($user === FALSE) {
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
         }
+
         $action = $this->input->post('action');
         if (!strlen($action)) {
             throw new Exception("کد فعالیت الزامی می باشد", 1);
         }
+
         $ref_id = $this->input->post('ref_id');
         if (!strlen($ref_id)) {
             throw new Exception("کد رهگیری الزامی می باشد", 1);
@@ -7184,71 +7655,91 @@ class V2 extends CI_Controller
 
         $this->load->model('m_category', 'category');
 
+        // Check if the user already has an active subscription for the selected category
         if ($this->category->isBought($user->id, $category_id, $plan_id)) {
+            // Get the latest active membership for the user
             $data = $this->db
                 ->where_in('cat_id', $category_id)
                 ->where('enddate > NOW()')
                 ->order_by('enddate DESC')
-                ->get("user_catmembership")->row();
-            $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
-            //throw new Exception("اشتراک قبلا خریداری شده است", 5);
-        } else {
-            $discountCode = $this->input->post('code');
-            $discount_ids = [];
-            if ($discountCode) {
-                $discount_ids = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
-            }
-            if (!isset($discount_ids["allowed"])) {
-                $discount_ids = [];
-            } else {
-                $discount_ids = $discount_ids["allowed"];
-            }
-            $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_ids);
+                ->get("user_catmembership")
+                ->row();
 
-            if ($cf['done'] == FALSE) {
-                throw new Exception($cf['msg'], 5);
-            }
-
-            $factor = $cf['factor'];
-            $data = ['factor' => $factor];
-
-            if ($factor->price == 0) {
-                $this->category->updatetFactor($factor->id, [
-                    'state' => count($discount_ids) ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
-                    'status' => 0,
-                    'pdate' => time()
+            // If we have an existing valid membership, extend it using the same logic in updatetFactor
+            if ($data) {
+                // We already have the logic for updating the subscription in the updatetFactor method
+                $this->category->updatetFactor($data->factor_id, [
+                    'status' => NULL, // Leave the status as NULL to avoid overwriting it.
+                    'state' => 'اشتراک قبلا خریداری شده است و برای ' . $plan_id[0] . ' ماه دیگر تمدید شد',
+                    'pdate' => time(),
                 ]);
 
-                if (count($discount_ids)) {
-                    $this->category->setDiscountUsed($discount_ids, $factor->id);
-                }
-
-                $data['free'] = TRUE;
-                $data['link'] = NULL;
-
-            } else {
-                $data['link'] = site_url('payment/paycategory/' . $factor->id);
+                $this->tools->outS(5, "اشتراک قبلا خریداری شده است. عضویت شما برای " . $plan_id[0] . " ماه دیگر تمدید شد.", ['data' => $data]);
+                return; // Exit after extending the subscription
             }
-            if (in_array($action, ["bazar", "myket"]) && $ref_id) {
-                $factor->state = 'پرداخت موفق';
-                $factor->status = 0;
-                $factor->pdate = $factor->cdate;
-                $factor->paid = $factor->price;
-                $factor->ref_id = $action . ":" . $ref_id;
-                $this->category->updatetFactor($factor->id, [
-                    'state' => $factor->state,
-                    'status' => $factor->status,
-                    'pdate' => $factor->pdate,
-                    'paid' => $factor->paid,
-                    'ref_id' => $factor->ref_id
-                ]);
-                $data = [];
-                $data['factor'] = $factor;
-                $data['link'] = '';
-            }
-            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
         }
+
+        // Proceed to create a new factor if the subscription does not exist or is expired
+        $discountCode = $this->input->post('code');
+        $discount_ids = [];
+        if ($discountCode) {
+            $discount_ids = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+        }
+        if (!isset($discount_ids["allowed"])) {
+            $discount_ids = [];
+        } else {
+            $discount_ids = $discount_ids["allowed"];
+        }
+
+        $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_ids);
+
+        if ($cf['done'] == FALSE) {
+            throw new Exception($cf['msg'], 5);
+        }
+
+        $factor = $cf['factor'];
+        $data = ['factor' => $factor];
+
+        if ($factor->price == 0) {
+            $this->category->updatetFactor($factor->id, [
+                'state' => count($discount_ids) ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+                'status' => 0,
+                'pdate' => time()
+            ]);
+
+            if (count($discount_ids)) {
+                $this->category->setDiscountUsed($discount_ids, $factor->id);
+            }
+
+            $data['free'] = TRUE;
+            $data['link'] = NULL;
+
+        } else {
+            $data['link'] = site_url('payment/paycategory/' . $factor->id);
+        }
+
+        if (in_array($action, ["bazar", "myket"]) && $ref_id) {
+            $factor->state = 'پرداخت موفق';
+            $factor->status = 0;
+            $factor->pdate = $factor->cdate;
+            $factor->paid = $factor->price;
+            $factor->ref_id = $action . ":" . $ref_id;
+            $this->category->updatetFactor($factor->id, [
+                'state' => $factor->state,
+                'status' => $factor->status,
+                'pdate' => $factor->pdate,
+                'paid' => $factor->paid,
+                'ref_id' => $factor->ref_id
+            ]);
+            $data = [];
+            $data['factor'] = $factor;
+            $data['link'] = '';
+        }
+
+        $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
+
+
 
     //=========================================
     public function BoughtCategory()
@@ -7270,7 +7761,7 @@ class V2 extends CI_Controller
     // public function getClassOnline($id = 0)
     // {
     //     try {
-    //         $baseurl = base_url();
+    //         $baseurl = CDN_URL;
 
     //         $limit = (int)$this->input->post('limit');
     //         $limitstart = (int)$this->input->post('limitstart');
@@ -7314,7 +7805,7 @@ class V2 extends CI_Controller
     public function getClassOnline()
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $limit = (int)$this->input->post('limit');
             $limitstart = (int)$this->input->post('limitstart');
@@ -7454,6 +7945,84 @@ class V2 extends CI_Controller
         $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
 
+    public function buyAccountClassOnlineBazar()
+    {
+        $user = $this->_loginNeed();
+
+        if ($user === FALSE) {
+            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
+
+        $classonline_id = (int)$this->input->post('classonline_id');
+        if (!$classonline_id) {
+            throw new Exception("شماره دسته بندی یا شماره پلن عضویت الزامی است", 1);
+        }
+        $action = $this->input->post('action');
+        if (!strlen($action)) {
+            throw new Exception("کد فعالیت الزامی می باشد", 1);
+        }
+        $ref_id = $this->input->post('ref_id');
+        if (!strlen($ref_id)) {
+            throw new Exception("کد رهگیری الزامی می باشد", 1);
+        }
+
+        $this->load->model('m_classonline', 'classonline');
+
+        if ($this->classonline->isBought($user->id, $classonline_id)) {
+            throw new Exception("اشتراک قبلا خریداری شده است", 5);
+        }
+
+        $discountCode = $this->input->post('code');
+        $discount_id = 0;
+        if ($discountCode) {
+            $discount_id = (int)$this->classonline->checkDiscountCode($discountCode, "-9", $user->id);
+        }
+        $cf = $this->classonline->createFactor($user->id, $classonline_id, $discount_id);
+
+        if ($cf['done'] == FALSE) {
+            throw new Exception($cf['msg'], 5);
+        }
+
+        $factor = $cf['factor'];
+        $data = ['factor' => $factor];
+
+        if ($factor->price == 0) {
+            $this->classonline->updatetFactor($factor->id, [
+                'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+                'status' => 0,
+                'pdate' => time()
+            ]);
+
+            if ($discount_id != NULL) {
+                $this->classonline->setDiscountUsed($discount_id, $factor->id);
+            }
+
+            $data['free'] = TRUE;
+            $data['link'] = NULL;
+
+        } else {
+            $data['link'] = site_url('payment/payclassonline/' . $factor->id);
+        }
+        if (in_array($action, ["bazar", "myket"]) && $ref_id) {
+            $factor->state = 'پرداخت موفق';
+            $factor->status = 0;
+            $factor->pdate = $factor->cdate;
+            $factor->paid = $factor->price;
+            $factor->ref_id = $action . ":" . $ref_id;
+            $this->classonline->updatetFactor($factor->id, [
+                'state' => $factor->state,
+                'status' => $factor->status,
+                'pdate' => $factor->pdate,
+                'paid' => $factor->paid,
+                'ref_id' => $factor->ref_id
+            ]);
+            $data = [];
+            $data['factor'] = $factor;
+            $data['link'] = '';
+        }
+        $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+    }
+
     //=========================================
     public function getClassOnlineAccounts($id = 0)
     {
@@ -7501,8 +8070,8 @@ class V2 extends CI_Controller
             $teachers = $db->get('users c')->result();
 
             $tempteachers = [];
-            foreach ($teachers as $teacher){
-                $tempteachers[$teacher->id] = $teacher->displayname;
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->id] = ["value" => $teacher->id, "text" => $teacher->displayname];
             }
             $teachers = $tempteachers;
 
@@ -7518,11 +8087,210 @@ class V2 extends CI_Controller
             $this->tools->outE($e);
         }
     }
+
+    public function ema_getClassOnlineAccounts()
+    {
+        try {
+            $user = $this->_loginNeed();
+
+            if ($user === FALSE) {
+                throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            }
+
+            $limit = (int)$this->input->post('limit');
+            $limitstart = (int)$this->input->post('limitstart');
+            $id         = (int) $this->input->post('id');
+
+            $db = $this->db;
+            $data = array();
+
+            // Select the classaccounts for the logged in user
+            $db->select('c.*');
+            if ($user->id) {
+                $db->where('c.user_id', $user->id);
+            }
+            
+            // If an id is provided (not 0) then filter by that classonline id
+            if ($id != 0) {
+                $db->where('c.classonline_id', $id);
+            }
+            
+            if ($limit || $limitstart) {
+                $db->limit($limit, $limitstart);
+            }
+            $classaccounts = $db->get('classaccount c')->result();
+
+            // Gather the classonline ids from the user's accounts
+            $classonline_ids = [0];
+            foreach ($classaccounts as $classaccount) {
+                $classonline_ids[] = $classaccount->classonline_id;
+            }
+
+            // Get classonline records based on the collected ids
+            $db->select('c.*');
+            $db->where_in('c.id', $id);
+            $classonlines = $db->get('classonline c')->result();
+
+            // Prepare teacher ids and an associative array for classonlines
+            $teacher_ids = [0];
+            $tempclassonlines = [];
+            foreach ($classonlines as $classonline) {
+                if ($classonline->teachername) {
+                    $teacher_ids[] = $classonline->teachername;
+                }
+                $tempclassonlines[$classonline->id] = $classonline;
+            }
+            $classonlines = $tempclassonlines;
+
+            // Get teacher data
+            $db->select('c.*');
+            $db->where_in('c.id', $teacher_ids);
+            $teachers = $db->get('users c')->result();
+
+            $tempteachers = [];
+            foreach ($teachers as $teacher) {
+                $tempteachers[$teacher->id] = [
+                    "value" => $teacher->id, 
+                    "text"  => $teacher->displayname
+                ];
+            }
+            $teachers = $tempteachers;
+
+            // Append teacher and classonline details to each classaccount
+            foreach ($classaccounts as $key => $classaccount) {
+                $teacherId = @$classonlines[$classaccount->classonline_id]->teachername;
+                $classaccounts[$key]->teacher = @$teachers[$teacherId];
+                $classaccounts[$key]->classonline = @$classonlines[$classaccount->classonline_id];
+                // mrm change
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classaccount->classonline_id)->count_all_results('classaccount');
+                $classaccounts[$key]->capacity = $classaccount;
+            }
+
+            $data['classaccounts'] = $classaccounts;
+
+            $this->tools->outS(0, 'OK', ["data" => $data]);
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
+
+    public function ema_getClassOnlineAccountsNew()
+    {
+        try {
+            $user = $this->_loginNeed();
+
+            // if ($user === FALSE) {
+            //     throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+            // }
+
+            $limit = (int)$this->input->post('limit');
+            $limitstart = (int)$this->input->post('limitstart');
+            $id         = (int) $this->input->post('id');
+
+            $db = $this->db;
+            $data = array();
+
+            // Select the classaccounts for the logged in user
+            $db->select('c.*');
+            $db->where('c.user_id', $user->id);
+            
+            // If an id is provided (not 0) then filter by that classonline id
+            if ($id != 0) {
+                $db->where('c.classonline_id', $id);
+            }
+            
+            if ($limit || $limitstart) {
+                $db->limit($limit, $limitstart);
+            }
+            $classaccounts = $db->get('classaccount c')->result();
+
+            // Gather the classonline ids from the user's accounts
+            $classonline_ids = [0];
+            foreach ($classaccounts as $classaccount) {
+                $classonline_ids[] = $classaccount->classonline_id;
+            }
+
+            // Get classonline records based on the collected ids
+            $db->select('c.*');
+            $db->where_in('c.id', $id);
+            $classonlines = $db->get('classonline c')->result();
+
+            
+
+            $dayofweeks = [
+                0 => "شنبه",
+                1 => "یکشنبه",
+                2 => "دوشنبه",
+                3 => "سه شنبه",
+                4 => "چهارشنبه",
+                5 => "پنجشنبه",
+                6 => "جمعه"
+            ];
+
+            // Fetch and organize schedule data
+            $classonline_schedule = $this->db->select('*')
+                ->where_in('data_type', ['dayofweek'])
+                ->where_in('cid', $classonline_ids)
+                ->order_by('cid, dayofweek, starttime')
+                ->get('classonline_data')
+                ->result();
+
+            $classonline_dayofweeks = [];
+            foreach ($classonline_schedule as $schedule) {
+                $classonline_dayofweeks[$schedule->cid][] = [
+                    "dayofweek" => $schedule->dayofweek,
+                    "dayname" => $dayofweeks[$schedule->dayofweek],
+                    "starttime" => $schedule->starttime,
+                    "endtime" => $schedule->endtime
+                ];
+            }
+
+            // Fetch teacher names
+            $teacher_ids = array_unique(array_column($classonlines, 'teachername'));
+            if (!empty($teacher_ids)) {
+                $teachers = $this->db->select('c.id AS value, c.displayname AS text')
+                    ->where_in('c.id', $teacher_ids)
+                    ->get('users c')
+                    ->result();
+
+                $tempteachers = [];
+                foreach ($teachers as $teacher) {
+                    $tempteachers[$teacher->value] = $teacher->text;
+                }
+                $teachers = $tempteachers;
+            } else {
+                $teachers = [];
+            }
+
+            // mrm change
+            foreach ($classonlines as $key => $classonline) {
+                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                    $classonlines[$key]->teachername = $teachers[$classonline->teachername];
+                } else {
+                    $classonlines[$key]->teachername = null;
+                }
+                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+                $classonlines[$key]->capacity = $classaccount;
+                $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
+            }
+
+
+
+
+            $data['classaccounts'] = $classaccounts;
+            $data['classonlines'] = $classonlines;
+            
+            $this->tools->outS(0, 'OK', ["data" => $data]);
+        } catch (Exception $e) {
+            $this->tools->outE($e);
+        }
+    }
+
     //=========================================
     public function DayClassOnline($id = 0)
     {
         try {
-            $baseurl = base_url();
+            $baseurl = CDN_URL;
 
             $user = $this->_loginNeed();
 
@@ -7605,5 +8373,57 @@ class V2 extends CI_Controller
         } catch (Exception $e) {
             $this->tools->outE($e);
         }
+    }
+
+    public function DeleteUser()
+    {
+        $user = $this->_loginNeed(TRUE, 'u.id');
+        if ($user === FALSE) {
+            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
+        $mobile = $this->input->post('mac');
+        $id = $user->id;
+        $status = 1;
+        $data = ["active" => 0];
+        $this->db
+            ->where("id='$id'")
+            ->where("active=1")
+            ->update('users', $data);
+        $user = $this->db->affected_rows();
+
+        $message = "در ورود اطلاعات دقت نمایید.شماره همراه %s وجود ندارد";
+        $message = sprintf($message, $mobile);
+        if ($user) {
+            $status = 0;
+            $message = "اطلاعات شماره همراه %s با موفقیت حذف شد";
+            $message = sprintf($message, $mobile);
+        }
+        $this->tools->outS($status, $message);
+    }
+
+    public function getMediaSftp() {
+        $sftp_host = 'idrgwvlp.lexoyacloud.ir';
+        $sftp_port = 30046;
+        $sftp_user = 'sftp';
+        $sftp_pass = '6fbnDYuFVN1ElCRY7sBVQqZcieQV2wDr';
+        $remote_file = 'uploads/makahani/2022/11/2022-11-24-5B11.23-5D.jpg'; // File on the SFTP server
+
+        // Connect to the SFTP server
+        $sftp = new \phpseclib3\Net\SFTP($sftp_host, $sftp_port);
+        // $sftp = new SFTP($sftp_host, $sftp_port);
+
+        if (!$sftp->login($sftp_user, $sftp_pass)) {
+            die('SFTP login failed.');
+        }
+
+        // Retrieve the file contents
+        $file_contents = $sftp->get($remote_file);
+
+        if ($file_contents === false) {
+            die('Failed to retrieve the file from SFTP.');
+        }
+
+        $this->tools->outS(0, "shosh", ['data' => $file_contents]);
+
     }
 }

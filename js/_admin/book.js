@@ -115,7 +115,8 @@
 				checkPartChanged(part);
 			}else{
 				media('file,1',btn,function(data,files,button){
-					var src = data[0];
+					var originalSrc = data[0];
+					var src = originalSrc.replace('/lexoya/var/www/html/', '');
 					var sound = 
 						'<input name="file" type="hidden" value="'+src+'">'
 						+ '<i class="fa fa-volume-up toggle-sound" title="مشاهده یا پنهان کردن فایل صوتی"></i>'
@@ -137,7 +138,8 @@
 				checkPartChanged(part);
 			}else{
 				media('image,1',btn,function(data,files,button){
-					var src = data[0];
+					var originalSrc = data[0];
+					var src = originalSrc.replace('/lexoya/var/www/html/', '');
 					var image = 
 						'<input name="image" type="hidden" value="'+src+'">'
 						+ '<i class="fa fa-picture-o toggle-image" title="مشاهده یا پنهان کردن تصویر"></i>'
@@ -255,6 +257,7 @@
 			setTimeout(function(){
 				$('[data-title]').trigger('mouseleave');
 			},100);
+			$p.data('saving', false);
 		}); 
 	
 		$(document).on('input','.book-part textarea,.book-part input',function(){
@@ -410,14 +413,14 @@
 		var $p = $(p);
 		
 		var btn = $p.find('.book-save');
-		
-		if(!$p.hasClass('has-description'))
-			$p.find('.part-description').val('');
-		
+
+		// keep description even if UI toggle is off; server will treat empty string as NULL
+ 
 		btn.removeClass('changed saved');
 		btn.addClass('saving');
 		
-		
+		if ($p.data('saving')) return;
+		$p.data('saving', true);
 		
 		var data = new FormData($p[0]);
 	
@@ -432,7 +435,7 @@
 			contentType : false,
 			dataType    : 'json', 
 			success     : function (data) {
-	
+				$p.data('saving', false);
 				console.log(data);
 			
 				btn.removeClass("saving");
@@ -461,6 +464,7 @@
 				}
 			},
 			error: function (a,b,c) {
+				$p.data('saving', false);
 				btn.removeClass('saving').addClass('fail');
 				
 				if(typeof fail == 'function') fail($p);
@@ -600,8 +604,7 @@ function checkBookData(){
         }
         $(el).find('.part-order').val(i);
 
-        if(!$(el).hasClass('has-description'))
-            $(el).find('.part-description').val('');
+		// keep description text; do not forcibly clear
     });
 	if(key) setPages();
     return key;

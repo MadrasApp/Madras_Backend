@@ -1,28 +1,32 @@
 <IfModule mod_rewrite.c>
-	RewriteEngine On
-	Options +FollowSymlinks
+    RewriteEngine On
+    Options +FollowSymlinks
     RewriteBase /
-	RewriteCond $1 !^(index\.php|images|css|js|robots\.txt|favicon\.ico)
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+
+    # Exclude certain files and directories from rewrite
+    RewriteCond $1 !^(index\.php|images|css|js|robots\.txt|favicon\.ico)
+
+    # Check if the file or directory exists; if not, process it
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Default route to index.php
+    RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
+
 <IfModule !mod_rewrite.c>
     ErrorDocument 404 /index.php
 </IfModule>
-# <IfModule mod_headers.c>
-#     Header set Access-Control-Allow-Origin 'https://madras.app'
-# </IfModule>
+
+# Enable CORS (Cross-Origin Resource Sharing)
 <IfModule mod_headers.c>
     Header add Access-Control-Allow-Origin "*"
-    Header add Access-Control-Allow-Headers "origin"
+    Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type, accept"
     Header add Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
 </IfModule>
-<IfModule mod_php5.c>
-   php_value upload_max_filesize 300M
-   php_value post_max_size 300M
-</IfModule>
 
-# php -- BEGIN cPanel-generated handler, do not edit
-# This domain inherits the “PHP” package.
-# php -- END cPanel-generated handler, do not edit
+# Increase file upload size limits
+<IfModule mod_php5.c>
+   php_value upload_max_filesize 1000M
+   php_value post_max_size 1000M
+</IfModule>

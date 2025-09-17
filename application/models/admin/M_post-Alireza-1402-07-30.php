@@ -1087,7 +1087,14 @@ class M_post extends CI_Model {
         }
         else
         {
-            $this->db->insert('book_meta',$partData);
+            // Check for existing part with same book_id and order
+            $existing = $this->db->select('id')->where('book_id', (int)$bookId)->where('order', (int)$data['order'])->get('book_meta')->row();
+            if ($existing) {
+                unset($partData['book_id']);
+                $this->db->where('id', $existing->id)->update('book_meta', $partData);
+            } else {
+                $this->db->insert('book_meta', $partData);
+            }
         }
     }
 	

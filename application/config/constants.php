@@ -92,8 +92,17 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 |--------------------------------------------------------------------------
 */
 
-define('EITAA_TOKEN', '60930039:ETE~OTvqDq-vtgYq5EiuV-iAR]^7cJFU-FxSext?CbB-I)HQM4,3l7-rP@S8OnUAA-]2VnCV2t8m-8NqQBdrH).-d1[C1Z/krv-Gt0I1IxfkX-GgaDLiai@e-5%Ho0IYj[C-hYpylo.L3x-ZKflUj2M4S-hWTBfnR4aj-H2Vb');
+define('EITAA_TOKEN', '60930039:laKi6ig-Ml)Q8[?-EMpqNKn-UL(vPo}-dD7Xsx8-A%hpXLw-1WvuO4V-YxXSC9E-@v6g5mz-C5p*R7q-4KAfOhm-Oa~PsRi-oV9R^/T-eyunIYD-0%PfYWo-vHk{JF1-W1g7B,s-yYlYmIb-BZLs(V0-EUGJh');
 define('SECRET_KEY', '626f6f726f2062616261206d616e20696e6f20616e6a616d206e656d6964616d');
+// define('CDN_URL', 'https://hls.zipak.info?path='); // Deprecated: now using direct S3 upload
+define('CDN_URL', 'https://modir.madras.app/');
+define('EITAA_COLABRATION_TOKEN', 'bot355148:8b921ad0-7776-404b-bc78-43a9cd1a6164');
+
+/*
+upload_path
+*/
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -270,12 +279,16 @@ $file_types =
 array(
 	'text_files'  =>array('doc','docx','log','msg','odt','pages','rtf','tex','txt','wpd','wps','pdf'),
 	'data_files'  =>array('csv','dat','gbr','ged','key','keychain','pps','ppt','pptx','sdf','tar','tax2012','tax2014','vcf','xml'),
-	'audio_files' =>array('aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma'),	
-	'video_files' =>array('3g2','3gp','asf','asx','avi','flv','m4v','mov','mp4','mpg','rm','Real','srt','swf','vob','wmv'),	
-	'image_files' =>array('bmp','gif','jpg','png','tif','tiff','jpe','jpeg'),	
-	'code_files'  =>array('asp','aspx','cer','cfm','csr','css','htm','html','js','jsp','php','rss','xhtml','c','class','cpp','cs','dtd','fla','h','java','lua','m','pl','py'),	
-	'zip_files'   =>array('7z','cbr','deb','gz','pkg','rar','rpm','sitx','zip','zipx'),	
-	'font_files'  =>array('fnt','fon','otf','ttf'),	
-	'set_files'   =>array('cfg','ini','prf','config'),	
+	'audio_files' =>array('aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma'), 
+	'video_files' =>array('3g2','3gp','asf','asx','avi','flv','m4v','mov','mp4','mpg','rm','Real','srt','swf','vob','wmv'), 
+	'image_files' =>array('bmp','gif','jpg','png','tif','tiff','jpe','jpeg','webp'), 
+	'code_files'  =>array('asp','aspx','cer','cfm','csr','css','htm','html','js','jsp','php','rss','xhtml','c','class','cpp','cs','dtd','fla','h','java','lua','m','pl','py'), 
+	'zip_files'   =>array('7z','cbr','deb','gz','pkg','rar','rpm','sitx','zip','zipx'), 
+	'font_files'  =>array('fnt','fon','otf','ttf'), 
+	'set_files'   =>array('cfg','ini','prf','config'), 
 );
+
+
+
+
 ?>

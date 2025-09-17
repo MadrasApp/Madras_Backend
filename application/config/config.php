@@ -18,9 +18,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
  $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-// $config['base_url'] =  $protocol.$_SERVER["HTTP_HOST"];
-$config['base_url'] = 'https://ormpjvbl.lexoyacloud.ir';
-
+  $config['base_url'] =  $protocol.$_SERVER["HTTP_HOST"];
+// $config['base_url'] =  "https://localhost/madras1/";
 
 /*
 |--------------------------------------------------------------------------
@@ -156,7 +155,9 @@ $config['composer_autoload'] = FALSE;
 | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
 |
 */
-$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-,';
+// $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-()';
+$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-()[\]@';
+
 
 
 /*

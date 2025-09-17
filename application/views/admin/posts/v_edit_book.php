@@ -8,7 +8,6 @@
 global $POST_TYPES;
 
 $postType = @$POST_TYPES[$type];
-
 ?>
 
 <style>
@@ -23,11 +22,11 @@ $postType = @$POST_TYPES[$type];
 </style>
 <script src="<?php echo  base_url() ?>/js/_admin/book.js"></script>
 
+
 <div id="result"></div>
 
 
 <div style="width:90%;padding-left:10px;margin:auto;">
-	
 	<h2><?php echo  $post['title'] ?></h2>
 
 	<p></p>

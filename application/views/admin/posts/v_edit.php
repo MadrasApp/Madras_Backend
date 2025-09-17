@@ -326,6 +326,10 @@ $postType = @$POST_TYPES[$type];
                                         case 'dropdown' :
                                             $options = $this->post->LoadDataTableSelect($mi['table']);
                                             $val = @$nashr[$mik];
+                                            
+                                            // اضافه کردن گزینه خالی در ابتدا
+                                            $options = array('' => 'انتخاب کنید...') + $options;
+                                            
                                             echo form_dropdown("nashr[$mik]", $options, $val);
                                             break;
                                     case 'calendar' :
