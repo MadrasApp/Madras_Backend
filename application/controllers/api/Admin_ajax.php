@@ -79,11 +79,9 @@ class Admin_ajax extends CI_Controller
         $options = $options == 'true' ? TRUE : FALSE;
 
 
-
         // Build uploads dir based on FCPATH to work on both Linux and Windows
         $baseUploads = rtrim(str_replace('\\','/', FCPATH), '/').'/uploads/';
         $dir = $baseUploads;
-
         if ($user_dir = $this->input->post('dir')) {
             if ($this->user->is_admin() or $user_dir == $this->user->data->username)
                 $dir .= $user_dir;
@@ -115,10 +113,8 @@ class Admin_ajax extends CI_Controller
         $dir = array();
 
         if ($this->user->is_admin()) {
-
             $baseUploads = rtrim(str_replace('\\','/', FCPATH), '/').'/uploads/';
             $dir = $this->media->scanPrimaryDir($baseUploads);
-       
             $permission = TRUE;
         }
         $data = array('permission' => $permission, 'user' => $this->user->data->username, 'list' => $dir);

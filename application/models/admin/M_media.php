@@ -549,13 +549,9 @@ class M_media extends CI_Model
         if ($type == 'images') {
             $thumb = $info['thumb150'];
             if (!file_exists($thumb)) $thumb = $info['file'];
-
             $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
             $rel = ltrim(str_replace($fc, '', str_replace('\\','/', $thumb)), '/');
             $result .= '<img src="' . base_url($rel) . '">';
-
-            $cleaned_thumb = str_replace("/lexoya/var/www/html/", "/", $thumb);
-            $result .= '<img src="' . 
 
             $footer_info = $this->imageSize($file);
         } else {

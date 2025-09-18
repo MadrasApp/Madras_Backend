@@ -1,5 +1,6 @@
-$(document).ready(function(e) {
 
+
+$(document).ready(function(e) {
     $(document).on("click",".selectable",function(){
 
         var un = $(this).attr('unique-group');
@@ -34,7 +35,6 @@ $(document).ready(function(e) {
         }
 
     });
-
 });
 
 
@@ -91,7 +91,6 @@ function media(options,button,callback){
             case 'file'   : options = {include:{images:false,files:true},selected:'files'};break;
             case 'img,1'  : options = {include:{images:true,files:false},multiple:false};break;
             case 'img,1,l': options = {include:{images:true,files:false},multiple:false};break;
-
             case 'file,1' : options = {include:{images:false,files:true},multiple:false,selected:'files'};break;
             case 'editor' : options = {thumbs:true,insert:true };break;
         }
@@ -192,7 +191,6 @@ function media(options,button,callback){
             updateMediaSidbar(element,mSettings.thumbs,mSettings.insert);
 
             if(typeof(mSettings.onSelect)=='function')
-
                 mSettings.onSelect(element,selctedfiles);
 
         },100);
@@ -212,7 +210,6 @@ function media(options,button,callback){
 
             if(typeof(mSettings.callback)=='function')
                 mSettings.callback(data,files,mSettings.button);
-
 
             if( mediaType == 'editor' )
             {
@@ -349,17 +346,18 @@ function media(options,button,callback){
                 }
                 else $tab.append(data);
 
-                $tab.find(
-                    '.media-item[data-type="mp4"], ' +
-                    '.media-item[data-type="m4s"], ' +
-                    '.media-item[data-type="mp3"], ' +
-                    '.media-item[data-type="wav"], ' +
-                    '.media-item[data-type="ogg"], ' +
-                    '.media-item[data-type="aac"], ' +
-                    '.media-item[data-type="wma"], ' +
-                    '.media-item[data-type="m4a"], ' +
-                    '.media-item[data-type="flac"]'
-                ).hide();
+                // Previously hid audio/video types from file list. Removed to allow selecting audio/video files.
+                //$tab.find(
+                //    '.media-item[data-type="mp4"], ' +
+                //    '.media-item[data-type="m4s"], ' +
+                //    '.media-item[data-type="mp3"], ' +
+                //    '.media-item[data-type="wav"], ' +
+                //    '.media-item[data-type="ogg"], ' +
+                //    '.media-item[data-type="aac"], ' +
+                //    '.media-item[data-type="wma"], ' +
+                //    '.media-item[data-type="m4a"], ' +
+                //    '.media-item[data-type="flac"]'
+                //).hide();
 
 
                 updateMediaSidbar();
@@ -520,308 +518,6 @@ function updateMediaSidbar(file,thumb,insert){
     if(ext == 'mp4' || ext == 'webm')
     {
         privew = '<div style="text-align:center"><video controls style="max-width:100%">\
-
-			
-			if( mediaType == 'editor' )
-			{
-				insertToEditor(files);
-			}
-			else if( mSettings.button && mSettings.button.nodeType == 1 )
-			{
-				var $ap = $(mSettings.button).closest('.media-ap'),
-				$input = $ap.find('.media-ap-input'),
-				$thumb = $ap.find('.media-ap-data');
-				
-				$(files).each(function(i, file) {
-					var originalFilePath = $(file).data('file');
-					var cleanFilePath = originalFilePath.replace('/lexoya/var/www/html/', '');
-				
-					if ($input.length) {
-						$($input[i]).val(cleanFilePath);
-					}
-				
-					if ($thumb.length) {
-						var size = $thumb.data('thumb');
-						var originalThumbPath = $(file).data(size);
-						var cleanThumbPath = originalThumbPath.replace('/lexoya/var/www/html/', '');
-				
-						var img = $('<img/>', { src: cleanThumbPath, file: cleanFilePath })
-							.addClass('convert-this img-responsive');
-				
-						if ($thumb.hasClass('replace')) {
-							$thumb.html(img);
-						} else {
-							$thumb.append(img);
-						}
-					}
-				});
-				
-			}
-			
-			$(files).removeClass('selected');
-			
-			$("html,body").css("overflow","");
-			$media.hide();		
-	});
-	
-	var lastUpdate = false;
-	
-	function addTab(name,data){
-		
-		var style = data.style;
-		if(!style) style = {};
-		var tabbtn = $('<div/>').addClass('media-select-tab-btn')
-			.attr({'tab':name}).append($('<i/>').addClass('fa fa-'+data.icon)).append(data.name)
-			.on("click",function(){
-				$('.media-select-content-tab').hide();
-				$('.media-select-content-tab[tab="'+$(this).attr('tab')+'"]').show();
-				$('.media-select-tab-btn').removeClass('selected');
-				$(this).addClass('selected');
-			});
-		
-		if(name == 'upload')
-		$(tabbtn).insertAfter($closeBtn);
-		else 
-		$(tabbtn).appendTo($header);
-
-		$('<div/>').addClass("media-select-content-tab")
-			.attr({'tab':name}).html(data.html).css(style).appendTo($content);		
-	}
-	
-	function getSelctedFiles(){
-		
-		var selctedfiles = $('.media-item.selectable.selected');
-		if( ! selctedfiles.length ) return false;
-		
-		var files = [];
-		 
-		$(selctedfiles).each(function(index, el) {
-			files.push($(el).data('file'));
-		});
-		return files;
-	}
-	
-	function updateImages(append){
-		
-		mediaLoding(1);
-				
-		var begin,total = 20;
-		
-		if( ! append ) begin = 0; else begin = $('.media-item.media-images').length;
-			
-		total = getTotal(begin);
-		
-		var dir = readCookie('_ad0f');
-		
-		$.ajax({
-			url:URL+"/media/images/"+begin+"/"+total,
-			type:"POST",
-			data:{selectable:true,multiple:mSettings.multiple,options:false,dir:dir},
-			success: function(data){
-				
-				var $tab = $('.media-select-content-tab[tab=images]');
-				
-				if( ! append ){
-					$tab.html(data);
-					MediaData('restore');
-				}else
-				$tab.append(data);
-				
-				$tab.find('.media-images img:hidden').each(function(index, element) {
-					$(this).load(function(){$(this).fadeIn(200)});
-				}); 
-				
-				updateMediaSidbar();
-				
-				mediaLoding(0);
-			},error: function(){mediaLoding(0)}
-		});
-	}
-	
-	function updateFiles(append){
-		
-		mediaLoding(1);
-		
-		var sFiles = getSelctedFiles(),begin,total;
-		
-		if( ! append ) begin = 0; else begin = $('.media-item.media-files').length;
-		
-		total = getTotal(begin);
-		
-		var dir = readCookie('_ad0f');
-		
-		$.ajax({
-			url:URL+"/media/files/"+begin+"/"+total,
-			type:"POST",
-			data:{selectable:true,multiple:mSettings.multiple,options:false,dir:dir},
-			success: function(data){
-				
-				var $tab = $('.media-select-content-tab[tab=files]');
-				
-				if( ! append ){
-					$tab.html(data);
-					MediaData('restore','files');
-				}
-				else $tab.append(data);
-				
-				updateMediaSidbar();
-				
-				mediaLoding(0);
-				
-			},error: function(){mediaLoding(0)}
-		});		
-
-	}
-	
-	function updateMedia(){
-		
-		/*if( lastUpdate && lastUpdate+5 > strTime() ) return;
-		lastUpdate = strTime(); 
-		$('.media-reload').addClass('disable');
-		setTimeout(function(){$('.media-reload').removeClass('disable')},5000);*/
-		MediaData('backup');
-		
-		if(mSettings.include.images)
-		updateImages();
-		
-		if(mSettings.include.files)
-		updateFiles();
-		
-		$.ajax({
-			type:"POST",
-			url:URL+"/mediadirlist",
-			dataType:"json",
-			success: function(data){
-				
-				$header.find('select,.media-header-select,.select-menu').remove();
-				if(data.permission && data.list.length )
-				{
-					var dir = readCookie('_ad0f') || data.user;
-					var $select = $('<select/>').addClass('media-header-select')
-					.on("change",function(){
-						createCookie('_ad0f',this.value,1);
-						updateMedia();
-					}).appendTo($header);
-					
-					$.each(data.list,function(i,v){
-						$('<option/>').val(v).html(v).appendTo($select);
-					});
-					$select.val(dir)
-					selectMenu($select,'user');
-				}
-			}
-		});
-		
-		
-				
-	}
-
-	function setSize(){
-		
-		var ww = $(window).width(),wh = $(window).height(),
-		mh = $('.media-select-main').height(),
-		hh = $('.media-select-main-header').outerHeight(),
-		sh = $('.media-select-sidebar').height(),
-		fh = $('.media-select-footer').outerHeight();
-		
-		$('.media-select-sidebar-content').innerHeight(sh-fh);
-		$('.media-select-content').innerHeight(mh-hh);
-		
-		var sminW = 250,fileW = 130,scrollW = 0,
-		bW = $('.media-select-body').innerWidth(), remW = bW-sminW-scrollW , 
-		items = Math.floor(remW/fileW),mW = (items*fileW)+scrollW;
-		
-		$('.media-select-main').innerWidth(mW);
-		$('.media-select-sidebar').innerWidth(bW-mW-3);
-				
-	}	
-	
-	function getTotal(begin){
-
-		var w = $('.media-select-content').width(),
-		h = $('.media-select-content').height(),
-		col = w /130 , row = Math.ceil(h/130);
-				
-		if( begin == 0 ) return  2*row*col;
-		
-		else  return  3*col*row;
-		
-	}	
-	
-	$(window).resize(setSize);
-	
-	setSize();
-	
-	updateMedia();
-	
-	$('.media-select-tab-btn[tab="'+mSettings.selected+'"]').trigger("click");
-	
-	$('.media-select-content').mCustomScrollbar({
-		theme: "3d-thick",
-		scrollButtons:{enable:true},
-		scrollInertia:100,
-		//autoHideScrollbar: true,
-		//autoExpandScrollbar :true ,
-		scrollbarPosition:"outside",
-		callbacks:{
-			onTotalScroll: function(){
-				
-				var tab = $('.media-select-tab-btn.selected').attr('tab');
-				
-				if(tab=='images') updateImages(true);
-						
-				if(tab=='files') updateFiles(true);
-						
-			}
-		}
-	});	
-	
-	/*$('.media-select-sidebar-content').mCustomScrollbar({
-		theme: "3d-thick",
-		scrollButtons:{enable:true},
-		scrollInertia:100,
-		//autoHideScrollbar: true,
-		scrollbarPosition:"outside"
-	});*/
-
-} 
-
-function updateMediaSidbar(file,thumb,insert){
-	
-	var sidebar = $('.media-select-sidebar-content');
-	
-	if(!file){ $(sidebar).html(''); return; }
-		
-
-	function addRow(c1,c2){
-		if(!c2)
-		return $('<tr/>').append($('<td/>').attr("colspan","2").html(c1));
-	    return $('<tr/>').append($('<td/>').html(c1)).append($('<td/>').html(c2));
-	}
-		
-	var data = $(file).data(),
-		name = data.name,
-		size = data.size,
-		type = data.type.toUpperCase(),
-		ext  = data.type.toLowerCase(),
-		date = data.date,
-		path = data.file.replace('/lexoya/var/www/html/', ''),
-		thumb150  = BURL+data.thumb150,
-		thumb300  = BURL+data.thumb300,
-		thumb600  = BURL+data.thumb600, 
-		eSizebase = data.selfsize,
-		eSize150  = data.thumb150size,
-		eSize300  = data.thumb300size,   
-		eSize600  = data.thumb600size,
-		privew  = $(file).find('.media-item-icon').clone(true),
-		cls     = 'media-select-sidebar-',
-		isImage = $(file).hasClass('media-images') ? true : false;
-	
-	var $info = $('<div/>',{'dir':'rtl'});
-	
-	if(ext == 'mp4' || ext == 'webm')
-	{
-		privew = '<div style="text-align:center"><video controls style="max-width:100%">\
 					 <source src="'+path+'" type="video/'+ext+'">\
 					  Your browser does not support the video.\
 				  </video></div>';
@@ -830,7 +526,6 @@ function updateMediaSidbar(file,thumb,insert){
         privew = '<div style="text-align:center"><audio  controls style="max-width: 100%;">\
 				  <source src="'+path+'" type="audio/mpeg" title="'+name+'">\
 				  Your browser does not support the audio tag.\
-
 				 </audio></div>';
     }
 
@@ -988,7 +683,6 @@ function MediaData(op,cls){
 
 function insertToEditor(files){
 
-
     $(files).each(function(index, file) {
 
         var name   = $.trim($(file).attr("data-info-name")) || $(file).attr("data-name"),
@@ -1012,7 +706,6 @@ function insertToEditor(files){
 
                     case 'mp3':case 'ogg':
                         html = '<p></p><div style="text-align:center"><audio  controls>\
-
 				  <source src="'+path+'" type="audio/mpeg" title="'+title+'">\
 				  Your browser does not support the audio tag.\
 				 </audio></div><p></p>';

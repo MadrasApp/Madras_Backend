@@ -61,6 +61,11 @@ class Upload extends CI_Controller
             $directory = $this->createDirectoryStructure($dir, $fileBaseName);
             $fullFilePath = $this->moveUploadedFile($fileTemp, $fileName, $directory);
 
+            // Generate thumbnails for images (enables previews and confirms non-zero size)
+            if ($this->isImageFile($fileName)) {
+                $this->media->creatThumb($fullFilePath);
+            }
+
             if ($this->isImageFile($fileName)) {
                 $this->uploadToSFTP($directory, $fileName);
                 $msg = "Image uploaded successfully.";
@@ -96,7 +101,6 @@ class Upload extends CI_Controller
     {
         $this->load->config('sftp');
         $sftpConfig = $this->config->item('sftp');
-
 
         $sftp_host = $sftpConfig['host'];
         $sftp_port = $sftpConfig['port'];
@@ -149,7 +153,6 @@ class Upload extends CI_Controller
                 continue;
             }
 
-
             $localFilePath  = $baseDir . "/" . $file;
             $remoteFilePath = $remoteDir . "/" . $file;
 
@@ -190,7 +193,6 @@ class Upload extends CI_Controller
 
         // Do not delete local directory; media browser depends on local files to list images
     }
-
 
     public function deleteFromSFTPByLocalPath($localFilePath)
     {
@@ -279,7 +281,12 @@ class Upload extends CI_Controller
 
     private function createDirectoryStructure($dir, $fileBaseName)
     {
-        $dirArr = ['uploads', $dir, date("Y"), date("m"), $fileBaseName];
+        // Sanitize base directory name to avoid non-ASCII issues on Windows/Linux
+        $safeBase = $this->media->normalizeString((string)$fileBaseName);
+        if ($safeBase === '' || $safeBase === null) {
+            $safeBase = date("Y-m-d[H.i]");
+        }
+        $dirArr = ['uploads', $dir, date("Y"), date("m"), $safeBase];
         $directory = $this->media->mkDirArray($dirArr);
         if (! $directory) {
             throw new Exception("Failed to create directory structure.");
