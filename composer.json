@@ -1,0 +1,12 @@
+{
+    "require": {
+        "aws/aws-sdk-php": "3.235.1",
+        "guzzlehttp/guzzle": "^7.4",
+        "phpseclib/phpseclib": "3.0",
+        "symfony/deprecation-contracts": "^2.2"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
