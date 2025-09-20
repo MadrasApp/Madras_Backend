@@ -4739,7 +4739,7 @@ class V2 extends CI_Controller
                         $db->where("p.type = 'book'");
                         $rows = $db->get('posts p')->result();
                         foreach ($rows as $X) {
-                            $X->thumb = full_media_url($X->thumb);
+                            $X->thumb = $X->thumb ? $base . $X->thumb : null;
                             $data[] = $X;
                         }
                         break;
@@ -4749,7 +4749,7 @@ class V2 extends CI_Controller
                         $db->where("p.id IN(" . implode(",", $ids) . ")");
                         $rows = $db->get('category p')->result();
                         foreach ($rows as $X) {
-                            $X->pic = full_media_url($X->pic);
+                            $X->pic = $X->pic ? $base . $X->pic : null;
                             $data[] = $X;
                         }
                         break;
@@ -4770,7 +4770,7 @@ class V2 extends CI_Controller
                         $db->join('ci_doreh d', 't.id=d.tecatid', 'inner', FALSE);
                         $rows = $db->get('tecat t')->result();
                         foreach ($rows as $X) {
-                            $X->image = full_media_url($X->image);
+                            $X->image = $X->image ? $base . $X->image : null;
                             $data[] = $X;
                         }
                         break;
@@ -4960,7 +4960,7 @@ class V2 extends CI_Controller
                 foreach ($ostads as $k => $v) {
                     $data['ostad'][$k]["id"] = $v->id;
                     $data['ostad'][$k]["title"] = $v->title;
-                    $data['ostad'][$k]["image"] = full_media_url($v->image);
+                    $data['ostad'][$k]["image"] = $v->image ? $baseurl . $v->image : null;
                 }
                 break;
             case 'doreh':
@@ -4978,7 +4978,7 @@ class V2 extends CI_Controller
                 foreach ($dorehs as $k => $v) {
                     $data['doreh'][$k]["id"] = $v->id;
                     $data['doreh'][$k]["title"] = $v->name;
-                    $data['doreh'][$k]["image"] = full_media_url($v->image);
+                    $data['doreh'][$k]["image"] = $v->image ? $baseurl . $v->image : null;
                     $data['doreh'][$k]["year"] = $v->tahsili_year . '-' . ($v->tahsili_year + 1);
                 }
                 break;
@@ -5013,8 +5013,8 @@ class V2 extends CI_Controller
                     $data['book'][$k]["sound"] = intval($v->has_sound) ? 1 : 0;
                     $data['book'][$k]["video"] = intval($v->has_video) ? 1 : 0;
                     $data['book'][$k]["image"] = intval($v->has_image) ? 1 : 0;
-                    $data['book'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['book'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['book'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['book'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'favbook':
@@ -5046,8 +5046,8 @@ class V2 extends CI_Controller
                     $data['favbook'][$k]["title"] = $v->title;
                     $data['favbook'][$k]["price"] = intval($v->price);
                     $data['favbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['favbook'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['favbook'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['favbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['favbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'favclass':
@@ -5075,7 +5075,7 @@ class V2 extends CI_Controller
                 foreach ($favclass as $k => $v) {
                     $data['favclass'][$k]["id"] = $v->id;
                     $data['favclass'][$k]["title"] = $v->title;
-                    $data['favclass'][$k]["thumb"] = full_media_url($v->image);
+                    $data['favclass'][$k]["thumb"] = $v->image ? $baseurl . $v->image : null;
                 }
                 break;
             case 'bookupdate':
@@ -5105,8 +5105,8 @@ class V2 extends CI_Controller
                     $data['bookupdate'][$k]["title"] = $v->title;
                     $data['bookupdate'][$k]["price"] = intval($v->price);
                     $data['bookupdate'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['bookupdate'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['bookupdate'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['bookupdate'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['bookupdate'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'supplierbook':
@@ -5131,8 +5131,8 @@ class V2 extends CI_Controller
                     $data['supplierbook'][$k]["title"] = $v->title;
                     $data['supplierbook'][$k]["price"] = intval($v->price);
                     $data['supplierbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['supplierbook'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['supplierbook'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['supplierbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['supplierbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'specialbook':
@@ -5158,8 +5158,8 @@ class V2 extends CI_Controller
                     $data['specialbook'][$k]["title"] = $v->title;
                     $data['specialbook'][$k]["price"] = intval($v->price);
                     $data['specialbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['specialbook'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['specialbook'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['specialbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['specialbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'samembook':
@@ -5180,8 +5180,8 @@ class V2 extends CI_Controller
                     $data['samembook'][$k]["title"] = $v->title;
                     $data['samembook'][$k]["price"] = intval($v->price);
                     $data['samembook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['samembook'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['samembook'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['samembook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['samembook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                     $data['samembook'][$k]["data_type"] = $v->data_type;
                 }
                 break;
@@ -5212,8 +5212,8 @@ class V2 extends CI_Controller
                     $data['sametbook'][$k]["title"] = $v->title;
                     $data['sametbook'][$k]["price"] = intval($v->price);
                     $data['sametbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['sametbook'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['sametbook'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['sametbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['sametbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                     $data['sametbook'][$k]["data_type"] = $data_type[$v->id];
                 }
                 break;
@@ -5233,7 +5233,7 @@ class V2 extends CI_Controller
                 foreach ($O as $k => $v) {
                     $ids[$v->id] = $v->id;
                     $kids[$v->id] = $k;
-                    $v->image = full_media_url($v->image);
+                    $v->image = $v->image ? $baseurl . $v->image : null;
                     $O[$k] = $v;
                 }
                 $xids = implode(",", $ids);
@@ -5267,7 +5267,7 @@ class V2 extends CI_Controller
 
 
                 foreach ($O as $k => $v) {
-                    $v->image = full_media_url($v->image);
+                    $v->image = $v->image ? $baseurl . $v->image : null;
                     $O[$k] = $v;
                 }
 
@@ -5287,7 +5287,7 @@ class V2 extends CI_Controller
 
 
                 foreach ($O as $k => $v) {
-                    $v->image = full_media_url($v->image);
+                    $v->image = $v->image ? $baseurl . $v->image : null;
                     $O[$k] = $v;
                 }
 
@@ -5307,7 +5307,7 @@ class V2 extends CI_Controller
 
 
                 foreach ($O as $k => $v) {
-                    $v->image = full_media_url($v->image);
+                    $v->image = $v->image ? $baseurl . $v->image : null;
                     $O[$k] = $v;
                 }
 
@@ -5335,8 +5335,8 @@ class V2 extends CI_Controller
                     $data['supplierfavbook'][$k]["title"] = $v->title;
                     $data['supplierfavbook'][$k]["price"] = intval($v->price);
                     $data['supplierfavbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                    $data['supplierfavbook'][$k]["thumb"] = full_media_url($v->thumb);
-                    $data['supplierfavbook'][$k]["cover300"] = $v->thumb ? full_media_url(thumb($v->thumb, 300)) : null;
+                    $data['supplierfavbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
+                    $data['supplierfavbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'place':
@@ -5364,7 +5364,7 @@ class V2 extends CI_Controller
                 foreach ($places as $k => $v) {
                     $data['place'][$k]["id"] = $v->id;
                     $data['place'][$k]["title"] = $v->title;
-                    $data['place'][$k]["image"] = full_media_url($v->image);
+                    $data['place'][$k]["image"] = $v->image ? $baseurl . $v->image : null;
                 }
                 break;
             case 'classroom':
@@ -5421,7 +5421,7 @@ class V2 extends CI_Controller
                 foreach ($dorehs as $k => $v) {
                     $data['doreh'][$v->id]["id"] = $v->id;
                     $data['doreh'][$v->id]["title"] = $v->name;
-                    $data['doreh'][$v->id]["image"] = full_media_url($v->image);
+                    $data['doreh'][$v->id]["image"] = $v->image ? $baseurl . $v->image : null;
                     $data['doreh'][$v->id]["year"] = $v->tahsili_year . '-' . ($v->tahsili_year + 1);
                 }
 
@@ -5457,7 +5457,7 @@ class V2 extends CI_Controller
                     $data['dorehclass'][$k]["classroom"] = $data['classroom'][$v->classid];
                     $data['dorehclass'][$k]["jalasat"] = $v->jalasat;
                     $data['dorehclass'][$k]["startdate"] = $v->shamsidate;
-                    $data['dorehclass'][$k]["image"] = full_media_url($v->image);
+                    $data['dorehclass'][$k]["image"] = $v->image ? $baseurl . $v->image : null;
                 }
                 break;
         }
@@ -6526,7 +6526,7 @@ class V2 extends CI_Controller
                     $data['samembook'][$k]["title"] = $v->title;
                     $data['samembook'][$k]["price"] = intval($v->price);
                     $data['samembook'][$k]["sharh"] = intval($v->has_description) ? "1" : "0";
-                    $data['samembook'][$k]["thumb"] = full_media_url($v->thumb);
+                    $data['samembook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
                     $data['samembook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 $same_mozoe = $data['samembook'];
@@ -6557,7 +6557,7 @@ class V2 extends CI_Controller
                     $data['samembook'][$k]["title"] = $v->title;
                     $data['samembook'][$k]["price"] = intval($v->price);
                     $data['samembook'][$k]["sharh"] = intval($v->has_description) ? "1" : "0";
-                    $data['samembook'][$k]["thumb"] = full_media_url($v->thumb);
+                    $data['samembook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
                     $data['samembook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 $same_onvan = $data['samembook'];
@@ -7159,7 +7159,7 @@ class V2 extends CI_Controller
                 $data['books'][$k]["title"] = $v->title;
                 $data['books'][$k]["price"] = intval($v->price);
                 $data['books'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
-                $data['books'][$k]["thumb"] = full_media_url($v->thumb);
+                $data['books'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
                 $data['books'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
             }
 
@@ -7261,7 +7261,7 @@ class V2 extends CI_Controller
             foreach ($dorehs as $k => $v) {
                 $data['doreh'][$v->id]["id"] = $v->id;
                 $data['doreh'][$v->id]["title"] = $v->name;
-                $data['doreh'][$v->id]["image"] = full_media_url($v->image);
+                $data['doreh'][$v->id]["image"] = $v->image ? $baseurl . $v->image : null;
                 $data['doreh'][$v->id]["year"] = $v->tahsili_year . '-' . ($v->tahsili_year + 1);
                 $data['doreh'][$v->id]["price"] = 0;
                 $db->where('d.dorehid', $v->id);
@@ -7314,7 +7314,7 @@ class V2 extends CI_Controller
                 throw new Exception('موردی یافت نشد', 2);
             }
             foreach ($advertise as $k => $v) {
-                $original_url = full_media_url($v->image);
+                $original_url = $baseurl . $v->image;
                 $new_url = preg_replace('/\/lexoya\/.*?\/uploads/', 'uploads', $original_url);
                 $advertise[$k]->image = $v->image ? $new_url : null;
                 if ($v->section) {

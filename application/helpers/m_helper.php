@@ -80,32 +80,6 @@ function thumb($file,$size = '150')
     return $file_name?"$file_dir/$file_name-$size.$file_ext":"";
 }
 
-function full_media_url($path)
-{
-    if (!$path) return null;
-    // If already an absolute URL, return as-is
-    if (preg_match('#^https?://#i', $path)) return $path;
-
-    // Normalize leading slash for filesystem check
-    $relativePath = ltrim($path, '/');
-
-    // Prefer local file if it exists (legacy uploads)
-    if (defined('FCPATH')) {
-        $local = rtrim(FCPATH, '/\\') . '/' . $relativePath;
-        if (file_exists($local)) {
-            return base_url() . $relativePath;
-        }
-    }
-
-    // Fallback to CDN base for new uploads
-    if (defined('CDN_URL')) {
-        return rtrim(CDN_URL, '/').'/'.$relativePath;
-    }
-
-    // Last resort, return as relative URL
-    return $relativePath;
-}
-
 function m_int($str) {
     return preg_replace("/[^0-9]/","",$str);
 }
