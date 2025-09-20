@@ -18,8 +18,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
  $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-  $config['base_url'] =  $protocol.$_SERVER["HTTP_HOST"];
-// $config['base_url'] =  "https://localhost/madras1/";
+ $config['base_url'] = "https://".$_SERVER["HTTP_HOST"];
+
 
 /*
 |--------------------------------------------------------------------------

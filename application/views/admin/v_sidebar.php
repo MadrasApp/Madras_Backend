@@ -10,7 +10,12 @@
 
 <div id="header" class="bg-dark border-light">
     <a href="<?php echo site_url() ?>" target="_blank">
-        <img src="<?php echo base_url() . $site_logo ?>" style="max-height:50px;float:right">
+        <?php 
+            $logo = isset($site_logo) ? $site_logo : '';
+            $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+            $relLogo = ltrim(str_replace($fc, '', str_replace('\\','/', (string)$logo)), '/');
+        ?>
+        <img src="<?php echo base_url() . $relLogo ?>" style="max-height:50px;float:right">
         <h3 style="float:right;margin:12px 10px"><?php echo $title ?></h3>
     </a>
     <div class="admin-user-logged-in">
