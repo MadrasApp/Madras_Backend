@@ -1845,166 +1845,183 @@ class V2 extends CI_Controller
     public function allbookList()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-        if ($user === FALSE)
+        if ($user === TRUE) {
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
 
-        $book_ids = [];
-        $price = (int)$this->input->post('price');
-        $catid = (int)$this->input->post('catid');
-        $order = $this->input->post('order');
-        $limit = (int)$this->input->post('limit');
+        $book_ids   = [];
+        $price      = (int)$this->input->post('price');
+        $catid      = (int)$this->input->post('catid');
+        $order      = $this->input->post('order');
+        $limit      = (int)$this->input->post('limit');
         $limitstart = (int)$this->input->post('limitstart');
+
         if (!strlen($order)) {
             $order = 'p.date_modified desc';
         }
-        $category = $this->db->where('id', $catid)->get('category')->row();
-        $categories = $this->db->order_by('parent,name ASC')->get('category')->result();
-        $cats = array();
-        $reversecats = array();
-        $parentcategorys = array();
-        $parentcategoryid = array();
-        foreach ($categories as $k => $v) {
+
+        // دسته‌بندی‌ها
+        $categories       = $this->db->order_by('parent,name ASC')->get('category')->result();
+        $cats             = [];
+        $reversecats      = [];
+        $parentcategorys  = [];
+        $parentcategoryid = [];
+
+        foreach ($categories as $v) {
             $prefix = "";
             if (isset($cats[$v->parent])) {
-                $prefix = $cats[$v->parent] . " » ";
+                $prefix                  = $cats[$v->parent] . " » ";
                 $parentcategorys[$v->id] = $cats[$v->parent];
                 $parentcategoryid[$v->id] = $v->parent;
                 $reversecats[$v->parent][] = $v->id;
             }
             $cats[$v->id] = $prefix . $v->name;
         }
+
+        // زیرمجموعه‌ها
+        $xcatid = [];
         if ($catid) {
             if (isset($parentcategoryid[$catid])) {
-                $xcatid = $parentcategoryid[$catid];
+                $xcatid = [(int)$parentcategoryid[$catid]];
             } elseif (isset($reversecats[$catid])) {
-                $xcatid = implode(",", $reversecats[$catid]);
+                $xcatid = array_map('intval', $reversecats[$catid]);
             }
         }
-        $ids = array();
-        $bookids = array();
+
+        $ids     = [];
+        $bookids = [];
+
+        // فیلتر قیمت
         switch ($price) {
-            case 1 :
+            case 1:
                 $this->db->where("p.price = 0");
                 break;
-            case 2 :
+            case 2:
                 $this->db->where("p.price > 0");
                 break;
         }
 
         $this->db->select('p.*,p.excerpt description,p.category parentcategoryid,p.category parentcategoryname,p.category categoryid,p.category categoryname');
-        if ($catid)
-            $this->db->where("(p.category = '$catid' OR p.category IN('$xcatid') )");
-        $this->db->where("p.published = 1");
-        $this->db->where("p.type = 'book'");
-        $this->db->where("p.category > 0");
+        if ($catid) {
+            $this->db->group_start()
+                ->where('p.category', $catid);
+            if (!empty($xcatid)) {
+                $this->db->or_where_in('p.category', $xcatid);
+            }
+            $this->db->group_end();
+        }
+        $this->db->where("p.published", 1);
+        $this->db->where("p.type", 'book');
+        $this->db->where("p.category >", 0);
         $this->db->order_by($order);
-        if (count($ids))
-            $this->db->where("p.id IN (" . implode(",", $ids) . ")");
+
+        if (count($ids)) {
+            $this->db->where_in("p.id", $ids);
+        }
+
         if ($limit || $limitstart) {
             $this->db->limit($limit, $limitstart);
-            $bookids = array(0);
+            $bookids = [0]; // جلوگیری از خالی شدن
         }
+
         $books = $this->db->get('posts p')->result();
         $count = count($books);
+
         if ($limit || $limitstart) {
             $this->db->select('p.*');
-            if ($catid)
-                $this->db->where("(p.category = '$catid' OR p.category IN('$xcatid') )");
-            $this->db->where("p.published = 1");
-            $this->db->where("p.type = 'book'");
+            if ($catid) {
+                $this->db->group_start()
+                    ->where('p.category', $catid);
+                if (!empty($xcatid)) {
+                    $this->db->or_where_in('p.category', $xcatid);
+                }
+                $this->db->group_end();
+            }
+            $this->db->where("p.published", 1);
+            $this->db->where("p.type", 'book');
             $this->db->order_by($order);
-            if (count($ids))
-                $this->db->where("p.id IN (" . implode(",", $ids) . ")");
+            if (count($ids)) {
+                $this->db->where_in("p.id", $ids);
+            }
             $count = $this->db->count_all_results('posts p');
         }
-        $bookscontroller = array();
+
+        $bookscontroller = [];
         if ($limit || $limitstart) {
             foreach ($books as $k => $v) {
                 if (!isset($cats[$v->categoryid])) {
                     unset($books[$k]);
                     continue;
                 }
-                $bookids[] = $v->id;
-                $books[$k]->nashr = array();
+                $bookids[]               = $v->id;
+                $books[$k]->nashr        = [];
                 $bookscontroller[$v->id] = $k;
             }
         }
-        /*
-		$this->db->select('book_id,sound,video,image,description');
-		$this->db->distinct('book_id');
 
-		$book_meta = $this->db->get('book_meta')->result();
-		$book_ids = array(0);
-		$hasDescription = array();
-		$hasSound = array();
-		$hasVideo = array();
-		$hasImage = array();
-		foreach($book_meta as $k=>$v){
-			if(!isset($hasDescription[$v->book_id])){
-				$book_ids[] = $v->book_id;
-				$hasDescription[$v->book_id] = 0;
-				$hasSound[$v->book_id] = 0;
-				$hasVideo[$v->book_id] = 0;
-				$hasImage[$v->book_id] = 0;
-			}
-			$hasDescription[$v->book_id] = $hasDescription[$v->book_id]?$hasDescription[$v->book_id]:($v->description?'true':0);
-			$hasSound[$v->book_id] = $hasSound[$v->book_id]?$hasSound[$v->book_id]:($v->sound?'true':0);
-			$hasVideo[$v->book_id] = $hasVideo[$v->book_id]?$hasVideo[$v->book_id]:($v->video?'true':0);
-			$hasImage[$v->book_id] = $hasImage[$v->book_id]?$hasImage[$v->book_id]:($v->image?'true':0);
-		}
-        */
-        $author = [];
-        $startpage = [];
-        $finaltest = [];
-        $timesecond = [];
-        $acceptpercent = [];
-        $isvideo = [];
-
-        $post_meta = $this->db->select('*')->where('post_id IN(' . implode(',', $bookids) . ')')
-            ->where("meta_key IN ('author','startpage','finaltest','timesecond','acceptpercent','isvideo')")
-            ->get('post_meta')->result();
-        $meta = [];
-        foreach ($post_meta as $k => $v) {
-            $meta[$v->meta_key][$v->post_id] = $v->meta_value;
-            //eval('$'.$v->meta_key.'['.$v->post_id.'] = "'.$v->meta_value.'";');
+        // متادیتا
+        if (empty($bookids)) {
+            $bookids = [0];
         }
+
+        $post_meta = $this->db
+            ->select('*')
+            ->where_in('post_id', $bookids)
+            ->where_in('meta_key', ['author','startpage','finaltest','timesecond','acceptpercent','isvideo'])
+            ->get('post_meta')
+            ->result();
+
+        $meta = [];
+        foreach ($post_meta as $v) {
+            $meta[$v->meta_key][$v->post_id] = $v->meta_value;
+        }
+
         foreach ($books as $k => $v) {
             if (!isset($cats[$v->categoryid])) {
                 unset($books[$k]);
                 continue;
             }
-            $books[$k]->categoryname = $cats[$v->categoryname];
-            $books[$k]->parentcategoryname = $parentcategorys[$v->parentcategoryname];
-            $books[$k]->parentcategoryid = $parentcategoryid[$v->parentcategoryid];
-            $books[$k]->has_description = intval($v->has_description) ? "true" : "false";
-            $books[$k]->has_sound = intval($v->has_sound) ? "true" : "false";
-            $books[$k]->has_video = intval($v->has_video) ? "true" : "false";
-            $books[$k]->has_image = intval($v->has_image) ? "true" : "false";
-            $books[$k]->author = @$author[$v->id];
-            //$books[$k]->price = @$price[$v->id];
-            $books[$k]->startpage = @$meta["startpage"][$v->id];
-            $books[$k]->finaltest = @$meta["finaltest"][$v->id];
-            $books[$k]->timesecond = @$meta["timesecond"][$v->id];
-            $books[$k]->acceptpercent = @$meta["acceptpercent"][$v->id];
-            $books[$k]->isvideo = @$isvideo[$v->id];
-
-            $books[$k]->has_test = intval($v->has_test) ? "true" : "false";
-            $books[$k]->has_tashrihi = intval($v->has_tashrihi) ? "true" : "false";
+            $books[$k]->categoryname      = $cats[$v->categoryname] ?? '';
+            $books[$k]->parentcategoryname = $parentcategorys[$v->parentcategoryname] ?? '';
+            $books[$k]->parentcategoryid  = $parentcategoryid[$v->parentcategoryid] ?? 0;
+            $books[$k]->has_description   = intval($v->has_description) ? "true" : "false";
+            $books[$k]->has_sound         = intval($v->has_sound) ? "true" : "false";
+            $books[$k]->has_video         = intval($v->has_video) ? "true" : "false";
+            $books[$k]->has_image         = intval($v->has_image) ? "true" : "false";
+            $books[$k]->author            = $meta["author"][$v->id] ?? '';
+            $books[$k]->startpage         = $meta["startpage"][$v->id] ?? '';
+            $books[$k]->finaltest         = $meta["finaltest"][$v->id] ?? '';
+            $books[$k]->timesecond        = $meta["timesecond"][$v->id] ?? '';
+            $books[$k]->acceptpercent     = $meta["acceptpercent"][$v->id] ?? '';
+            $books[$k]->isvideo           = $meta["isvideo"][$v->id] ?? '';
+            $books[$k]->has_test          = intval($v->has_test) ? "true" : "false";
+            $books[$k]->has_tashrihi      = intval($v->has_tashrihi) ? "true" : "false";
 
             if ($v->thumb) {
-                $books[$k]->thumb = $v->thumb;
-                $books[$k]->cover300 = thumb($v->thumb, 300);
+                // Ensure thumb is a relative path, not a full URL
+                $relativeThumb = $v->thumb;
+                if (strpos($relativeThumb, 'http') === 0) {
+                    // If it's already a full URL, extract the relative path
+                    $relativeThumb = str_replace(CDN_URL, '', $relativeThumb);
+                }
+
+                $books[$k]->thumb    = CDN_URL . $relativeThumb;
+                $books[$k]->cover300 = CDN_URL . thumb($relativeThumb, 300);
             }
         }
 
         $this->LoadNashr($bookscontroller, $books, $book_ids);
 
-        $pagination = array();
-        $pagination["limitstart"] = $limitstart;
-        $pagination["limit"] = $limit;
-        $pagination["total"] = $count;
+        $pagination = [
+            "limitstart" => $limitstart,
+            "limit"      => $limit,
+            "total"      => $count,
+        ];
 
-        $this->tools->outS(0, 'OK', ['books' => array_values($books), 'pagination' => $pagination]);
+        $this->tools->outS(0, 'OK', [
+            'books'      => array_values($books),
+            'pagination' => $pagination
+        ]);
     }
 
     public function bookList()
@@ -2527,6 +2544,14 @@ class V2 extends CI_Controller
         $data['parts'] = $this->book->getBookPartsById($id);
         $data['tests'] = $this->book->getBookTests($id);
 
+        // Convert image paths to full URLs for mobile app
+        $base = CDN_URL;
+        foreach ($data['parts'] as $k => $part) {
+            if (!empty($part->image)) {
+                $data['parts'][$k]->image = $base . $part->image;
+            }
+        }
+
         // Restrict book content for unauthorized users
         if (!$fullAccess) {
             $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
@@ -2569,10 +2594,12 @@ class V2 extends CI_Controller
             foreach ($data['parts'] as $k => $v) {
                 // Only proceed if $v->image is set and not empty
                 if (!empty($v->image)) {
+                    // Convert full URL back to relative path for file operations
+                    $relativePath = str_replace($base, '', $v->image);
                     // Check if the file exists and is a file
-                    if (is_file($v->image)) {
-                        $baseName = 'images/' . basename($v->image);
-                        $this->zip->read_file($v->image, $baseName);
+                    if (is_file($relativePath)) {
+                        $baseName = 'images/' . basename($relativePath);
+                        $this->zip->read_file($relativePath, $baseName);
                     }
                 }
             }
@@ -2685,8 +2712,13 @@ class V2 extends CI_Controller
 
         $data['tests'] = $this->book->getBookTests($id);
 
+        // Convert image paths to full URLs for mobile app
+        $base = CDN_URL;
         foreach ($data['parts'] as $pk => $part) {
             $data['parts'][$pk]->description = base64_encode($part->description);
+            if (!empty($part->image)) {
+                $data['parts'][$pk]->image = $base . $part->image;
+            }
         }
 
         $data['tests'] = base64_encode($this->MakeJSON($data['tests']));
@@ -2726,11 +2758,13 @@ class V2 extends CI_Controller
             foreach ($data['parts'] as $k => $v) {
                 // Only proceed if $v->image is set and not empty
                 if (!empty($v->image)) {
+                    // Convert full URL back to relative path for file operations
+                    $relativePath = str_replace($base, '', $v->image);
                     // Check if the file exists and is a file
-                    if (is_file($v->image)) {
+                    if (is_file($relativePath)) {
                         // Set the file name inside the ZIP (keeping the images folder structure)
-                        $baseName = 'images/' . basename($v->image);
-                        $this->zip->read_file($v->image, $baseName);
+                        $baseName = 'images/' . basename($relativePath);
+                        $this->zip->read_file($relativePath, $baseName);
                     }
                 }
             }
@@ -5019,7 +5053,7 @@ class V2 extends CI_Controller
                     $data['book'][$k]["video"] = intval($v->has_video) ? 1 : 0;
                     $data['book'][$k]["image"] = intval($v->has_image) ? 1 : 0;
                     $data['book'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['book'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['book'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'favbook':
@@ -5052,7 +5086,7 @@ class V2 extends CI_Controller
                     $data['favbook'][$k]["price"] = intval($v->price);
                     $data['favbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['favbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['favbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['favbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'favclass':
@@ -5111,7 +5145,7 @@ class V2 extends CI_Controller
                     $data['bookupdate'][$k]["price"] = intval($v->price);
                     $data['bookupdate'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['bookupdate'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['bookupdate'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['bookupdate'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'supplierbook':
@@ -5137,7 +5171,7 @@ class V2 extends CI_Controller
                     $data['supplierbook'][$k]["price"] = intval($v->price);
                     $data['supplierbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['supplierbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['supplierbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['supplierbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'specialbook':
@@ -5164,7 +5198,7 @@ class V2 extends CI_Controller
                     $data['specialbook'][$k]["price"] = intval($v->price);
                     $data['specialbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['specialbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['specialbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['specialbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'samembook':
@@ -5186,7 +5220,7 @@ class V2 extends CI_Controller
                     $data['samembook'][$k]["price"] = intval($v->price);
                     $data['samembook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['samembook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['samembook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['samembook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                     $data['samembook'][$k]["data_type"] = $v->data_type;
                 }
                 break;
@@ -5218,7 +5252,7 @@ class V2 extends CI_Controller
                     $data['sametbook'][$k]["price"] = intval($v->price);
                     $data['sametbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['sametbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['sametbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['sametbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                     $data['sametbook'][$k]["data_type"] = $data_type[$v->id];
                 }
                 break;
@@ -5341,7 +5375,7 @@ class V2 extends CI_Controller
                     $data['supplierfavbook'][$k]["price"] = intval($v->price);
                     $data['supplierfavbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['supplierfavbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['supplierfavbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['supplierfavbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'place':
@@ -5739,7 +5773,7 @@ class V2 extends CI_Controller
         foreach ($bookdata as $k => $v) {
             if ($v->thumb) {
                 $bookdata[$k]->thumb = base_url() . $v->thumb;
-                $bookdata[$k]->cover300 = thumb($v->thumb, 300);
+                $bookdata[$k]->cover300 = base_url() . thumb($v->thumb, 300);
             }
             $book_ids[] = $v->id;
             $books[$v->id] = $bookdata[$k];
@@ -5860,7 +5894,7 @@ class V2 extends CI_Controller
                     $bookdata[$k]->price = intval($v->price);
                     $bookdata[$k]->sharh = intval($v->has_description) ? 1 : 0;
                     $bookdata[$k]->thumb = base_url() . $v->thumb;
-                    $bookdata[$k]->cover300 = thumb($v->thumb, 300);
+                    $bookdata[$k]->cover300 = base_url() . thumb($v->thumb, 300);
                 }
                 $book_ids[] = $v->id;
                 $books[$v->id] = $bookdata[$k];
@@ -6130,7 +6164,7 @@ class V2 extends CI_Controller
                 $bookdata[$k]->price = intval($v->price);
                 $bookdata[$k]->sharh = intval($v->has_description) ? 1 : 0;
                 $bookdata[$k]->thumb = $v->thumb ? base_url() . $v->thumb : null;
-                $bookdata[$k]->cover300 = $v->thumb ? thumb($v->thumb, 300) : null;
+                $bookdata[$k]->cover300 = $v->thumb ? base_url() . thumb($v->thumb, 300) : null;
                 $book_ids[] = $v->id;
                 $books[$v->id] = $bookdata[$k];
             }
@@ -7165,7 +7199,7 @@ class V2 extends CI_Controller
                 $data['books'][$k]["price"] = intval($v->price);
                 $data['books'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                 $data['books'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                $data['books'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                $data['books'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
             }
 
             $this->tools->outS(0, 'OK', ["supplier" => $supplier, "data" => $data]);
