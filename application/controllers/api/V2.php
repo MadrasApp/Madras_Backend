@@ -2567,8 +2567,14 @@ class V2 extends CI_Controller
         $this->load->library('zip');
         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
-                $baseName = 'images/' . basename($v->image);
-                $this->zip->read_file($v->image, $baseName);
+                // Only proceed if $v->image is set and not empty
+                if (!empty($v->image)) {
+                    // Check if the file exists and is a file
+                    if (is_file($v->image)) {
+                        $baseName = 'images/' . basename($v->image);
+                        $this->zip->read_file($v->image, $baseName);
+                    }
+                }
             }
         }
 
@@ -2720,12 +2726,11 @@ class V2 extends CI_Controller
             foreach ($data['parts'] as $k => $v) {
                 // Only proceed if $v->image is set and not empty
                 if (!empty($v->image)) {
-                    $fullPath = '/lexoya/var/www/html/' . $v->image;
                     // Check if the file exists and is a file
-                    if (is_file($fullPath)) {
+                    if (is_file($v->image)) {
                         // Set the file name inside the ZIP (keeping the images folder structure)
-                        $baseName = 'images/' . basename($fullPath);
-                        $this->zip->read_file($fullPath, $baseName);
+                        $baseName = 'images/' . basename($v->image);
+                        $this->zip->read_file($v->image, $baseName);
                     }
                 }
             }
@@ -4827,7 +4832,7 @@ class V2 extends CI_Controller
         $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
         $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
         $outputString = str_replace("api/v2/fetchFile/", "", $relative_path);
-        $file_path = '/lexoya/var/www/html/'. $outputString;
+        $file_path = FCPATH . $outputString;
         $file_path = str_replace("api/v2/fetchFile/", "", $file_path);
 
 
@@ -6362,7 +6367,7 @@ class V2 extends CI_Controller
                 ->where('p.id', $id)
                 ->get('posts p')->row();
             if ($book->thumb) {
-                $book->thumb = str_replace('/lexoya/var/www/html/', '', $book->thumb);
+                $book->thumb = str_replace(FCPATH, '', $book->thumb);
                 $book->thumb = CDN_URL . $book->thumb;
             }
 

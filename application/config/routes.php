@@ -81,6 +81,7 @@ $route['tags/(:any)/page/(:num)'] = 'blog/tags/$1/$2';
 
 
 
+
 $route['proficient/page/(:num)'] = 'proficient/index/$1';
 $route['proficient/page/(:num)/(.*)'] = 'proficient/index/$1/$2';
 
