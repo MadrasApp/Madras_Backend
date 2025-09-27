@@ -2950,19 +2950,23 @@ class V2 extends CI_Controller
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
         if ($case == 'sound') {
-            if (!file_exists($part->sound))
-                throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-            //$this->load->helper('download');
-            //force_download($part->sound,NULL);
-            $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+            $this->load->helper('sftp');
+            if (!sftp_file_exists($part->sound)) {
+                // Instead of throwing an exception, return the file path anyway
+                // The file serving will handle the 404 gracefully
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+            } else {
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+            }
         } elseif ($case == 'image') {
-            if (!file_exists($part->image))
-                throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-            //$this->load->helper('download');
-            //force_download($part->image,NULL);
-            $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+            $this->load->helper('sftp');
+            if (!sftp_file_exists($part->image)) {
+                // Instead of throwing an exception, return the file path anyway
+                // The file serving will handle the 404 gracefully
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+            } else {
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+            }
         } else {
             $this->tools->outS(0, NULL, ['data' => $part->{$case}]);
         }
@@ -2992,13 +2996,14 @@ class V2 extends CI_Controller
         if (!isset($part->sound) or empty($part->sound))
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
-        if (!file_exists($part->sound))
-            throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-        //$this->load->helper('download');
-        //force_download($part->sound,NULL);
-
-        $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+        $this->load->helper('sftp');
+        if (!sftp_file_exists($part->sound)) {
+            // Instead of throwing an exception, return the file path anyway
+            // The file serving will handle the 404 gracefully
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+        } else {
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+        }
     }
 
     public function getPartImage($part_id = NULL)
@@ -3025,13 +3030,14 @@ class V2 extends CI_Controller
         if (!isset($part->image) or empty($part->image))
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
-        if (!file_exists($part->image))
-            throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-        //$this->load->helper('download');
-        //force_download($part->image,NULL);
-
-        $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+        $this->load->helper('sftp');
+        if (!sftp_file_exists($part->image)) {
+            // Instead of throwing an exception, return the file path anyway
+            // The file serving will handle the 404 gracefully
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+        } else {
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+        }
     }
 
     public function getExtPdf($book_id = 0, $request = '')

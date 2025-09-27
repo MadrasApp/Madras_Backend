@@ -3,8 +3,11 @@
     Options +FollowSymlinks
     RewriteBase /
 
+    # Handle uploads requests through SFTP
+    RewriteRule ^uploads/(.*)$ sftp_file.php [L,QSA]
+
     # Exclude certain files and directories from rewrite
-    RewriteCond $1 !^(index\.php|images|css|js|robots\.txt|favicon\.ico)
+    RewriteCond $1 !^(index\.php|images|css|js|uploads|robots\.txt|favicon\.ico)
 
     # Check if the file or directory exists; if not, process it
     RewriteCond %{REQUEST_FILENAME} !-f
