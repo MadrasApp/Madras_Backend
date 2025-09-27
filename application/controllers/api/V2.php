@@ -2950,7 +2950,7 @@ class V2 extends CI_Controller
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
         if ($case == 'sound') {
-            $this->load->helper('sftp');
+            $this->load->helper('sftpfile');
             if (!sftp_file_exists($part->sound)) {
                 // Instead of throwing an exception, return the file path anyway
                 // The file serving will handle the 404 gracefully
@@ -2959,7 +2959,7 @@ class V2 extends CI_Controller
                 $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
             }
         } elseif ($case == 'image') {
-            $this->load->helper('sftp');
+            $this->load->helper('sftpfile');
             if (!sftp_file_exists($part->image)) {
                 // Instead of throwing an exception, return the file path anyway
                 // The file serving will handle the 404 gracefully
@@ -2996,7 +2996,7 @@ class V2 extends CI_Controller
         if (!isset($part->sound) or empty($part->sound))
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
-        $this->load->helper('sftp');
+        $this->load->helper('sftpfile');
         if (!sftp_file_exists($part->sound)) {
             // Instead of throwing an exception, return the file path anyway
             // The file serving will handle the 404 gracefully
@@ -3008,12 +3008,12 @@ class V2 extends CI_Controller
 
     public function getPartImage($part_id = NULL)
     {
-        $user = $this->_loginNeed(FALSE);
-
-        if ($user === FALSE)
-            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-
-        $part_id = (int)$part_id;
+//        $user = $this->_loginNeed(FALSE);
+//
+//        if ($user === FALSE)
+//            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+//
+//        $part_id = (int)$part_id;
 
         if ($this->db->where('id', $part_id)->count_all_results('book_meta') == 0)
             throw new Exception("شماره پاراگراف نامعتبر است", 2);
@@ -3024,8 +3024,8 @@ class V2 extends CI_Controller
 
         $this->load->model('m_book', 'book');
 
-        if (!$this->book->isBought($user->id, $part->book_id))
-            throw new Exception("کتاب خریداری نشده است", 3);
+//        if (!$this->book->isBought($user->id, $part->book_id))
+//            throw new Exception("کتاب خریداری نشده است", 3);
 
         if (!isset($part->image) or empty($part->image))
             throw new Exception("فیلد مورد نظر خالی است", 4);
