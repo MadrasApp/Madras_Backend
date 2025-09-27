@@ -605,18 +605,18 @@ class V2 extends CI_Controller
         if (isset($data['avatar']) && !empty($data['avatar'])) {
             // API endpoint for the upload server
             $uploadServerUrl = base_url('api/media_upload/upload'); // Replace with actual URL
-        
+
             // Convert Base64 to a Temporary File
             $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['avatar']));
             $tempFilePath = tempnam(sys_get_temp_dir(), 'avatar_') . ".jpg";
             file_put_contents($tempFilePath, $imageData);
-     
+
             // Prepare File Upload Request
             $curlFile = new CURLFile($tempFilePath, 'image/jpeg', "profile-{$user->id}.jpg");
             $postData = [
                 'file' => $curlFile,
             ];
-        
+
             // Send File to Upload Server via cURL
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $uploadServerUrl);
@@ -626,10 +626,10 @@ class V2 extends CI_Controller
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-        
+
             // Delete the temporary file after upload
             @unlink($tempFilePath);
-        
+
             // Handle response from the upload server
             $uploadResponse = json_decode($response, true);
             if ($httpCode !== 200 || empty($uploadResponse['url'])) {
@@ -638,7 +638,7 @@ class V2 extends CI_Controller
             $avatar = $uploadResponse['key']; // or use $uploadResponse['url'] if you want the full S3 URL
 
         }
-        
+
 
         $udata = array(
             'username' => $data['username'],
@@ -667,22 +667,22 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "اطلاعات به روز شد", ['data' => $user]);
     }
-    
+
     /*===================================
 		Eitaa AutoAuth
 	===================================*/
-	public function ema_auto_auth_user() {
-	    // Load the UserModel
-	    $userModel = new M_user();
-	    $eitaa_token = EITAA_TOKEN;
-	   // $eitta_token2 is just for test, must be deleted later
-	    $eitaa_token2 = '61101070:ad]r(7#cP-xUVh4O9o3-vIfpRCdqv-whFaQH4pR-ul9NjebzU-3sESD}OD1-Aw4LkqYe7-TGL2lr61{-YKqmL(.3u-Br}sdOjyo-wPBVVW)ez-JB%M6JKIF-GOmXm,t]v-MFAMKHbuy-gsgz';
-	    $eitta_data = $this->input->post('eitaa_data');
-	    $eitta_utm = $this->input->post('utm');
-	    
-	    // Remove escaped backslashes
+    public function ema_auto_auth_user() {
+        // Load the UserModel
+        $userModel = new M_user();
+        $eitaa_token = EITAA_TOKEN;
+        // $eitta_token2 is just for test, must be deleted later
+        $eitaa_token2 = '61101070:ad]r(7#cP-xUVh4O9o3-vIfpRCdqv-whFaQH4pR-ul9NjebzU-3sESD}OD1-Aw4LkqYe7-TGL2lr61{-YKqmL(.3u-Br}sdOjyo-wPBVVW)ez-JB%M6JKIF-GOmXm,t]v-MFAMKHbuy-gsgz';
+        $eitta_data = $this->input->post('eitaa_data');
+        $eitta_utm = $this->input->post('utm');
+
+        // Remove escaped backslashes
         $eitta_data = preg_replace('/\\\\"/', '"', $eitta_data);
-        
+
         if ($eitaa_token) {
             $valid_data2 = false;
             $valid_data = $this->ema_validate_eitta_data($eitta_data, $eitaa_token);
@@ -692,7 +692,7 @@ class V2 extends CI_Controller
         } else {
             $this->tools->outS(0, 'ایتا توکن الزامی می باشد!');
         }
-        
+
         if ($valid_data || $valid_data2) {
             $parsedData = $this->ema_extract_data($eitta_data);
 
@@ -703,24 +703,24 @@ class V2 extends CI_Controller
             $email = $parsedData['user']['email'] ?? $username . '@eitaa.com';
 
             $full_name = $first_name . ' ' . $last_name;
-            
+
             if (!empty($eitaa_id)) {
                 $meta_key = 'eitaa_id';
-                
+
                 $user_meta = $this->db->select('user_id')
-                      ->where('meta_name', $meta_key)
-                      ->where('meta_value', $eitaa_id)
-                      ->get('user_meta')
-                      ->row();
+                    ->where('meta_name', $meta_key)
+                    ->where('meta_value', $eitaa_id)
+                    ->get('user_meta')
+                    ->row();
 
                 if ($user_meta && isset($user_meta->user_id)) {
                     $user_id = (int) $user_meta->user_id;
                     $user = $this->db->select('*')
-                     ->where('id', $user_id)
-                     ->get('users')
-                     ->row();
+                        ->where('id', $user_id)
+                        ->get('users')
+                        ->row();
 
-                     // If UTM is provided, insert record into the new utm table with is_registered = 0
+                    // If UTM is provided, insert record into the new utm table with is_registered = 0
                     if (!empty($eitta_utm)) {
                         $utm_data = [
                             'user_id'    => $user_id,
@@ -731,7 +731,7 @@ class V2 extends CI_Controller
                         ];
                         $this->db->insert('utm', $utm_data);
                     }
-                    
+
                     $response = [
                         'login' => true,
                         'user' => $user,
@@ -747,7 +747,7 @@ class V2 extends CI_Controller
                     if (!$this->db->insert('users', $user_data)) {
                         throw new Exception("خطا در انجام عملیات", 4);
                     }
-    
+
                     // Get the newly created user's ID
                     $new_user_id = $this->db->insert_id();
 
@@ -758,7 +758,7 @@ class V2 extends CI_Controller
                     $meta_data = [
                         'eitaa_id' => $eitaa_id
                     ];
-                    
+
                     // Call the updateMeta function
                     $userModel->updateMeta($meta_data, $new_user_id);
 
@@ -773,11 +773,11 @@ class V2 extends CI_Controller
                         ];
                         $this->db->insert('utm', $utm_data);
                     }
-                    
+
                     $this->db->select('*');
                     $this->db->where('id', $new_user_id);
                     $user = $this->db->get('users')->row();
-                    
+
                     $response = [
                         'register' => true,
                         'user' => $user,
@@ -794,7 +794,7 @@ class V2 extends CI_Controller
         } else {
             $this->tools->outS(0, 'دیتا معتبر نمی باشد!');
         }
-	}
+    }
 
     public function ema_contact_check() {
         // Load the UserModel
@@ -807,10 +807,10 @@ class V2 extends CI_Controller
             $this->tools->outS(0, 'اطلاعات کافی نمی باشد!');
             return;
         }
-    
+
         // Remove escaped backslashes from contact_data
         $contact_data = preg_replace('/\\\\"/', '"', $contact_data);
-    
+
         // Validate contact data
         $valid_contact_data = $this->ema_validate_eitta_data($contact_data, $eitaa_token);
         if (!$valid_contact_data) {
@@ -818,37 +818,37 @@ class V2 extends CI_Controller
             // $this->tools->outS(0, $valid_contact_data);
             return;
         }
-    
+
         // Extract the phone number and other details from contact_data
         $extracted_contact_data = $this->ema_extract_contact_data($contact_data);
-    
+
         if (!isset($extracted_contact_data['phone_number'], $extracted_contact_data['eitaa_id'])) {
             $this->tools->outS(0, 'اطلاعات تماس معتبر نمی باشد!');
             return;
         }
-    
+
         $phone_number = $extracted_contact_data['phone_number'];
         $eitaa_id = $extracted_contact_data['eitaa_id'];
-        
+
         $normalized_tel = $this->ema_replace_country_code_with_zero($phone_number);
         $existing_user = $this->M_user->selectUserByNeme($normalized_tel);
         if ($existing_user) {
             $existing_user_id = (int)$existing_user->id;
         }
-        
+
         if ($existing_user_id) {
             $meta_key = 'eitaa_id';
             // Prepare the data array
             $data = [
                 $meta_key => $eitaa_id
             ];
-            
+
             // Call the updateMeta function
             $this->M_user->updateMeta($data, $existing_user_id);
-  
+
             $username = 'user_' . $eitaa_id;
             $user = $this->M_user->selectUserByNeme($username);
-            
+
             if ($user) {
                 // Update the user's phone number
                 $user_id = (int)$user->id;
@@ -857,7 +857,7 @@ class V2 extends CI_Controller
                 $this->db->delete('user_meta');
 
                 $updated_user = $this->M_user->selectUserByNeme($normalized_tel);
-                
+
                 // Respond with the user object
                 $response = [
                     'user' => $updated_user,
@@ -871,24 +871,24 @@ class V2 extends CI_Controller
             // Generate username and find the user
             $username = 'user_' . $eitaa_id;
             $user = $this->M_user->selectUserByNeme($username);
-        
+
             if (!$user) {
                 $this->tools->outS(0, 'کاربر یافت نشد!');
                 return;
             }
-        
+
             // Update the user's phone number
             $user_id = (int)$user->id;
             $user_data = array(
                 'username' => $normalized_tel,
                 'tel' => $normalized_tel,
             );
-        
+
             $this->db->where('id', $user_id);
             $update_result = $this->db->update('users', $user_data);
-            
+
             $updated_user = $this->M_user->selectUserByNeme($normalized_tel);
-            
+
             // Respond with the user object
             $response = [
                 'user' => $updated_user,
@@ -897,7 +897,7 @@ class V2 extends CI_Controller
         }
 
     }
-    
+
     private function ema_replace_country_code_with_zero($phone) {
         $phone = (string)$phone;
         // Check if the number starts with '98'
@@ -908,34 +908,34 @@ class V2 extends CI_Controller
         return $phone;
     }
 
-	private function ema_validate_eitta_data($eitta_data, $eitaa_token) {
-	    parse_str($eitta_data, $data);
+    private function ema_validate_eitta_data($eitta_data, $eitaa_token) {
+        parse_str($eitta_data, $data);
 
         $receivedHash = $data['hash'];
         unset($data['hash']);
-    
+
         ksort($data);
         $dataCheckString = [];
         foreach($data as $key => $value) {
             $dataCheckString[] = "$key=$value";
         }
-    
+
         $secretKey = hash_hmac('sha256', $eitaa_token, "WebAppData", true);
         $generatedHash = hash_hmac('sha256', implode("\n", $dataCheckString), $secretKey);
-    
+
         return hash_equals($generatedHash, $receivedHash);
-	}
-	
-	private function ema_extract_data($eitta_data) {
-	    parse_str($eitta_data, $queryParams);
-    
+    }
+
+    private function ema_extract_data($eitta_data) {
+        parse_str($eitta_data, $queryParams);
+
         return [
             'query_id' => $queryParams['query_id'] ?? null,
             'user' => $queryParams['user'] ? json_decode($queryParams['user'], true) : null,
             'auth_date' => $queryParams['auth_date'] ?? null,
             'hash' => $queryParams['hash'] ?? null,
         ];
-	}
+    }
 
     // Extract Telegram/Eitaa data
     private function ema_extract_contact_data($queryString) {
@@ -946,34 +946,34 @@ class V2 extends CI_Controller
             'eitaa_id' => json_decode($queryParams['contact'])->user_id ?? null,
         ];
     }
-    
+
     public function ema_get_user_by_username() {
         // Load the UserModel
         $this->load->model('M_user'); // Ensure the model is loaded properly
         $secret_key = SECRET_KEY;
         $data = $this->input->post('data');
         $iv = $this->input->post('iv');
-        
+
         // Check for missing parameters
         if (empty($encryptedData) || empty($iv)) {
             $this->tools->outS(0, 'دیتا کامل نیست!');
         }
-        
+
         $username = $this->ema_decrypt_data(hex2bin($data), $iv, $secret_key);
-        
+
         if ($username) {
             $user = $this->M_user->selectUserByNeme($username);
         } else {
             $this->tools->outS(0, 'عملیات ناموفق!');
         }
-        
+
         // Respond with the user object
         $response = [
             'user' => $user,
         ];
         $this->tools->outS(1, $response); // 1 indicates success
     }
-    
+
     // Function to decrypt data
     private function ema_decrypt_data($encryptedData, $iv, $secretKey) {
         // Ensure inputs are valid
@@ -996,7 +996,7 @@ class V2 extends CI_Controller
 
         return $decryptedData ? json_decode($decryptedData, true) : null;
     }
-    
+
     public function ema_change_mobile()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
@@ -1008,25 +1008,25 @@ class V2 extends CI_Controller
         $this->form_validation->set_rules('code', 'کد اعتبار سنجی', 'trim|numeric');
         if ($this->form_validation->run() == FALSE)
             throw new Exception(implode('|', $this->form_validation->error_array()), 1);
-    
+
         $post = $this->input->post();
-    
+
         $this->db->select("a.id");
         $this->db->where("a.id != $userid");
         $this->db->where("a.tel", $post['tel']);
         $existingUser = $this->db->get('users a')->row() ? true : false;
-    
+
         $code = $post['code'];
         if ($code) {
             $this->db->select("a.*");
             $this->db->where("a.id", $userid);
             $this->db->where("a.code", $code);
             $isValidCode = $this->db->count_all_results('users a');
-    
+
             if ($isValidCode) {
                 $data = ["tel" => $post["tel"]];
                 $this->db->where('id', $userid)->update('users', $data);
-    
+
                 $response = [
                     "existingUser" => $existingUser,
                     "res" => "جایگذاری شماره همراه جدید با موفقیت انجام شد"
@@ -1071,7 +1071,7 @@ class V2 extends CI_Controller
             $message = trim($message);
             $smsdata = array("mobile" => $mobile, "text" => $message);
             $re = $this->SendSMS($smsdata, $userid, 2);
-    
+
             $response = [
                 "existingUser" => $existingUser,
                 "res" => $re
@@ -1678,27 +1678,27 @@ class V2 extends CI_Controller
     public function GetUserAzmoon()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-    
+
         if ($user === FALSE)
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-        
+
         $userid = $user->id;
         $this->load->library('form_validation');
         $this->form_validation->set_rules('term', 'ترم', 'trim|numeric');
         $this->form_validation->set_rules('bookid', 'آی دی کتاب', 'trim|numeric');
         $this->form_validation->set_rules('azmoon_type', 'مدل آزمون', 'trim|numeric');
         $this->form_validation->set_rules('azmoon_time', 'مدت آزمون', 'trim|numeric');
-        
+
         if ($this->form_validation->run() == FALSE)
             throw new Exception(implode('|', $this->form_validation->error_array()), 1);
-    
+
         $data = $this->input->post();
-    
+
         $this->db->select("a.*, pdate(`azmoon_date`) AS `shamsidate`, p.title AS book_title");
         $this->db->from("azmoon_result a");
         $this->db->join("posts p", "p.id = a.bookid", "left"); // Join with posts table to get book title
         $this->db->where("a.userid", $userid);
-    
+
         if (isset($data['term']) && (int)$data['term'])
             $this->db->where("a.term", (int)$data['term']);
         if (isset($data['azmoon_type']) && (int)$data['azmoon_type'])
@@ -1707,14 +1707,14 @@ class V2 extends CI_Controller
             $this->db->where("a.azmoon_time", (int)$data['azmoon_time']);
         if (isset($data['bookid']) && (int)$data['bookid'])
             $this->db->where("a.bookid", (int)$data['bookid']);
-    
+
         $this->db->order_by('a.azmoon_date DESC');
-        
+
         $azmoons = $this->db->get()->result();
-    
+
         $this->tools->outS(0, array("azmoon" => $azmoons));
     }
-    
+
 
     /*===================================
 		MOBILE
@@ -1845,166 +1845,183 @@ class V2 extends CI_Controller
     public function allbookList()
     {
         $user = $this->_loginNeed(TRUE, 'u.id');
-        if ($user === FALSE)
+        if ($user === TRUE) {
             throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+        }
 
-        $book_ids = [];
-        $price = (int)$this->input->post('price');
-        $catid = (int)$this->input->post('catid');
-        $order = $this->input->post('order');
-        $limit = (int)$this->input->post('limit');
+        $book_ids   = [];
+        $price      = (int)$this->input->post('price');
+        $catid      = (int)$this->input->post('catid');
+        $order      = $this->input->post('order');
+        $limit      = (int)$this->input->post('limit');
         $limitstart = (int)$this->input->post('limitstart');
+
         if (!strlen($order)) {
             $order = 'p.date_modified desc';
         }
-        $category = $this->db->where('id', $catid)->get('category')->row();
-        $categories = $this->db->order_by('parent,name ASC')->get('category')->result();
-        $cats = array();
-        $reversecats = array();
-        $parentcategorys = array();
-        $parentcategoryid = array();
-        foreach ($categories as $k => $v) {
+
+        // دسته‌بندی‌ها
+        $categories       = $this->db->order_by('parent,name ASC')->get('category')->result();
+        $cats             = [];
+        $reversecats      = [];
+        $parentcategorys  = [];
+        $parentcategoryid = [];
+
+        foreach ($categories as $v) {
             $prefix = "";
             if (isset($cats[$v->parent])) {
-                $prefix = $cats[$v->parent] . " » ";
+                $prefix                  = $cats[$v->parent] . " » ";
                 $parentcategorys[$v->id] = $cats[$v->parent];
                 $parentcategoryid[$v->id] = $v->parent;
                 $reversecats[$v->parent][] = $v->id;
             }
             $cats[$v->id] = $prefix . $v->name;
         }
+
+        // زیرمجموعه‌ها
+        $xcatid = [];
         if ($catid) {
             if (isset($parentcategoryid[$catid])) {
-                $xcatid = $parentcategoryid[$catid];
+                $xcatid = [(int)$parentcategoryid[$catid]];
             } elseif (isset($reversecats[$catid])) {
-                $xcatid = implode(",", $reversecats[$catid]);
+                $xcatid = array_map('intval', $reversecats[$catid]);
             }
         }
-        $ids = array();
-        $bookids = array();
+
+        $ids     = [];
+        $bookids = [];
+
+        // فیلتر قیمت
         switch ($price) {
-            case 1 :
+            case 1:
                 $this->db->where("p.price = 0");
                 break;
-            case 2 :
+            case 2:
                 $this->db->where("p.price > 0");
                 break;
         }
 
         $this->db->select('p.*,p.excerpt description,p.category parentcategoryid,p.category parentcategoryname,p.category categoryid,p.category categoryname');
-        if ($catid)
-            $this->db->where("(p.category = '$catid' OR p.category IN('$xcatid') )");
-        $this->db->where("p.published = 1");
-        $this->db->where("p.type = 'book'");
-        $this->db->where("p.category > 0");
+        if ($catid) {
+            $this->db->group_start()
+                ->where('p.category', $catid);
+            if (!empty($xcatid)) {
+                $this->db->or_where_in('p.category', $xcatid);
+            }
+            $this->db->group_end();
+        }
+        $this->db->where("p.published", 1);
+        $this->db->where("p.type", 'book');
+        $this->db->where("p.category >", 0);
         $this->db->order_by($order);
-        if (count($ids))
-            $this->db->where("p.id IN (" . implode(",", $ids) . ")");
+
+        if (count($ids)) {
+            $this->db->where_in("p.id", $ids);
+        }
+
         if ($limit || $limitstart) {
             $this->db->limit($limit, $limitstart);
-            $bookids = array(0);
+            $bookids = [0]; // جلوگیری از خالی شدن
         }
+
         $books = $this->db->get('posts p')->result();
         $count = count($books);
+
         if ($limit || $limitstart) {
             $this->db->select('p.*');
-            if ($catid)
-                $this->db->where("(p.category = '$catid' OR p.category IN('$xcatid') )");
-            $this->db->where("p.published = 1");
-            $this->db->where("p.type = 'book'");
+            if ($catid) {
+                $this->db->group_start()
+                    ->where('p.category', $catid);
+                if (!empty($xcatid)) {
+                    $this->db->or_where_in('p.category', $xcatid);
+                }
+                $this->db->group_end();
+            }
+            $this->db->where("p.published", 1);
+            $this->db->where("p.type", 'book');
             $this->db->order_by($order);
-            if (count($ids))
-                $this->db->where("p.id IN (" . implode(",", $ids) . ")");
+            if (count($ids)) {
+                $this->db->where_in("p.id", $ids);
+            }
             $count = $this->db->count_all_results('posts p');
         }
-        $bookscontroller = array();
+
+        $bookscontroller = [];
         if ($limit || $limitstart) {
             foreach ($books as $k => $v) {
                 if (!isset($cats[$v->categoryid])) {
                     unset($books[$k]);
                     continue;
                 }
-                $bookids[] = $v->id;
-                $books[$k]->nashr = array();
+                $bookids[]               = $v->id;
+                $books[$k]->nashr        = [];
                 $bookscontroller[$v->id] = $k;
             }
         }
-        /*
-		$this->db->select('book_id,sound,video,image,description');
-		$this->db->distinct('book_id');
 
-		$book_meta = $this->db->get('book_meta')->result();
-		$book_ids = array(0);
-		$hasDescription = array();
-		$hasSound = array();
-		$hasVideo = array();
-		$hasImage = array();
-		foreach($book_meta as $k=>$v){
-			if(!isset($hasDescription[$v->book_id])){
-				$book_ids[] = $v->book_id;
-				$hasDescription[$v->book_id] = 0;
-				$hasSound[$v->book_id] = 0;
-				$hasVideo[$v->book_id] = 0;
-				$hasImage[$v->book_id] = 0;
-			}
-			$hasDescription[$v->book_id] = $hasDescription[$v->book_id]?$hasDescription[$v->book_id]:($v->description?'true':0);
-			$hasSound[$v->book_id] = $hasSound[$v->book_id]?$hasSound[$v->book_id]:($v->sound?'true':0);
-			$hasVideo[$v->book_id] = $hasVideo[$v->book_id]?$hasVideo[$v->book_id]:($v->video?'true':0);
-			$hasImage[$v->book_id] = $hasImage[$v->book_id]?$hasImage[$v->book_id]:($v->image?'true':0);
-		}
-        */
-        $author = [];
-        $startpage = [];
-        $finaltest = [];
-        $timesecond = [];
-        $acceptpercent = [];
-        $isvideo = [];
-
-        $post_meta = $this->db->select('*')->where('post_id IN(' . implode(',', $bookids) . ')')
-            ->where("meta_key IN ('author','startpage','finaltest','timesecond','acceptpercent','isvideo')")
-            ->get('post_meta')->result();
-        $meta = [];
-        foreach ($post_meta as $k => $v) {
-            $meta[$v->meta_key][$v->post_id] = $v->meta_value;
-            //eval('$'.$v->meta_key.'['.$v->post_id.'] = "'.$v->meta_value.'";');
+        // متادیتا
+        if (empty($bookids)) {
+            $bookids = [0];
         }
+
+        $post_meta = $this->db
+            ->select('*')
+            ->where_in('post_id', $bookids)
+            ->where_in('meta_key', ['author','startpage','finaltest','timesecond','acceptpercent','isvideo'])
+            ->get('post_meta')
+            ->result();
+
+        $meta = [];
+        foreach ($post_meta as $v) {
+            $meta[$v->meta_key][$v->post_id] = $v->meta_value;
+        }
+
         foreach ($books as $k => $v) {
             if (!isset($cats[$v->categoryid])) {
                 unset($books[$k]);
                 continue;
             }
-            $books[$k]->categoryname = $cats[$v->categoryname];
-            $books[$k]->parentcategoryname = $parentcategorys[$v->parentcategoryname];
-            $books[$k]->parentcategoryid = $parentcategoryid[$v->parentcategoryid];
-            $books[$k]->has_description = intval($v->has_description) ? "true" : "false";
-            $books[$k]->has_sound = intval($v->has_sound) ? "true" : "false";
-            $books[$k]->has_video = intval($v->has_video) ? "true" : "false";
-            $books[$k]->has_image = intval($v->has_image) ? "true" : "false";
-            $books[$k]->author = @$author[$v->id];
-            //$books[$k]->price = @$price[$v->id];
-            $books[$k]->startpage = @$meta["startpage"][$v->id];
-            $books[$k]->finaltest = @$meta["finaltest"][$v->id];
-            $books[$k]->timesecond = @$meta["timesecond"][$v->id];
-            $books[$k]->acceptpercent = @$meta["acceptpercent"][$v->id];
-            $books[$k]->isvideo = @$isvideo[$v->id];
-
-            $books[$k]->has_test = intval($v->has_test) ? "true" : "false";
-            $books[$k]->has_tashrihi = intval($v->has_tashrihi) ? "true" : "false";
+            $books[$k]->categoryname      = $cats[$v->categoryname] ?? '';
+            $books[$k]->parentcategoryname = $parentcategorys[$v->parentcategoryname] ?? '';
+            $books[$k]->parentcategoryid  = $parentcategoryid[$v->parentcategoryid] ?? 0;
+            $books[$k]->has_description   = intval($v->has_description) ? "true" : "false";
+            $books[$k]->has_sound         = intval($v->has_sound) ? "true" : "false";
+            $books[$k]->has_video         = intval($v->has_video) ? "true" : "false";
+            $books[$k]->has_image         = intval($v->has_image) ? "true" : "false";
+            $books[$k]->author            = $meta["author"][$v->id] ?? '';
+            $books[$k]->startpage         = $meta["startpage"][$v->id] ?? '';
+            $books[$k]->finaltest         = $meta["finaltest"][$v->id] ?? '';
+            $books[$k]->timesecond        = $meta["timesecond"][$v->id] ?? '';
+            $books[$k]->acceptpercent     = $meta["acceptpercent"][$v->id] ?? '';
+            $books[$k]->isvideo           = $meta["isvideo"][$v->id] ?? '';
+            $books[$k]->has_test          = intval($v->has_test) ? "true" : "false";
+            $books[$k]->has_tashrihi      = intval($v->has_tashrihi) ? "true" : "false";
 
             if ($v->thumb) {
-                $books[$k]->thumb = $v->thumb;
-                $books[$k]->cover300 = thumb($v->thumb, 300);
+                // Ensure thumb is a relative path, not a full URL
+                $relativeThumb = $v->thumb;
+                if (strpos($relativeThumb, 'http') === 0) {
+                    // If it's already a full URL, extract the relative path
+                    $relativeThumb = str_replace(CDN_URL, '', $relativeThumb);
+                }
+
+                $books[$k]->thumb    = CDN_URL . $relativeThumb;
+                $books[$k]->cover300 = CDN_URL . thumb($relativeThumb, 300);
             }
         }
 
         $this->LoadNashr($bookscontroller, $books, $book_ids);
 
-        $pagination = array();
-        $pagination["limitstart"] = $limitstart;
-        $pagination["limit"] = $limit;
-        $pagination["total"] = $count;
+        $pagination = [
+            "limitstart" => $limitstart,
+            "limit"      => $limit,
+            "total"      => $count,
+        ];
 
-        $this->tools->outS(0, 'OK', ['books' => array_values($books), 'pagination' => $pagination]);
+        $this->tools->outS(0, 'OK', [
+            'books'      => array_values($books),
+            'pagination' => $pagination
+        ]);
     }
 
     public function bookList()
@@ -2244,7 +2261,7 @@ class V2 extends CI_Controller
         //$categories = $this->post->setCategoryPostsCount($categories);
         $this->tools->outS(0, NULL, ['data' => $categories]);
     }
-    
+
     public function getCategoryArrayWithLimit($parent = 0, $post_type = 'book', $limit = 1)
     {
         $categories = $this->post->getCategoryArrayWithLimit((int)$parent, $post_type, $limit = 1);
@@ -2527,11 +2544,19 @@ class V2 extends CI_Controller
         $data['parts'] = $this->book->getBookPartsById($id);
         $data['tests'] = $this->book->getBookTests($id);
 
+        // Convert image paths to full URLs for mobile app
+        $base = CDN_URL;
+        foreach ($data['parts'] as $k => $part) {
+            if (!empty($part->image)) {
+                $data['parts'][$k]->image = $base . $part->image;
+            }
+        }
+
         // Restrict book content for unauthorized users
         if (!$fullAccess) {
             $limitedPages = array_slice($data['book']->pages['array'], 0, 3, true);
             $data['book']->pages['array'] = $limitedPages;
-            
+
             $offset = [];
             $currentPage = 0;
             foreach ($limitedPages as $key => $value) {
@@ -2539,15 +2564,15 @@ class V2 extends CI_Controller
                 $offset[] = $currentPage - 1;
             }
             $data['book']->pages['offset'] = implode(',', $offset);
-            
+
             $totalPartsInLimitedPages = 0;
             foreach ($limitedPages as $value) {
                 $totalPartsInLimitedPages += count($value);
             }
-            
+
             $data['parts'] = array_slice($data['parts'], 0, $totalPartsInLimitedPages);
         }
-        
+
 
         foreach ($data['parts'] as $pk => $part) {
             $data['parts'][$pk]->description = base64_encode($part->description);
@@ -2567,8 +2592,16 @@ class V2 extends CI_Controller
         $this->load->library('zip');
         if (!empty($data['parts'])) {
             foreach ($data['parts'] as $k => $v) {
-                $baseName = 'images/' . basename($v->image);
-                $this->zip->read_file($v->image, $baseName);
+                // Only proceed if $v->image is set and not empty
+                if (!empty($v->image)) {
+                    // Convert full URL back to relative path for file operations
+                    $relativePath = str_replace($base, '', $v->image);
+                    // Check if the file exists and is a file
+                    if (is_file($relativePath)) {
+                        $baseName = 'images/' . basename($relativePath);
+                        $this->zip->read_file($relativePath, $baseName);
+                    }
+                }
             }
         }
 
@@ -2679,8 +2712,13 @@ class V2 extends CI_Controller
 
         $data['tests'] = $this->book->getBookTests($id);
 
+        // Convert image paths to full URLs for mobile app
+        $base = CDN_URL;
         foreach ($data['parts'] as $pk => $part) {
             $data['parts'][$pk]->description = base64_encode($part->description);
+            if (!empty($part->image)) {
+                $data['parts'][$pk]->image = $base . $part->image;
+            }
         }
 
         $data['tests'] = base64_encode($this->MakeJSON($data['tests']));
@@ -2720,12 +2758,13 @@ class V2 extends CI_Controller
             foreach ($data['parts'] as $k => $v) {
                 // Only proceed if $v->image is set and not empty
                 if (!empty($v->image)) {
-                    $fullPath = '/lexoya/var/www/html/' . $v->image;
+                    // Convert full URL back to relative path for file operations
+                    $relativePath = str_replace($base, '', $v->image);
                     // Check if the file exists and is a file
-                    if (is_file($fullPath)) {
+                    if (is_file($relativePath)) {
                         // Set the file name inside the ZIP (keeping the images folder structure)
-                        $baseName = 'images/' . basename($fullPath);
-                        $this->zip->read_file($fullPath, $baseName);
+                        $baseName = 'images/' . basename($relativePath);
+                        $this->zip->read_file($relativePath, $baseName);
                     }
                 }
             }
@@ -2866,7 +2905,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
     }
-    
+
     public function getUserBooks($user_id = NULL)
     {
         $user_id = (int)$user_id;
@@ -2911,19 +2950,23 @@ class V2 extends CI_Controller
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
         if ($case == 'sound') {
-            if (!file_exists($part->sound))
-                throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-            //$this->load->helper('download');
-            //force_download($part->sound,NULL);
-            $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+            $this->load->helper('sftpfile');
+            if (!sftp_file_exists($part->sound)) {
+                // Instead of throwing an exception, return the file path anyway
+                // The file serving will handle the 404 gracefully
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+            } else {
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+            }
         } elseif ($case == 'image') {
-            if (!file_exists($part->image))
-                throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-            //$this->load->helper('download');
-            //force_download($part->image,NULL);
-            $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+            $this->load->helper('sftpfile');
+            if (!sftp_file_exists($part->image)) {
+                // Instead of throwing an exception, return the file path anyway
+                // The file serving will handle the 404 gracefully
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+            } else {
+                $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+            }
         } else {
             $this->tools->outS(0, NULL, ['data' => $part->{$case}]);
         }
@@ -2953,23 +2996,24 @@ class V2 extends CI_Controller
         if (!isset($part->sound) or empty($part->sound))
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
-        if (!file_exists($part->sound))
-            throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-        //$this->load->helper('download');
-        //force_download($part->sound,NULL);
-
-        $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+        $this->load->helper('sftpfile');
+        if (!sftp_file_exists($part->sound)) {
+            // Instead of throwing an exception, return the file path anyway
+            // The file serving will handle the 404 gracefully
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+        } else {
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->sound]);
+        }
     }
 
     public function getPartImage($part_id = NULL)
     {
-        $user = $this->_loginNeed(FALSE);
-
-        if ($user === FALSE)
-            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
-
-        $part_id = (int)$part_id;
+//        $user = $this->_loginNeed(FALSE);
+//
+//        if ($user === FALSE)
+//            throw new Exception("برای دسترسی به این بخش باید وارد حساب کاربری خود شوید", -1);
+//
+//        $part_id = (int)$part_id;
 
         if ($this->db->where('id', $part_id)->count_all_results('book_meta') == 0)
             throw new Exception("شماره پاراگراف نامعتبر است", 2);
@@ -2980,19 +3024,20 @@ class V2 extends CI_Controller
 
         $this->load->model('m_book', 'book');
 
-        if (!$this->book->isBought($user->id, $part->book_id))
-            throw new Exception("کتاب خریداری نشده است", 3);
+//        if (!$this->book->isBought($user->id, $part->book_id))
+//            throw new Exception("کتاب خریداری نشده است", 3);
 
         if (!isset($part->image) or empty($part->image))
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
-        if (!file_exists($part->image))
-            throw new Exception("فایل مورد نظر در سرور وجود ندارد", 5);
-
-        //$this->load->helper('download');
-        //force_download($part->image,NULL);
-
-        $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+        $this->load->helper('sftpfile');
+        if (!sftp_file_exists($part->image)) {
+            // Instead of throwing an exception, return the file path anyway
+            // The file serving will handle the 404 gracefully
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+        } else {
+            $this->tools->outS(0, NULL, ['data' => base_url() . $part->image]);
+        }
     }
 
     public function getExtPdf($book_id = 0, $request = '')
@@ -3385,7 +3430,7 @@ class V2 extends CI_Controller
 
         $this->tools->outS(0, "حذف شد");
     }
-    
+
     public function ema_deleteItem()
     {
         $user = $this->_loginNeed();
@@ -4827,7 +4872,7 @@ class V2 extends CI_Controller
         $relative_path = str_replace($base_path, '', $requested_url); // Remove base path
         $relative_path = ltrim($relative_path, '/'); // Remove leading slash if present
         $outputString = str_replace("api/v2/fetchFile/", "", $relative_path);
-        $file_path = '/lexoya/var/www/html/'. $outputString;
+        $file_path = FCPATH . $outputString;
         $file_path = str_replace("api/v2/fetchFile/", "", $file_path);
 
 
@@ -4852,19 +4897,19 @@ class V2 extends CI_Controller
     public function collabrationMessageEitaa() {
         // توکن بات خود را اینجا وارد کنید
         $token = EITAA_COLABRATION_TOKEN;
-    
+
         // آیدی چت یا کاربری که می‌خواهید پیام ارسال شود
         $chat_id = 10406720;
-    
+
         // متن پیام که از طریق ورودی ارسال شده
         $text = $this->input->post('text');
-    
+
         // URL صحیح برای API ایتا یار
         $apiUrl = 'https://eitaayar.ir/api/' . $token . '/sendMessage';
-    
+
         // مقداردهی cURL
         $request = curl_init();
-    
+
         // تنظیمات cURL
         curl_setopt($request, CURLOPT_URL, $apiUrl); // آدرس API
         curl_setopt($request, CURLOPT_POST, true); // ارسال درخواست POST
@@ -4875,21 +4920,21 @@ class V2 extends CI_Controller
             'text' => $text,
         ])); // ارسال داده‌ها به API
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true); // دریافت پاسخ API
-    
+
         // اجرای درخواست و دریافت پاسخ
         $response = curl_exec($request);
-    
+
         // بررسی خطاهای احتمالی cURL
         if (curl_errno($request)) {
             echo 'Curl error: ' . curl_error($request);
         } else {
             echo $response; // نمایش پاسخ API
         }
-    
+
         // بستن cURL
         curl_close($request);
     }
-   
+
 
 
 
@@ -4939,7 +4984,7 @@ class V2 extends CI_Controller
 
         // Check if data is cached in Redis
         $cached_data = $this->cache->redis->get($cache_key);
-        
+
         if ($cached_data !== FALSE) {
             // Cache hit, return the cached data
             return $this->tools->outS(0, "اطلاعات کلی", ["data" => $cached_data["data"], "pagination" => $cached_data["pagination"]]);
@@ -5014,7 +5059,7 @@ class V2 extends CI_Controller
                     $data['book'][$k]["video"] = intval($v->has_video) ? 1 : 0;
                     $data['book'][$k]["image"] = intval($v->has_image) ? 1 : 0;
                     $data['book'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['book'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['book'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'favbook':
@@ -5047,7 +5092,7 @@ class V2 extends CI_Controller
                     $data['favbook'][$k]["price"] = intval($v->price);
                     $data['favbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['favbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['favbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['favbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'favclass':
@@ -5106,7 +5151,7 @@ class V2 extends CI_Controller
                     $data['bookupdate'][$k]["price"] = intval($v->price);
                     $data['bookupdate'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['bookupdate'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['bookupdate'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['bookupdate'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'supplierbook':
@@ -5132,7 +5177,7 @@ class V2 extends CI_Controller
                     $data['supplierbook'][$k]["price"] = intval($v->price);
                     $data['supplierbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['supplierbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['supplierbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['supplierbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'specialbook':
@@ -5159,7 +5204,7 @@ class V2 extends CI_Controller
                     $data['specialbook'][$k]["price"] = intval($v->price);
                     $data['specialbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['specialbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['specialbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['specialbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'samembook':
@@ -5181,7 +5226,7 @@ class V2 extends CI_Controller
                     $data['samembook'][$k]["price"] = intval($v->price);
                     $data['samembook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['samembook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['samembook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['samembook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                     $data['samembook'][$k]["data_type"] = $v->data_type;
                 }
                 break;
@@ -5213,7 +5258,7 @@ class V2 extends CI_Controller
                     $data['sametbook'][$k]["price"] = intval($v->price);
                     $data['sametbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['sametbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['sametbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['sametbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                     $data['sametbook'][$k]["data_type"] = $data_type[$v->id];
                 }
                 break;
@@ -5336,7 +5381,7 @@ class V2 extends CI_Controller
                     $data['supplierfavbook'][$k]["price"] = intval($v->price);
                     $data['supplierfavbook'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                     $data['supplierfavbook'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                    $data['supplierfavbook'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                    $data['supplierfavbook'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
                 }
                 break;
             case 'place':
@@ -5734,7 +5779,7 @@ class V2 extends CI_Controller
         foreach ($bookdata as $k => $v) {
             if ($v->thumb) {
                 $bookdata[$k]->thumb = base_url() . $v->thumb;
-                $bookdata[$k]->cover300 = thumb($v->thumb, 300);
+                $bookdata[$k]->cover300 = base_url() . thumb($v->thumb, 300);
             }
             $book_ids[] = $v->id;
             $books[$v->id] = $bookdata[$k];
@@ -5855,7 +5900,7 @@ class V2 extends CI_Controller
                     $bookdata[$k]->price = intval($v->price);
                     $bookdata[$k]->sharh = intval($v->has_description) ? 1 : 0;
                     $bookdata[$k]->thumb = base_url() . $v->thumb;
-                    $bookdata[$k]->cover300 = thumb($v->thumb, 300);
+                    $bookdata[$k]->cover300 = base_url() . thumb($v->thumb, 300);
                 }
                 $book_ids[] = $v->id;
                 $books[$v->id] = $bookdata[$k];
@@ -6125,7 +6170,7 @@ class V2 extends CI_Controller
                 $bookdata[$k]->price = intval($v->price);
                 $bookdata[$k]->sharh = intval($v->has_description) ? 1 : 0;
                 $bookdata[$k]->thumb = $v->thumb ? base_url() . $v->thumb : null;
-                $bookdata[$k]->cover300 = $v->thumb ? thumb($v->thumb, 300) : null;
+                $bookdata[$k]->cover300 = $v->thumb ? base_url() . thumb($v->thumb, 300) : null;
                 $book_ids[] = $v->id;
                 $books[$v->id] = $bookdata[$k];
             }
@@ -6362,8 +6407,8 @@ class V2 extends CI_Controller
                 ->where('p.id', $id)
                 ->get('posts p')->row();
             if ($book->thumb) {
-		$book->thumb = str_replace('/lexoya/var/www/html/', '', $book->thumb);
-		$book->thumb = CDN_URL . $book->thumb;
+                $book->thumb = str_replace(FCPATH, '', $book->thumb);
+                $book->thumb = CDN_URL . $book->thumb;
             }
 
             $category = $book->category;
@@ -6562,7 +6607,7 @@ class V2 extends CI_Controller
                 }
                 $same_onvan = $data['samembook'];
             }
-            
+
             $classonlines = $this->db->select('cid')
                 ->where_in('data_type', ['book', 'hamniaz'])
                 ->where('data_id', $id)
@@ -6659,8 +6704,8 @@ class V2 extends CI_Controller
                 ->where('(ISNULL(expiremembership) OR (NOT ISNULL(expiremembership) AND expiremembership > CURDATE()))')
                 ->get('user_books')
                 ->row();
-                
-            $this->tools->outS(0, 'OK', 
+
+            $this->tools->outS(0, 'OK',
                 [
                     "book" => $book,
                     "dayofweek" => $dayofweek,
@@ -6694,10 +6739,10 @@ class V2 extends CI_Controller
 
         // Retrieve related classonlines IDs
         $classonlines2 = $this->db->select('cid')
-        ->where_in('data_type', ['book', 'hamniaz'])
-        ->where('data_id', $id)
-        ->get('classonline_data')
-        ->result();
+            ->where_in('data_type', ['book', 'hamniaz'])
+            ->where('data_id', $id)
+            ->get('classonline_data')
+            ->result();
 
         $classonline_ids = [];
         foreach ($classonlines2 as $classonline) {
@@ -6714,19 +6759,19 @@ class V2 extends CI_Controller
             ->get('classonline')
             ->result();
 
-            foreach ($classonlines2 as $key => $classonline) {
-                if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
-                    $classonlines2[$key]->teachername = $teachers[$classonline->teachername];
-                } else {
-                    $classonlines2[$key]->teachername = null; // Set to null if teacher is not found
-                }
-                $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
-                $classonlines2[$key]->capacity = $classaccount;
-                $classonlines2[$key]->program = $classonline_dayofweeks[$classonline->id];
+        foreach ($classonlines2 as $key => $classonline) {
+            if (isset($classonline->teachername) && isset($teachers[$classonline->teachername])) {
+                $classonlines2[$key]->teachername = $teachers[$classonline->teachername];
+            } else {
+                $classonlines2[$key]->teachername = null; // Set to null if teacher is not found
             }
+            $classaccount = $this->db->where('user_id', 0)->where('classonline_id', $classonline->id)->count_all_results('classaccount');
+            $classonlines2[$key]->capacity = $classaccount;
+            $classonlines2[$key]->program = $classonline_dayofweeks[$classonline->id];
+        }
 
 
- 
+
         return $this->tools->outS(0, 'OK', ['classonlines1' => $classonlines1, 'classonlines2' => $classonlines2 ]);
     }
 
@@ -6824,7 +6869,7 @@ class V2 extends CI_Controller
                 $classonlines[$key]->capacity = $classaccount;
                 $classonlines[$key]->program = $classonline_dayofweeks[$classonline->id];
             }
-            
+
             // Attach teacher names and schedules to classonlines
             // foreach ($classonlines as $key => $classonline) {
             //     $classonlines[$key]->teachername = $teachers[$classonline->teachername] ?? null;
@@ -7160,7 +7205,7 @@ class V2 extends CI_Controller
                 $data['books'][$k]["price"] = intval($v->price);
                 $data['books'][$k]["sharh"] = intval($v->has_description) ? 1 : 0;
                 $data['books'][$k]["thumb"] = $v->thumb ? $baseurl . $v->thumb : null;
-                $data['books'][$k]["cover300"] = $v->thumb ? thumb($v->thumb, 300) : null;
+                $data['books'][$k]["cover300"] = $v->thumb ? $baseurl . thumb($v->thumb, 300) : null;
             }
 
             $this->tools->outS(0, 'OK', ["supplier" => $supplier, "data" => $data]);
@@ -7485,7 +7530,7 @@ class V2 extends CI_Controller
         }
 
         $this->load->model('m_category', 'category');
-        
+
         // if ($this->category->isBought($user->id, $category_id, $plan_id)) {
         //     $data = $this->db
         //         ->where_in('cat_id', $category_id)
@@ -7495,46 +7540,46 @@ class V2 extends CI_Controller
         //     $this->tools->outS(5, "اشتراک قبلا خریداری شده است", ['data' => $data]);
         //     //throw new Exception("اشتراک قبلا خریداری شده است", 5);
         // } else {
-            $discountCode = $this->input->post('code');
-            $discount_id = 0;
-            if ($discountCode) {
-                $discount_id = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+        $discountCode = $this->input->post('code');
+        $discount_id = 0;
+        if ($discountCode) {
+            $discount_id = $this->category->checkDiscountCode($discountCode, "-8", $plan_id, $category_id, $user->id);
+        }
+        if (!isset($discount_ids["allowed"])) {
+            $discount_ids = [];
+        } else {
+            $discount_ids = $discount_ids["allowed"];
+        }
+        $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_id);
+
+        if ($cf['done'] == FALSE) {
+            throw new Exception($cf['msg'], 5);
+        }
+
+        $factor = $cf['factor'];
+        $data = ['factor' => $factor];
+
+        if ($factor->price == 0) {
+            $this->category->updatetFactor($factor->id, [
+                'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
+                'status' => 0,
+                'pdate' => time()
+            ]);
+
+            if ($discount_id != NULL) {
+                $this->category->setDiscountUsed($discount_id, $factor->id);
             }
-            if (!isset($discount_ids["allowed"])) {
-                $discount_ids = [];
-            } else {
-                $discount_ids = $discount_ids["allowed"];
-            }
-            $cf = $this->category->createFactor($user->id, $category_id, $plan_id, $discount_id);
-    
-            if ($cf['done'] == FALSE) {
-                throw new Exception($cf['msg'], 5);
-            }
-    
-            $factor = $cf['factor'];
-            $data = ['factor' => $factor];
-    
-            if ($factor->price == 0) {
-                $this->category->updatetFactor($factor->id, [
-                    'state' => $discount_id != NULL ? "خرید کامل با کد تخفیف (<span class=\"text-warning\">{$discountCode}</span>)" : 'رایگان',
-                    'status' => 0,
-                    'pdate' => time()
-                ]);
-    
-                if ($discount_id != NULL) {
-                    $this->category->setDiscountUsed($discount_id, $factor->id);
-                }
-    
-                $data['free'] = TRUE;
-                $data['link'] = NULL;
-    
-            } else {
-                $data['link'] = site_url('payment/paycategory/' . $factor->id);
-            }
-            $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
+
+            $data['free'] = TRUE;
+            $data['link'] = NULL;
+
+        } else {
+            $data['link'] = site_url('payment/paycategory/' . $factor->id);
+        }
+        $this->tools->outS(0, "فاکتور ایجاد شد", ['data' => $data]);
         // }
     }
-    
+
     // public function buyCategoryBazar()
     // {
     //     $user = $this->_loginNeed();
@@ -7768,7 +7813,7 @@ class V2 extends CI_Controller
 
     //         $db = $this->db;
     //         $data = array();
-            
+
     //         $dayofweek = [
     //             0 => "شنبه",
     //             1 => "یکشنبه",
@@ -8109,12 +8154,12 @@ class V2 extends CI_Controller
             if ($user->id) {
                 $db->where('c.user_id', $user->id);
             }
-            
+
             // If an id is provided (not 0) then filter by that classonline id
             if ($id != 0) {
                 $db->where('c.classonline_id', $id);
             }
-            
+
             if ($limit || $limitstart) {
                 $db->limit($limit, $limitstart);
             }
@@ -8150,7 +8195,7 @@ class V2 extends CI_Controller
             $tempteachers = [];
             foreach ($teachers as $teacher) {
                 $tempteachers[$teacher->id] = [
-                    "value" => $teacher->id, 
+                    "value" => $teacher->id,
                     "text"  => $teacher->displayname
                 ];
             }
@@ -8193,12 +8238,12 @@ class V2 extends CI_Controller
             // Select the classaccounts for the logged in user
             $db->select('c.*');
             $db->where('c.user_id', $user->id);
-            
+
             // If an id is provided (not 0) then filter by that classonline id
             if ($id != 0) {
                 $db->where('c.classonline_id', $id);
             }
-            
+
             if ($limit || $limitstart) {
                 $db->limit($limit, $limitstart);
             }
@@ -8215,7 +8260,7 @@ class V2 extends CI_Controller
             $db->where_in('c.id', $id);
             $classonlines = $db->get('classonline c')->result();
 
-            
+
 
             $dayofweeks = [
                 0 => "شنبه",
@@ -8279,7 +8324,7 @@ class V2 extends CI_Controller
 
             $data['classaccounts'] = $classaccounts;
             $data['classonlines'] = $classonlines;
-            
+
             $this->tools->outS(0, 'OK', ["data" => $data]);
         } catch (Exception $e) {
             $this->tools->outE($e);

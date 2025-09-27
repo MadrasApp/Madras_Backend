@@ -483,25 +483,17 @@ class M_media extends CI_Model
         }
 
         if ($cls != "") {
-            $icon = "<span class=\"fa-stack\">
-					  <i class=\"fa $cls fa-stack-2x\"></i>
-					</span>";
+            $icon = "<span class=\"fa-stack\">\n\t\t\t\t\t\t\t\t  <i class=\"fa $cls fa-stack-2x\"></i>\n\t\t\t\t\t\t\t\t</span>";
 
         } elseif ($ic != "") {
-            $icon = "<span class=\"fa-stack\">
-					  <i class=\"fa fa-gear fa-stack-1x\"></i>
-					  <i class=\"fa fa-file-o fa-stack-2x\"></i>
-					</span>";
+            $icon = "<span class=\"fa-stack\">\n\t\t\t\t\t\t\t\t  <i class=\"fa fa-gear fa-stack-1x\"></i>\n\t\t\t\t\t\t\t\t  <i class=\"fa fa-file-o fa-stack-2x\"></i>\n\t\t\t\t\t\t\t\t</span>";
         } else {
             $len = strlen($ext);
             $font_size = ((10 - $len) / 10) + (($len - 3) / 100);
             $font_size .= "em";
             $ext = strtoupper($ext);
 
-            $icon = "<span class=\"fa-stack\">
-					  <span class=\"fa-stack-1x filetype-text\" style=\"font-size:$font_size\">$ext</span>
-					  <i class=\"fa fa-file-o fa-stack-2x\"></i>
-					</span>";
+            $icon = "<span class=\"fa-stack\">\n\t\t\t\t\t\t\t\t  <span class=\"fa-stack-1x filetype-text\" style=\"font-size:$font_size\">$ext</span>\n\t\t\t\t\t\t\t\t  <i class=\"fa fa-file-o fa-stack-2x\"></i>\n\t\t\t\t\t\t\t\t</span>";
         }
 
         return $icon;
@@ -518,8 +510,12 @@ class M_media extends CI_Model
 
         $time = $this->settings->Date($info['time'], 'array');
 
+        // Normalize to web-relative paths under uploads/
+        $fc = rtrim(str_replace('\\','/', FCPATH), '/').'/';
+        $fileRel = ltrim(str_replace($fc, '', str_replace('\\','/', $file)), '/');
+
         $data = array(
-            'file' => $file,
+            'file' => $fileRel,
             'name' => $info['name'],
             'size' => $this->byteToSize($info['size']),
             'type' => $info['type'],
@@ -527,9 +523,13 @@ class M_media extends CI_Model
         );
 
         if ($type == 'images') {
-            $data['thumb150'] = $info['thumb150'];
-            $data['thumb300'] = $info['thumb300'];
-            $data['thumb600'] = $info['thumb600'];
+            // Convert thumbs to relative as well
+            $t150 = str_replace('\\','/', $info['thumb150']);
+            $t300 = str_replace('\\','/', $info['thumb300']);
+            $t600 = str_replace('\\','/', $info['thumb600']);
+            $data['thumb150'] = ltrim(str_replace($fc, '', $t150), '/');
+            $data['thumb300'] = ltrim(str_replace($fc, '', $t300), '/');
+            $data['thumb600'] = ltrim(str_replace($fc, '', $t600), '/');
             $data['thumb150size'] = "150x150";
             $data['thumb300size'] = $this->imageSize($info['thumb300']);
             $data['thumb600size'] = $this->imageSize($info['thumb600']);
@@ -562,8 +562,8 @@ class M_media extends CI_Model
         $result .=
             '</div>
 			<div class="media-item-footer">
-			 <div class="media-item-ext opacity">' . $footer_info . '</div>
-			 <div class="media-item-size opacity">' . $this->byteToSize($info['size']) . '</div>
+				 <div class="media-item-ext opacity">' . $footer_info . '</div>
+				 <div class="media-item-size opacity">' . $this->byteToSize($info['size']) . '</div>
             </div>';
 
 

@@ -346,17 +346,18 @@ function media(options,button,callback){
                 }
                 else $tab.append(data);
 
-                $tab.find(
-                    '.media-item[data-type="mp4"], ' +
-                    '.media-item[data-type="m4s"], ' +
-                    '.media-item[data-type="mp3"], ' +
-                    '.media-item[data-type="wav"], ' +
-                    '.media-item[data-type="ogg"], ' +
-                    '.media-item[data-type="aac"], ' +
-                    '.media-item[data-type="wma"], ' +
-                    '.media-item[data-type="m4a"], ' +
-                    '.media-item[data-type="flac"]'
-                ).hide();
+                // Previously hid audio/video types from file list. Removed to allow selecting audio/video files.
+                //$tab.find(
+                //    '.media-item[data-type="mp4"], ' +
+                //    '.media-item[data-type="m4s"], ' +
+                //    '.media-item[data-type="mp3"], ' +
+                //    '.media-item[data-type="wav"], ' +
+                //    '.media-item[data-type="ogg"], ' +
+                //    '.media-item[data-type="aac"], ' +
+                //    '.media-item[data-type="wma"], ' +
+                //    '.media-item[data-type="m4a"], ' +
+                //    '.media-item[data-type="flac"]'
+                //).hide();
 
 
                 updateMediaSidbar();
