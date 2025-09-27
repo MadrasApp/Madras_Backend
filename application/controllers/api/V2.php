@@ -3030,7 +3030,7 @@ class V2 extends CI_Controller
         if (!isset($part->image) or empty($part->image))
             throw new Exception("فیلد مورد نظر خالی است", 4);
 
-        $this->load->helper('sftp');
+        $this->load->helper('sftpfile');
         if (!sftp_file_exists($part->image)) {
             // Instead of throwing an exception, return the file path anyway
             // The file serving will handle the 404 gracefully
